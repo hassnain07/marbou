@@ -5,10 +5,11 @@ import { AuthProvider } from '@/context/AuthContext';
 import { AppShell } from '@/components/AppShell';
 import { Toast, Skeleton } from '@/components/ui';
 import { Suspense, lazy } from 'react';
-import { SearchPage, CategoryPage } from '@/pages/SearchPage';
 import { useI18n } from '@/i18n/I18nContext';
 
 const HomePage = lazy(() => import('@/pages/HomePage').then((m) => ({ default: m.HomePage })));
+const SearchPage = lazy(() => import('@/pages/SearchPage').then((m) => ({ default: m.SearchPage })));
+const CategoryPage = lazy(() => import('@/pages/SearchPage').then((m) => ({ default: m.CategoryPage })));
 const ListingDetailPage = lazy(() => import('@/pages/ListingDetailPage').then((m) => ({ default: m.ListingDetailPage })));
 const AddListingPage = lazy(() => import('@/pages/AddListingPage').then((m) => ({ default: m.AddListingPage })));
 const FavoritesPage = lazy(() => import('@/pages/FavoritesCompareMessages').then((m) => ({ default: m.FavoritesPage })));

@@ -1,0 +1,25 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Add global accessibility and styling utilities to index.css: @media (prefers-reduced-motion: reduce) rule to disable animations for users who prefer reduced motion, confirm .no-scrollbar utility class exists, verify Google Fonts imports (Cairo, Noto Kufi Arabic, Inter) are loaded correctly. These utilities support accessibility requirements and visual consistency across the app.",
+  "status": "pending",
+  "steps": [
+    "Add @media (prefers-reduced-motion: reduce) rule to Frontend/src/index.css after @layer base section, setting animation, transition to none for all elements",
+    "Verify .no-scrollbar utility class exists in index.css (should already be present from exploration); if missing, add webkit and standard scrollbar hiding",
+    "Verify @import url for Google Fonts (Cairo, Noto Kufi Arabic, Inter) is present at top of index.css with correct weights (400, 500, 600, 700) and display=swap"
+  ],
+  "acceptance_criteria": [
+    "@media (prefers-reduced-motion: reduce) rule is present and disables all animations and transitions",
+    ".no-scrollbar class hides scrollbars on webkit and standard browsers",
+    "All three Google Fonts (Cairo, Noto Kufi Arabic, Inter) load successfully",
+    "Browser DevTools: when prefers-reduced-motion is enabled, animations should not play",
+    "npm run build completes without CSS warnings or errors"
+  ],
+  "verification": [
+    "npm run build — should complete with no CSS errors",
+    "Inspect source: verify @media rule and .no-scrollbar in compiled CSS",
+    "Browser DevTools > Rendering > prefers-reduced-motion: set to 'reduce', reload page, verify animations are disabled"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

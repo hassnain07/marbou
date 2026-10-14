@@ -1,0 +1,94 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "id": 1,
+      "severity": "HIGH",
+      "title": "Design Plan Document Truncated",
+      "description": "design-plan.md exceeds 250KB or 2000-line platform limit; content cut off mid-section (ends at line 830). Verify full document exists; if truncated by platform, split into separate files (design-plan-1.md, design-plan-2.md) or request limit increase.",
+      "file": "design-plan.md",
+      "action": "Verify completeness; split if necessary"
+    },
+    {
+      "id": 2,
+      "severity": "MEDIUM",
+      "title": "Form Component Library Not Specified",
+      "description": "component-api.md lists planned form components (TextInput, TextArea, Select, Checkbox, Radio, DatePicker, FileUpload) but provides no specifications: no props tables, state definitions, accessibility requirements, or usage examples. AddListingPage and all forms depend on these.",
+      "file": "component-api.md",
+      "action": "Create form-components.md with full specifications for all form components before implementation"
+    },
+    {
+      "id": 3,
+      "severity": "MEDIUM",
+      "title": "PriceInput & PhoneInput Specifications Incomplete",
+      "description": "Both components listed as 'Planned' with minimal details. Missing: validation rules (min/max/format), currency switching behavior (SDG/EGP/AED), phone country code detection logic, error states, and recovery flows.",
+      "file": "component-api.md",
+      "action": "Expand PriceInput and PhoneInput specifications with validation rules, currency/country logic, and edge cases"
+    },
+    {
+      "id": 4,
+      "severity": "MEDIUM",
+      "title": "MediaUploader Specification Minimal",
+      "description": "Component listed as planned with basic props only. Missing: concurrent upload limits, client-side compression rules, retry strategy details, progress bar UX (cumulative vs. per-file), and max file count per listing.",
+      "file": "component-api.md",
+      "action": "Expand MediaUploader specification with backend integration requirements and error handling scenarios"
+    },
+    {
+      "id": 5,
+      "severity": "MEDIUM",
+      "title": "Sudan Cities/Areas Not Defined",
+      "description": "component-api.md LocationPicker specified as cascade dropdown for Sudan cities/areas but no actual geography data provided (e.g., Khartoum → Jabrein, Shambat, etc.). Cannot test implementation without real data.",
+      "file": "component-api.md",
+      "action": "Define complete Sudan city/area hierarchy (at least 5 major cities with sub-areas) in separate data file"
+    },
+    {
+      "id": 6,
+      "severity": "MEDIUM",
+      "title": "Image Size Presets Inconsistent Between Documents",
+      "description": "performance-strategy.md specifies 'Grid: 300×225px, Detail: 800×600px' while image-strategy.md specifies 'card: 400×300, detail: 800×600, detail-lg: 1200×900'. Two different presets defined; unclear which is authoritative.",
+      "file": ["performance-strategy.md", "image-strategy.md"],
+      "action": "Use image-strategy.md as authoritative; update performance-strategy.md to reference image preset table"
+    },
+    {
+      "id": 7,
+      "severity": "MEDIUM",
+      "title": "CDN Infrastructure Marked TBD",
+      "description": "image-strategy.md lists 'TBD' for image storage location, CDN endpoint, and geo-distribution. Cannot verify performance targets or estimate costs without this infrastructure specification.",
+      "file": "image-strategy.md",
+      "action": "Backend team must specify: image storage (S3/GCS/NFS?), CDN provider (CloudFront/Bunny/Local?), and regional edge locations for Sudan before implementation"
+    },
+    {
+      "id": 8,
+      "severity": "MEDIUM",
+      "title": "Border Radius RTL Support Incomplete",
+      "description": "Tailwind v3 does not support logical corner radius tokens (rounded-ss, rounded-ee). design-tokens.md acknowledges limitation but RTL-i18n-guide.md doesn't provide clear workaround. In RTL, corners won't mirror properly with physical properties.",
+      "file": ["design-tokens.md", "rtl-i18n-guide.md"],
+      "action": "Choose: (1) upgrade to Tailwind v4, (2) implement CSS variable workaround with [dir] selector, or (3) accept physical properties limitation and document it"
+    },
+    {
+      "id": 9,
+      "severity": "MEDIUM",
+      "title": "Network Probe Endpoint Not Owned",
+      "description": "weak-internet-ux.md requires /api/probe endpoint (1KB file for network speed detection) but provides no backend specification. No clarity on response format, status codes, or error handling.",
+      "file": "weak-internet-ux.md",
+      "action": "Add backend spec: 'GET /api/probe returns 1KB JSON (e.g., {ok: true}); Cache-Control: no-cache'"
+    },
+    {
+      "id": 10,
+      "severity": "MEDIUM",
+      "title": "Prefetch Strategy Ignores Language Parameter",
+      "description": "performance-strategy.md prefetch examples use queryKey: ['search', 'cars'] but ignore language. In RTL/Arabic context, ['search', 'cars'] vs. ['search', 'سيارات'] are different queries. Must include language.",
+      "file": "performance-strategy.md",
+      "action": "Update all prefetch examples: queryKey should include language parameter, e.g., ['search', 'cars', lang]"
+    },
+    {
+      "id": 11,
+      "severity": "MEDIUM",
+      "title": "Cache Invalidation Strategy Not Fully Integrated",
+      "description": "performance-strategy.md defines cache TTLs, weak-internet-ux.md specifies draft persistence, component-api.md doesn't address cache updates on server changes. No unified strategy for when to invalidate listings, profile, or listing detail caches.",
+      "file": ["performance-strategy.md", "weak-internet-ux.md", "component-api.md"],
+      "action": "Create unified cache invalidation document showing: (1) user updates listing → invalidate which caches, (2) WebSocket message arrives → update which caches, (3) payment processed → refresh which user data"
+    }
+  ],
+  "reviewDoc": "d:\\codeclub\\Marbou\\marbouProj(Main)\\Frontend\\.agents\\tasks\\design-review.md"
+}

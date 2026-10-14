@@ -1,0 +1,30 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Create 4 performance utility modules under Frontend/src/utils/ for code splitting, image optimization, cache configuration, and weak internet detection. These utilities enable lazy loading, responsive images, cache strategies, and graceful offline handling for a scalable, high-performance marketplace.",
+  "status": "pending",
+  "steps": [
+    "Create Frontend/src/utils/code-splitting.ts: export lazyPage<T>() function wrapping React.lazy for page bundle splitting",
+    "Create Frontend/src/utils/image-optimization.ts: export IMAGE_PRESETS object (thumbnail, card, detail, hero), getResponsiveImage(baseUrl, preset) function, getSrcSet(baseUrl, preset) function for CDN URL generation",
+    "Create Frontend/src/utils/cache-strategy.ts: export CACHE_CONFIG constant with keys (listings, categories, profile, search) mapping to {staleTime, gcTime} in milliseconds; define CacheKey type",
+    "Create Frontend/src/utils/weak-internet.ts: export NetworkState type ('connected'|'slow'|'offline'), useNetworkState() hook reading navigator.onLine + connection.effectiveType, useDataSaver() hook reading localStorage + navigator.connection.saveData, getRetryDelay(attempt) exponential backoff (1s, 2s, 4s, 8s, max 30s)",
+    "Ensure all files are TypeScript strict mode, zero 'any', proper types exported"
+  ],
+  "acceptance_criteria": [
+    "All 4 utility files created and export expected functions/types",
+    "lazyPage() properly wraps React.lazy for page components",
+    "IMAGE_PRESETS contains all 4 presets with w, h, q properties",
+    "getResponsiveImage() and getSrcSet() generate proper image URLs",
+    "CACHE_CONFIG has all 4 keys with staleTime and gcTime in milliseconds",
+    "useNetworkState() and useDataSaver() are proper React hooks",
+    "getRetryDelay() returns exponential backoff values (1000, 2000, 4000, 8000, capped at 30000)",
+    "npm run typecheck passes with zero errors"
+  ],
+  "verification": [
+    "npm run typecheck — should pass",
+    "Import each utility: verify imports work (import { lazyPage } from '@/utils/code-splitting', etc.)",
+    "npm run build — should include utilities in bundle"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

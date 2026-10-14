@@ -1,0 +1,1508 @@
+MARBOU
+Final Unified Project Scope - Sections 1-114
+Complete English-only version for technical review, development planning, and proposal
+preparation.
+1. Vision
+is a comprehensive open marketplace for Sudan, bringing together buying, selling, renting, services, jobs, real
+estate, vehicles, equipment, stores, and businesses in one unified platform.
+2. Core Principle
+Everything you need, you can find inside MARBOU.
+The platform is not specialized only in cars or real estate. It is designed as a comprehensive Marketplace.
+3. Competitor Study
+Platforms such as OpenSooq and Alsoug may be used to understand the market, user experience, and
+marketplace categories, but not to copy their design or product. MARBOU must have its own Sudan-focused
+identity and experience, including:
+• Dynamic categorization.
+• Smart search.
+• Listing quality.
+• Duplicate and fraud prevention.
+• Strong store/business profiles.
+• Data Saver.
+• Experience optimized for weak internet.
+• Advanced tools for sellers and businesses.
+• Scalable technical architecture.
+4. Brand Identity
+English Name: MARBOU Tagline: Everything you need, you can find inside MARBOU. Brand direction:
+• Arabic-first.
+• RTL.
+• Modern.
+• Simple.
+• Clear.
+• Regionally scalable.
+5. Platforms
+The platform must include:
+• Website.
+• Android.
+• iOS.
+MARBOU — Final Unified Project Scope | Page 2
+• User Dashboard.
+• Business Dashboard.
+• Admin Dashboard.
+• Backend.
+• REST API.
+All platforms must rely on a unified Backend/API architecture.
+MARBOU - Final Unified Project Scope | Page 1
+6. Languages
+From Day One:
+• Arabic.
+• English.
+Including:
+• RTL for Arabic.
+• Centralized translation architecture.
+• Ability to add additional languages in the future without rebuilding the system.
+7. Accounts & Roles
+The system must support:
+• User.
+• Seller.
+• Buyer.
+• Service Provider.
+• Job Seeker.
+• Employer.
+• Company.
+• Store.
+• Dealer.
+• Company Employee.
+• Moderator.
+• Customer Support.
+• Finance.
+• Marketing.
+• Business Verification.
+• Admin.
+• Super Admin.
+• Technical/Admin Developer Access.
+The platform must have advanced RBAC with detailed permissions. Each role should only have access to the
+functions and data required for its responsibilities.
+8. Registration & Login
+The system must support:
+• Email + Password.
+• Phone.
+• Google.
+• Facebook when enabled.
+• Forgot Password.
+• Change Email.
+• Change Phone.
+• Session Management.
+• Device Management.
+MARBOU — Final Unified Project Scope | Page 3
+• Logout Current Device.
+• Logout All Devices.
+• Delete Account.
+OTP: OTP must be technically prepared from the beginning but remain OFF at launch. The Admin must be able
+to enable it later.
+MARBOU - Final Unified Project Scope | Page 2
+9. Vehicles
+The Vehicles section includes:
+• Cars.
+• Buses.
+• Trucks.
+• Pickups.
+• Vans.
+• Commercial Vehicles.
+• Motorcycles.
+• Bicycles.
+• Rickshaws.
+• Tuk-tuks.
+• Vehicle Rentals.
+• Dealerships.
+• Dealers.
+Dynamic Fields include:
+• Make.
+• Model.
+• Year.
+• Condition.
+• Mileage.
+• Fuel Type.
+• Transmission.
+• Color.
+• Price.
+• Location.
+• Photos.
+• Video.
+10. Tractors & Equipment
+A dedicated comprehensive section for:
+• Tractors.
+• Harvesters.
+• Agricultural Equipment.
+• Irrigation Equipment.
+• Heavy Machinery.
+• Construction Equipment.
+• Excavators.
+• Cranes.
+• Generators.
+• Workshop Equipment.
+• Factory Equipment.
+• Industrial Equipment.
+11. Spare Parts
+MARBOU — Final Unified Project Scope | Page 4 Includes:
+• Tires.
+• Batteries.
+• Engines.
+MARBOU - Final Unified Project Scope | Page 3
+• Gearboxes.
+• Oils.
+• Filters.
+• Electrical Parts.
+• Lighting.
+• Body Parts.
+• Rims.
+• Interior Accessories.
+• Exterior Accessories.
+Fields include:
+• Part Number.
+• Brand.
+• Compatibility.
+• New/Used.
+• Original/Aftermarket.
+• Quantity.
+• Price.
+12. Real Estate
+Listing types:
+• For Sale.
+• For Rent.
+• Wanted to Buy.
+• Wanted to Rent.
+• Apartments.
+• Houses.
+• Villas.
+• Land.
+• Shops.
+• Offices.
+• Warehouses.
+• Buildings.
+• Farms.
+• Projects & Investments.
+Fields include:
+• Area.
+• Rooms.
+• Bathrooms.
+• Floors.
+• Finishing.
+• Furnishing.
+• Amenities.
+• Price.
+• Location.
+• Map.
+13. Hotels & Accommodation
+Includes:
+• Hotels.
+MARBOU - Final Unified Project Scope | Page 4
+• Hotel Apartments.
+MARBOU — Final Unified Project Scope | Page 5
+• Furnished Apartments.
+• Rooms.
+• Guest Houses.
+• Short-Term Accommodation.
+• Long-Term Accommodation.
+With:
+• Price.
+• Beds.
+• Rooms.
+• Amenities.
+• Photos.
+• Ratings.
+• Availability.
+• Booking when the booking system is enabled.
+14. Electronics
+Includes:
+• Phones.
+• Tablets.
+• Laptops.
+• Computers.
+• TVs.
+• Cameras.
+• Gaming.
+• Smart Devices.
+• Appliances.
+With:
+• Brand.
+• Model.
+• Storage.
+• RAM.
+• Condition.
+• Warranty.
+• New/Used.
+15. Women, Fashion & Beauty
+Includes: .) Ready-made traditional clothing.
+• Embroidered clothing.
+• Fabrics.
+• Jellabiyas.
+• Dresses.
+• Everyday Dresses.
+• Evening Dresses.
+• Occasion Dresses.
+• Wedding Dresses.
+• Engagement Dresses.
+• Abayas.
+MARBOU - Final Unified Project Scope | Page 5
+• Modest Wear.
+• Hijabs/Headscarves.
+• Homewear.
+• Sleepwear.
+MARBOU — Final Unified Project Scope | Page 6
+• Sportswear.
+• Maternity Wear.
+• Shoes.
+• Bags.
+• Jewelry.
+• Watches.
+• Glasses.
+• Makeup.
+• Perfumes.
+• Skincare.
+• Haircare.
+• Henna.
+• Salons.
+• Makeup Artists.
+• Hair Services.
+• Tailoring.
+• Embroidery.
+New/Used where applicable.
+16. Men
+Includes:
+• Jellabiyas.
+• Sudanese Clothing.
+• Traditional Clothing.
+• Shirts.
+• Trousers.
+• T-Shirts.
+• Formal Wear.
+• Sportswear.
+• Homewear.
+• Occasion Wear.
+• Shoes.
+• Bags.
+• Watches.
+• Perfumes.
+• Accessories.
+New/Used where applicable.
+17. Children & Mothers
+Includes:
+• Children's Clothing.
+• School Clothing.
+• Sportswear.
+• Shoes.
+MARBOU - Final Unified Project Scope | Page 6
+• Toys.
+• Newborn Supplies.
+• Strollers.
+• Cribs.
+• Mother & Baby Supplies.
+• Children's Equipment.
+New/Used where applicable. MARBOU — Final Unified Project Scope | Page 7
+18. Home & Furniture
+Includes in detail:
+• Beds.
+• Chairs.
+• Wardrobes.
+• Sofas.
+• Tables.
+• Kitchens.
+• Decor.
+• Furnishings.
+• Home Appliances.
+• Household Tools.
+• Lighting.
+• Kitchen Tools.
+• Bathroom Items.
+• Office Furniture.
+• And more.
+New/Used.
+19. Animals & Livestock
+Includes:
+• Cows.
+• Sheep.
+• Camels.
+• Goats.
+• Poultry.
+• Birds.
+• Pets.
+Subject to applicable laws and platform policies.
+20. Food & Consumer Goods
+Includes:
+• Food.
+• Beverages.
+• Household Supplies.
+• Daily Essentials.
+• Wholesale.
+• Retail.
+21. Companies & Stores
+Each company or store should have a professional profile including:
+• Logo.
+MARBOU - Final Unified Project Scope | Page 7
+• Cover.
+• Name.
+• Description.
+• Location.
+• Business Hours.
+• Phone.
+• WhatsApp.
+• Listings.
+• Services.
+• Reviews.
+• Staff.
+MARBOU — Final Unified Project Scope | Page 8
+• Statistics.
+• Verification.
+• Subscription.
+22. General Marketplace
+Any legal product or service that can be sold, purchased, rented, or offered. With systems for:
+• Prohibited Content.
+• Moderation.
+• Reports.
+• Safety Rules.
+23. MARBOU CORE PLATFORM ENGINE
+This is the heart of the project. Category → Fields → Filters → Listing → Search → Location → Media → Seller →
+Promotion → Payment → Delivery Adding a new category should be possible through the Admin system without
+rebuilding the application wherever technically possible.
+24. Dynamic Categories
+Admin must be able to create and manage:
+• Categories.
+• Subcategories.
+• Fields.
+• Filters.
+• Options.
+• Required Fields.
+• Optional Fields.
+• Field Order.
+• Translations.
+• Price Rules.
+• Location Rules.
+25. "Other" Rule
+At the end of every appropriate category, there should be: Other This allows users to add a product or service
+that is not currently listed. Admin can review these submissions and officially add a new category later when
+appropriate.
+26. Home Page
+Includes:
+• Logo.
+• Location.
+MARBOU - Final Unified Project Scope | Page 8
+• Notifications.
+• Search.
+• Categories.
+• Featured Listings.
+• Latest Listings.
+• Nearby.
+MARBOU — Final Unified Project Scope | Page 9
+• Stores.
+• Businesses.
+• Recommendations.
+• Popular Searches.
+• Banners.
+27. Navigation
+Main navigation: Home | Search | + Add Listing | Messages | Account
+28. Listing System
+Listing statuses: Draft → Submitted → Review → Published → Sold/Rented/Expired/Archived With:
+• Edit.
+• Delete.
+• Archive.
+• Renew.
+• Republish.
+• Clone.
+• Bulk Actions when enabled.
+29. Listing Quality Engine
+The system calculates listing quality based on:
+• Title.
+• Description.
+• Photos.
+• Price.
+• Location.
+• Specifications.
+• Required information.
+Example: Your listing is 85% complete.
+30. Duplicate Detection
+The system should detect:
+• Duplicate listings.
+• Duplicate images.
+• Phone numbers.
+• Repeated content.
+• Suspicious behavior.
+31. Fraud & Risk Engine
+Includes:
+• Risk Score.
+• Suspicious Activity.
+• Rapid Listing Detection.
+MARBOU - Final Unified Project Scope | Page 9
+• Spam Detection.
+• Suspicious Payment Receipts.
+• Multiple Account Patterns.
+• Blacklist.
+• Review Queue.
+MARBOU — Final Unified Project Scope | Page 10
+• Manual Review.
+32. Listing Details
+Includes:
+• Photos.
+• Cover Image.
+• Video.
+• Title.
+• Price.
+• Specifications.
+• Description.
+• Location.
+• Map.
+• Seller.
+• Business.
+• Call.
+• WhatsApp.
+• Message.
+• Favorite.
+• Share.
+• Report.
+• Block.
+• Views.
+• Similar Listings.
+33. Smart Search
+Includes:
+• Keyword.
+• Category.
+• Dynamic Filters.
+• Price.
+• Location.
+• Distance.
+• Map.
+• Sorting.
+• Saved Searches.
+• Alerts.
+• Search History.
+• Suggestions.
+Support for:
+• Arabic Normalization.
+• Typo Tolerance.
+• Synonyms.
+MARBOU - Final Unified Project Scope | Page 10
+• Brand/Model Recognition.
+34. Search Ranking
+Search results should be ranked based on:
+• Relevance.
+• Quality.
+• Freshness.
+• Location.
+• User Intent.
+• Promotion when applicable.
+MARBOU — Final Unified Project Scope | Page 11 Paid/promoted content must be clearly identified.
+35. Comparison
+Users should be able to compare:
+• Vehicles.
+• Real Estate.
+• Electronics.
+• Applicable products.
+Comparison should show:
+• Price.
+• Specifications.
+• Condition.
+• Differences.
+36. Market Price Insights
+When sufficient data is available, the platform may provide:
+• Price Range.
+• Averages/Indicators.
+• Price Comparisons.
+These must be clearly presented as market indicators and not a guarantee of the final selling price.
+37. Nearby / Discover / Recommendations
+Includes:
+• Nearby.
+• Discover.
+• Recommendations.
+• Popular.
+• Similar Listings.
+While respecting user privacy.
+38. Seller Profile
+Includes:
+• Seller Information.
+• Seller Listings.
+• Ratings.
+• Trust Indicators.
+• Share Profile.
+• Block.
+• Report.
+39. Business Profile
+MARBOU - Final Unified Project Scope | Page 11
+A complete business profile including:
+• Logo.
+• Cover.
+• Description.
+• Contact Information.
+• WhatsApp.
+• Location.
+• Business Hours.
+• Listings.
+MARBOU — Final Unified Project Scope | Page 12
+• Services.
+• Staff.
+• Reviews.
+• Verification.
+• Statistics.
+40. Business Dashboard
+Includes:
+• Listings.
+• Services.
+• Staff.
+• Permissions.
+• Statistics.
+• Subscriptions.
+• Payments.
+• Messages.
+• Verification.
+• Activity.
+41. Jobs
+Job types:
+• Government.
+• Private.
+• Freelance.
+• Remote.
+With:
+• Employer Profile.
+• Job Posting.
+• Salary.
+• Location.
+• Employment Type.
+• Requirements.
+• Applications.
+• Saved Jobs.
+• Alerts.
+Application statuses: New → Reviewing → Shortlisted → Interview → Rejected / Accepted → Closed
+42. Services
+Includes:
+• Construction.
+MARBOU - Final Unified Project Scope | Page 12
+• Contracting.
+• Concrete.
+• Foundations.
+• Finishing.
+• Painting.
+• Gypsum.
+• Electrical.
+• Plumbing.
+• Air Conditioning.
+• Carpentry.
+• Aluminum.
+MARBOU — Final Unified Project Scope | Page 13
+• Metalwork.
+• Maintenance.
+• Cleaning.
+• Moving.
+• Shipping.
+• Programming.
+• Design.
+• Marketing.
+• Consulting.
+Automotive Services:
+• Mechanic.
+• Auto Electrical.
+• Bodywork.
+• Painting.
+• Air Conditioning.
+• Tires.
+• Batteries.
+• Oil Change.
+• Diagnostics.
+• Towing.
+43. Messaging
+Supports: Buyer ↔ Seller Customer ↔ Business Customer ↔ Service Provider Job Seeker ↔ Employer With:
+• Text.
+• Images.
+• Sent.
+• Delivered.
+• Read.
+• Unread.
+• Block.
+• Report.
+44. Anti-Spam Messaging
+Includes:
+• Rate Limits.
+• Throttling.
+• Spam Detection.
+MARBOU - Final Unified Project Scope | Page 13
+• Repeated Message Detection.
+• Abuse Detection.
+• Block.
+• Report.
+45. Negotiation
+Includes:
+• Offer.
+• Accept.
+• Reject.
+MARBOU — Final Unified Project Scope | Page 14
+• Counter Offer.
+• Expiry.
+• History.
+• Status.
+46. Wanted Listings
+Users can publish: Wanted to Buy Wanted to Rent Wanted Service Wanted Job The system can send alerts to
+matching sellers or service providers.
+47. Favorites & Saved Search
+Includes:
+• Favorites.
+• Saved Searches.
+• Alerts.
+• Recently Viewed.
+• Price Change Alerts.
+48. Reviews & Ratings
+Includes:
+• Stars.
+• Comments.
+• Duplicate Prevention.
+• Moderation.
+• Report.
+• Business Reply.
+49. Trust & Safety
+Includes:
+• Verification.
+• Moderation.
+• Reports.
+• Fraud Detection.
+• Duplicate Detection.
+• Block.
+• Appeal.
+• Moderator Notes.
+• Audit Logs.
+50. Security Center
+Includes:
+MARBOU - Final Unified Project Scope | Page 14
+• Sessions.
+• Devices.
+• Password.
+• Phone.
+• Email.
+• Logout All.
+• Security Alerts.
+• 2FA.
+MARBOU — Final Unified Project Scope | Page 15
+51. Reports & Appeals
+Users can report:
+• User.
+• Listing.
+• Message.
+• Review.
+With:
+• Reason.
+• Attachment.
+• Moderator Decision.
+• Appeal.
+52. Auctions
+OFF at launch. When enabled:
+• Starting Price.
+• Minimum Increment.
+• Start/End Time.
+• Live Bidding.
+• Bid History.
+• Highest Bid.
+• Notifications.
+• Winner.
+• Anti-Manipulation.
+• Audit Log.
+53. Barter
+OFF at launch. Includes:
+• Offer.
+• Counter Offer.
+• Accept.
+• Reject.
+• Cancel.
+• Complete.
+54. Rental
+Includes:
+• Asset.
+• Daily/Monthly Price.
+• Duration.
+• Availability.
+MARBOU - Final Unified Project Scope | Page 15
+• Request.
+• Accept.
+• Cancel.
+• Return.
+55. Wholesale
+Includes:
+• Quantity.
+• Unit.
+MARBOU — Final Unified Project Scope | Page 16
+• MOQ.
+• Wholesale Price.
+• Retail Price.
+• Commercial Orders.
+56. Bookings
+For accommodation and services when enabled:
+• Request.
+• Accept.
+• Reject.
+• Cancel.
+• Date.
+• Availability.
+• Notifications.
+57. Order / Cart Engine
+The architecture should be prepared from the beginning for:
+• Cart.
+• Order.
+• Order Number.
+• Order Status.
+• Cancel.
+• Confirm.
+• Order History.
+• Buyer Orders.
+• Seller Orders.
+• Payment.
+• Delivery.
+• Refund in the future.
+This functionality may remain OFF at launch.
+58. Delivery
+The technical architecture must be prepared from the beginning. OFF at launch. Supports:
+• Seller Delivery.
+• Third-Party Courier.
+• Independent Courier.
+• Future MARBOU Courier.
+• Pickup.
+59. Delivery Status
+MARBOU - Final Unified Project Scope | Page 16
+Statuses: Requested → Accepted → Preparing → Picked Up → In Transit → Delivered With:
+• Cancelled.
+• Failed.
+• Returned when required.
+60. Delivery Fees
+MARBOU — Final Unified Project Scope | Page 17 Admin can configure:
+• Areas/Zones.
+• Fees.
+• Who Pays: Buyer, Seller, Split, or Free Delivery.
+61. Courier Integration
+Future readiness for:
+• Courier Dashboard.
+• Courier App.
+• Courier Companies.
+• Independent Drivers.
+• External Delivery APIs.
+62. Subscriptions
+Configurable plans:
+• Free.
+• Individual.
+• Business.
+• Dealer.
+• Premium.
+• Enterprise.
+• Service Provider.
+With:
+• Limits.
+• Features.
+• Duration.
+• Trial.
+• Upgrade.
+• Downgrade.
+• Suspend.
+• Extend.
+• Plan Versioning.
+63. Promotions
+Includes:
+• Featured Listing.
+• Homepage Placement.
+• Search Boost.
+• Pinned Listing.
+• Sponsored Category.
+• Banner.
+• Premium Visibility.
+64. Bankak
+MARBOU - Final Unified Project Scope | Page 17
+Manual payment flow:
+1. Select the service.
+2. Display Bankak account information.
+3. Make the transfer.
+4. Upload the receipt.
+5. Add the reference.
+6. Status becomes Pending.
+7. Admin reviews the payment.
+8. Approved / Rejected.
+MARBOU — Final Unified Project Scope | Page 18 The service must not be activated simply because a receipt
+has been uploaded. Activation occurs only after the required Admin approval.
+65. Payment Architecture
+A unified Payment Entity should include:
+• Reference.
+• Amount.
+• Currency.
+• Method.
+• Status.
+• Receipt.
+• Reviewer.
+• Invoice.
+• Subscription Dates.
+• Refund.
+• Cancellation.
+• Audit Trail.
+The architecture must be scalable for future suitable payment providers.
+66. Google AdMob
+OFF at launch. The system should be technically prepared with:
+• SDK.
+• Architecture.
+• Placements.
+• Testing.
+• Admin Toggle.
+The client will later manage:
+• AdMob Account.
+• Ad Units.
+• Revenue.
+• Performance.
+67. Notification Center
+Includes:
+• In-App Notifications.
+• Push Notifications.
+• Email in the future.
+MARBOU - Final Unified Project Scope | Page 18
+• SMS in the future.
+• Templates.
+• Preferences.
+• Read/Unread.
+• Mark All as Read.
+• History.
+• Broadcast.
+• Targeted Notifications.
+• Scheduled Notifications.
+• Deep Links.
+68. Help Center
+MARBOU — Final Unified Project Scope | Page 19 Includes:
+• FAQ.
+• Help.
+• Tutorials.
+• Safety.
+• Payments.
+• Listings.
+• Account.
+• Delivery.
+• Jobs.
+• Services.
+69. Data Saver
+Includes:
+• Compression.
+• Thumbnails.
+• Lazy Loading.
+• Pagination.
+• Cache.
+• On-demand Loading.
+• Reduced Video Usage.
+• Reduced Network Consumption.
+70. Weak Internet / Offline Drafts
+The system must support operation under weak, slow, or temporarily unavailable internet connections.
+Includes:
+• Handling network interruptions.
+• Slow internet.
+• Safe Retry.
+• Draft Saving.
+• Resume.
+• Sync State.
+• Idempotency.
+• Local Draft Cache.
+• Auto-save while creating a listing.
+• Temporary local storage of listing data and prepared images waiting for upload.
+• Upload Queue.
+• Automatic upload resume when connectivity returns.
+MARBOU - Final Unified Project Scope | Page 19
+• No data loss when the application is closed or the connection is interrupted.
+• Prevention of duplicate listings, messages, orders, or payments caused by retries.
+Sync Status:
+• Saved Locally.
+• Waiting for Connection.
+• Uploading.
+• Saved.
+• Upload Failed / Retry.
+These functions must be actually tested on weak and unstable networks before launch.
+71. Media Processing
+All images and videos must pass through a secure and efficient Media Processing Pipeline. Includes: MARBOU
+— Final Unified Project Scope | Page 20
+• Secure Upload.
+• Server-side Image Compression.
+• Video Compression.
+• Thumbnail Generation.
+• WebP/AVIF where appropriate.
+• CDN when used.
+• Cover Image.
+• Reordering.
+• Upload Progress.
+• Retry.
+• File Limits.
+• Video Limits.
+• Metadata Handling.
+• Orphan Cleanup.
+• Cleanup of temporary and unlinked files.
+• Automatic optimization to reduce data usage and storage requirements.
+Video Admin must be able to configure maximum Video Duration, Video File Size, and Number of Videos
+allowed per listing. Proposed Launch Defaults:
+• Maximum Video Duration: 30 seconds
+• Maximum Video Size: 15 MB
+Videos must be automatically compressed before final storage. Important Rule: Image/video limits and
+compression/processing settings must be configurable from the Admin Dashboard without requiring an
+application update or developer intervention. The 30-second and 15 MB values are initial launch defaults, not
+permanent fixed limitations.
+72. Expiry & Renewal
+Includes:
+• Expiration.
+• Reminder.
+• Renew.
+• Republish.
+• Archive.
+• Sold.
+• Rented.
+• Expired.
+73. User Dashboard
+Includes:
+MARBOU - Final Unified Project Scope | Page 20
+• Profile.
+• Listings.
+• Favorites.
+• Messages.
+• Saved Searches.
+• Notifications.
+• Orders.
+• Payments.
+• Subscriptions.
+• Security.
+MARBOU — Final Unified Project Scope | Page 21
+• Settings.
+• Delete Account.
+• Export Data.
+74. Data Export
+Users should be able to request and download applicable personal data according to the platform's privacy
+policy.
+75. Account Deletion
+Includes:
+• Request.
+• Identity Confirmation.
+• Processing Period.
+• Delete/Anonymize.
+• Handling Listings.
+• Handling Messages.
+• Handling Orders.
+• Handling Payments.
+• Audit.
+76. Admin Dashboard
+Full management of:
+• Users.
+• Listings.
+• Categories.
+• Fields.
+• Filters.
+• Locations.
+• Businesses.
+• Jobs.
+• Services.
+• Reports.
+• Reviews.
+• Subscriptions.
+• Payments.
+• Bankak.
+• Promotions.
+• Notifications.
+• CMS.
+MARBOU - Final Unified Project Scope | Page 21
+• SEO.
+• Analytics.
+• Roles.
+• Feature Flags.
+• Fraud.
+• System Health.
+• Backups.
+77. RBAC
+Detailed permissions for:
+• Super Admin.
+• Admin.
+• Moderator.
+• Finance.
+• Support.
+MARBOU — Final Unified Project Scope | Page 22
+• Content.
+• Marketing.
+• Verification.
+• Technical.
+Each employee should only see the functionality and data required to perform their responsibilities.
+78. Admin 2FA
+Includes:
+• Two-Factor Authentication.
+• Authenticator/OTP when enabled.
+• Sessions.
+• Devices.
+• Login Attempts.
+• Logout All.
+• Audit Log.
+79. Feature Flags
+Important features must be controllable through Feature Flags, including:
+• OTP.
+• Bankak.
+• AdMob.
+• Subscriptions.
+• Promotions.
+• Auctions.
+• Barter.
+• Rental.
+• Wholesale.
+• Bookings.
+• Delivery.
+• Video.
+• Jobs.
+• Services.
+• Business Verification.
+• Messaging.
+MARBOU - Final Unified Project Scope | Page 22
+• Push.
+• SMS.
+• And other relevant features.
+Feature control may be based on:
+• Global.
+• Country.
+• Category.
+• User Group.
+• Scheduled Activation.
+• Audit Log.
+80. Backend / API
+Includes:
+• Versioned REST API.
+• OpenAPI/Swagger.
+• Pagination.
+• Filtering.
+• Sorting.
+MARBOU — Final Unified Project Scope | Page 23
+• Consistent Error Handling.
+• Authentication.
+• Authorization.
+• Rate Limits.
+• Idempotency.
+• Webhooks.
+• Database Migrations.
+• Database Indexes.
+• Queues.
+• Cache.
+81. Search Engine
+Possible technologies include:
+• OpenSearch.
+• Elasticsearch.
+• Meilisearch.
+• Or another suitable solution.
+With support for:
+• Arabic Normalization.
+• Typo Tolerance.
+• Synonyms.
+• Relevance.
+• Location.
+• Price.
+• Brand.
+• Model.
+82. Integration Layer
+A unified integration layer between: Orders + Payments + Delivery + External Services This should allow future
+services and integrations to be added without rebuilding the core platform.
+MARBOU - Final Unified Project Scope | Page 23
+83. Environments & CI/CD
+The project must provide:
+• Development.
+• Staging/UAT.
+• Production.
+• CI/CD.
+• Database Migrations.
+• Rollback.
+• Environment Variables.
+• Secrets Management.
+84. Security
+Includes:
+• Server-side RBAC.
+• Least Privilege.
+• Rate Limiting.
+• Secure Upload.
+• API Security.
+• Secrets stored outside the source code.
+• Session Security.
+MARBOU — Final Unified Project Scope | Page 24
+• Data Protection.
+• Security Headers.
+• Dependency Updates.
+• Logging.
+85. System Health
+Monitoring should cover:
+• Server.
+• API.
+• Database.
+• Queue.
+• Storage.
+• Errors.
+• Crashes.
+• Backups.
+• Uptime.
+• Health Checks.
+With alerts where appropriate.
+86. Audit Logs
+The system must log:
+• Login.
+• Logout.
+• Account Changes.
+• Listing Changes.
+• Payment Approval.
+• Subscription Changes.
+• User Suspension.
+MARBOU - Final Unified Project Scope | Page 24
+• Permission Changes.
+• Feature Flags.
+• Admin Actions.
+Who / What / When
+87. App Version Management
+Includes:
+• Minimum Version.
+• Latest Version.
+• Optional Update.
+• Mandatory Update.
+• Maintenance Mode.
+• Android.
+• iOS.
+88. Deep Links
+When a listing is shared:
+• If the app is installed, the link should open the listing inside the app.
+• If the app is not installed, the link should open the listing on the website.
+Using where appropriate:
+• Android App Links.
+• iOS Universal Links.
+MARBOU — Final Unified Project Scope | Page 25
+89. Maintenance Mode
+Admin can:
+• Enable Maintenance Mode.
+• Write a maintenance message.
+• Exclude Admin users from the maintenance restriction.
+• Schedule maintenance for a future time.
+90. SEO
+Includes:
+• Indexable Pages.
+• Meta Data.
+• Open Graph.
+• Sitemap.
+• Robots.
+• Structured Data.
+• Friendly URLs.
+• Share Cards.
+• Category Pages.
+• City Pages.
+• Business Pages.
+• Listing Pages.
+91. Accessibility
+Includes:
+• Adequate Contrast.
+• Readable Text.
+MARBOU - Final Unified Project Scope | Page 25
+• Appropriate Touch Targets.
+• Labels.
+• Keyboard Navigation.
+• Focus States.
+• Responsive Design.
+92. CMS & Legal
+Editable pages should include:
+• Terms & Conditions.
+• Privacy Policy.
+• Acceptable Use.
+• Prohibited Content.
+• Listing Rules.
+• Business Verification.
+• Payment Terms.
+• Refund/Cancellation.
+• Reports.
+• Appeals.
+• Data Retention.
+• Location Privacy.
+• FAQ.
+CMS Versioning:
+• Draft.
+• Preview.
+• Publish.
+• Unpublish.
+• Version History.
+• Restore.
+MARBOU — Final Unified Project Scope | Page 26
+93. Analytics
+Includes:
+• Views.
+• Searches.
+• Listings.
+• Leads.
+• Messages.
+• Favorites.
+• Business Statistics.
+• Jobs.
+• Services.
+• Payments.
+• Promotions.
+• Retention.
+• Performance.
+94. Testing
+The project must be tested for:
+• Unit Testing.
+• Integration Testing.
+MARBOU - Final Unified Project Scope | Page 26
+• API Testing.
+• UI Testing.
+• Authentication.
+• Listings.
+• Categories.
+• Filters.
+• Search.
+• Maps.
+• Messaging.
+• Notifications.
+• Payments.
+• Bankak.
+• Optional Modules.
+• Admin Permissions.
+• Security.
+• Weak Network Conditions.
+• Android.
+• iOS.
+• Web.
+• Browser Compatibility.
+95. UAT & Definition of Done
+A core rule: A feature is not considered complete simply because its interface exists. Each feature must work
+according to its requirements through: Frontend + Backend + API + Database + Validation + Permissions +
+Error Handling + Security + Tests + Admin Controls and must pass the agreed User Acceptance Testing (UAT)
+criteria.
+96. GitHub & Ownership
+From Day One:
+• Private GitHub Repository.
+MARBOU — Final Unified Project Scope | Page 27
+• Client Ownership.
+• Full Client Access.
+At final delivery:
+• Source Code.
+• Database.
+• Migrations.
+• Backend.
+• Frontend.
+• Mobile Applications.
+• Admin Dashboard.
+• Server.
+• Hosting.
+• Domain.
+• API Credentials.
+• Deployment Documentation.
+97. Backup & Disaster Recovery
+Includes:
+• Database Backup.
+MARBOU - Final Unified Project Scope | Page 27
+• Media Backup.
+• Off-site Backup.
+• Backup Frequency.
+• Retention.
+• Restore Procedure.
+• Restore Testing.
+• RPO.
+• RTO.
+• Backup Monitoring.
+98. Final Handover
+Complete delivery must include:
+• Source Code.
+• Database.
+• API.
+• Documentation.
+• Deployment.
+• Accounts.
+• Credentials.
+• Configuration.
+• Backup Procedures.
+• Monitoring.
+• Production Environment.
+99. Support
+8 months of free support after: Final Delivery + Acceptance + Production Launch Support includes fixing bugs
+that are within the agreed project scope. Support Workflow: Report → Ticket → Severity → Diagnose → Fix →
+Test → Production → Close Critical issues receive the highest priority. MARBOU — Final Unified Project Scope |
+Page 28
+100. Change Request
+Anything outside the agreed scope must follow: Written Change Request → Cost → Impact → Timeline → Client
+Approval → Development No out-of-scope work should be added verbally.
+101. Price & Payment
+The project should use:
+• Fixed Total Project Price.
+• Not Hourly Billing.
+• Milestone-based Payments.
+• Every Milestone must be testable.
+• No full payment upfront.
+• External costs must be clearly disclosed in advance.
+102. Scope Rule
+Any functionality written in this document that requires Backend / API / Database / Admin must be delivered as
+a fully working feature, not merely as a UI/design.
+103. What We Do Not Want
+We do not want:
+• A copy of OpenSooq.
+• A copy of Alsoug.
+• UI-only development.
+MARBOU - Final Unified Project Scope | Page 28
+• Fake data instead of a real Backend.
+• A system that requires the developer for every administrative operation.
+• Hidden third-party service costs.
+• Incomplete delivery.
+• Features that only appear to work but are not fully implemented.
+104. Launch Configuration
+ON at Launch:
+• Arabic.
+• English.
+• Marketplace Core.
+• Search.
+• Messaging.
+• Jobs.
+• Services.
+• Business Profiles.
+• Core Listings.
+OFF or Subject to Client Decision:
+• OTP.
+• AdMob.
+• Auctions.
+• Barter.
+• Rental.
+• Wholesale.
+• Bookings.
+• Delivery.
+• Subscriptions.
+• Promotions.
+• Some payment gateways.
+MARBOU — Final Unified Project Scope | Page 29 Any feature intentionally disabled at launch but required by
+this scope to be technically prepared must be fully prepared and capable of being activated later.
+105. Sudan First
+The platform must understand the Sudanese market, including:
+• Cities and areas.
+• Sudanese terminology.
+• Sudanese traditional clothing.
+• Jellabiyas.
+• Rickshaws.
+• Tuk-tuks.
+• Livestock.
+• Agriculture.
+• Tractors.
+• Equipment.
+• Local services.
+• Local commerce.
+• Local payment methods.
+106. Regional Expansion
+The architecture must allow additional countries to be added without rebuilding the platform. Including:
+MARBOU - Final Unified Project Scope | Page 29
+• Countries.
+• Cities.
+• Regions.
+• Languages.
+• Currencies.
+• Phone Codes.
+• Payments.
+• Delivery.
+• Policies.
+107. Country-Aware Data Model
+Core data should be associated with the relevant country where required, allowing differences in:
+• Categories.
+• Currencies.
+• Locations.
+• Payment Methods.
+• Delivery.
+• Policies.
+• Features.
+108. Currencies
+The system should support:
+• Multiple Currencies.
+• Local Currency.
+• Price Formatting.
+• Currency Stored with Listing/Order.
+• Future Currency Conversion Architecture.
+109. Phone Country Codes
+MARBOU — Final Unified Project Scope | Page 30 Includes:
+• Country Codes.
+• Phone Validation.
+• Secure Storage.
+• Country-specific Rules.
+• Future OTP Providers.
+110. Regional Languages
+A centralized Translation System must allow:
+• New Languages.
+• Category Translations.
+• Field Translations.
+• Button Translations.
+• Policy Translations.
+without rebuilding the system.
+111. Regional Payments
+A Payment Abstraction Layer should allow a different payment provider to be integrated for each country.
+112. Regional Delivery
+Delivery management should support:
+• Country.
+MARBOU - Final Unified Project Scope | Page 30
+• City.
+• Area.
+• Zone.
+• Fees.
+• Courier Provider.
+independently for each market where applicable.
+113. Country Settings
+Each country should be able to have its own:
+• Categories.
+• Fields.
+• Currency.
+• Phone Rules.
+• Payments.
+• Delivery.
+• Policies.
+• Languages.
+• Feature Flags.
+114. MARBOU Golden Rule
+Everything you need, you can find inside MARBOU — in an organized, fast, safe, and easy-to-use way. The final
+goal is not simply to build a classified ads application. The goal is to build a: Real, Production-Ready
+Marketplace Platform that can be managed, scaled, integrated, and operated in Sudan first, with the ability to
+expand into other countries in the future. MARBOU — Final Unified Project Scope | Page 31   Final Delivery Rule
+The project is not considered complete simply because the interfaces have been completed. The project is
+considered complete only when the required functionality is: Designed + Developed + Connected to Backend
++ Database + API + Admin + Validation + Security + Error Handling + Testing + Deployment and successfully
+passes the agreed UAT and acceptance criteria.   Final Approval Project Scope, covering Sections 1 through
+114. It includes all agreed requirements, including:
+• Arabic and English from Day One.
+• OTP technically ready but OFF at launch.
+• All major marketplace categories.
+• Tractors and equipment.
+• New/Used clothing.
+• Detailed home and furniture categories.
+• "Other" category functionality.
+• Dynamic Marketplace Engine.
+• Smart Search.
+• Product Comparison.
+• Market Price Insights.
+• Business Profiles.
+• Jobs.
+• Services.
+• Messaging.
+• Negotiation.
+• Wanted Listings.
+• Auctions.
+• Barter.
+• Rental.
+• Wholesale.
+• Bookings.
+MARBOU - Final Unified Project Scope | Page 31
+• Orders/Cart.
+• Delivery.
+• Bankak.
+• Google AdMob.
+• Subscriptions.
+• Promotions.
+• Data Saver.
+• Offline Drafts / Local Draft Cache / Upload Queue.
+• Server-side Media Compression.
+• Admin-configurable video limits, with 30 seconds and 15 MB as initial launch values.
+• Security.
+• RBAC.
+• Admin 2FA.
+• Audit Logs.
+• System Health.
+• SEO.
+• Accessibility.
+• CMS.
+• Analytics.
+• Testing.
+MARBOU — Final Unified Project Scope | Page 32
+• UAT.
+• GitHub Ownership.
+• Backup & Disaster Recovery.
+• 8 Months of Support.
+• Change Request Process.
+• Sudan-first architecture and experience.
+• Regional expansion architecture.
+Final Product Direction MARBOU is not intended to be a copy of OpenSooq or Alsoug, and it is not intended to
+be a simple classified ads application. It is intended to be a complete, scalable, Sudan-first Marketplace
+Platform, with a flexible architecture that can support different categories, businesses, services, transactions,
+payments, delivery, and future expansion. The documentation above should be treated as the primary product
+and scope reference when preparing the technical assessment, development plan, timeline, and fixed-price
+proposal.
+MARBOU - Final Unified Project Scope | Page 32
+Final Delivery Rule
+The project is not considered complete simply because the interfaces have been completed. The project is
+considered complete only when the required functionality is designed, developed, connected to the Backend,
+Database, API, Admin, Validation, Security, Error Handling, Testing, and Deployment, and successfully passes
+the agreed UAT and acceptance criteria.
+Final Approval
+This is the Final Unified Version of the MARBOU Project Scope, covering Sections 1 through 114. It includes all
+agreed requirements and should be treated as the primary product and scope reference when preparing the
+technical assessment, development plan, timeline, and fixed-price proposal.
+MARBOU - Final Unified Project Scope | Page 33

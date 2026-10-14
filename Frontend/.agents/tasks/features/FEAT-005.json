@@ -1,0 +1,35 @@
+{
+  "id": "FEAT-005",
+  "type": "feat",
+  "description": "Create 5 marketplace components in Frontend/src/components/marketplace/ for listings, categories, search, filters, and location selection. Refactor existing ListingCard with memoization and LQIP optimization, extract CategoryTile and SearchBar from pages, extract FilterPanel from SearchPage, create LocationPicker. All components optimized for performance (React.memo), accessibility (WCAG AA), and RTL support.",
+  "status": "pending",
+  "steps": [
+    "Refactor Frontend/src/components/ListingCard.tsx → Frontend/src/components/marketplace/ListingCard.tsx: wrap ListingCard and ListingCardGrid exports in React.memo; add dataSaver prop for gradient placeholder; add loading prop for Skeleton rendering; implement LQIP blur-up (blurDataURL with filter blur(8px) and transition on load); keep grid + list layouts",
+    "Create Frontend/src/components/marketplace/CategoryTile.tsx: props (category {id, nameAr, name, icon}, onClick, featured bool, size 'sm'|'md'); design rounded-2xl card, icon top (emoji/SVG), label bottom; RTL centered; hover shadow-md + scale(1.02); featured ring-2 ring-accent-500; React.memo wrapped",
+    "Create Frontend/src/components/marketplace/SearchBar.tsx: props (value, onChange, onSubmit, placeholder, suggestions string[], showFilters bool, onFilterToggle); combobox pattern (role='combobox', aria-expanded, aria-controls, aria-activedescendant); suggestions dropdown max 6 items; RTL search icon on end; keyboard (Enter=search, Esc=close, arrows navigate); debounced 300ms onChange",
+    "Create Frontend/src/components/marketplace/FilterPanel.tsx: props (filters FilterState, onChange, onReset, resultCount); FilterState {category, subcategory, city, minPrice, maxPrice, condition}; desktop card sidebar, mobile BottomSheet; collapsible filter groups via disclosure; apply + reset buttons; React.memo on pure sections",
+    "Create Frontend/src/components/marketplace/LocationPicker.tsx: props (cityId, areaId, onChange({cityId,areaId}), label, error, required); cascading selects City → Area; city change clears area; shows full label 'Khartoum - Jabrein'; uses sudanCities from mockData; RTL logical padding",
+    "Create Frontend/src/components/marketplace/index.ts: barrel export for all 5 components",
+    "Update Frontend/src/components/ListingCard.tsx to re-export from marketplace version (or move entirely)"
+  ],
+  "acceptance_criteria": [
+    "ListingCard refactored with React.memo, dataSaver prop, loading prop, LQIP blur-up",
+    "CategoryTile supports featured state, size variants, hover animation",
+    "SearchBar implements combobox pattern, keyboard navigation, debounced search, RTL icons",
+    "FilterPanel handles all filter types, mobile BottomSheet, collapsible groups",
+    "LocationPicker cascades cities and areas, shows combined label",
+    "All components wrapped in React.memo where appropriate",
+    "All components support RTL via logical CSS (ps-, pe-, start, end)",
+    "4.5:1 contrast ratio maintained",
+    "44px minimum touch targets",
+    "npm run typecheck passes with zero errors"
+  ],
+  "verification": [
+    "npm run typecheck — should pass",
+    "Import all components: verify 'import { ListingCard, CategoryTile, SearchBar, FilterPanel, LocationPicker } from @/components/marketplace'",
+    "npm run build — includes all marketplace components",
+    "Render in dev server: verify memoization works, LQIP transitions, filter interactions, location cascading"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

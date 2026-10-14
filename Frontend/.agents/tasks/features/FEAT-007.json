@@ -1,0 +1,43 @@
+{
+  "id": "FEAT-007",
+  "type": "feat",
+  "description": "Polish and optimize HomePage and SearchPage for performance and user experience: wrap HomePage in React.lazy boundary, integrate new marketplace components (CategoryTile, SearchBar, FilterPanel), add React.memo to pure sections, optimize image loading, add URL sync for filters, implement pagination (20 per page), ensure RTL support, remove hardcoded colors, and verify accessibility.",
+  "status": "pending",
+  "steps": [
+    "Update Frontend/src/App.tsx: wrap HomePage import in React.lazy and add Suspense wrapper with fallback skeleton at route level",
+    "Refactor Frontend/src/pages/HomePage.tsx: replace inline CategoryTile with new 'import { CategoryTile } from @/components/marketplace'; replace inline SearchBar with marketplace component; add React.memo to SectionHeader, PromoBanner, BusinessCard; ensure key stability using listing.id (not index); verify all images use lazy loading; remove any hardcoded color values (use design tokens only); ensure search input has proper ARIA labels",
+    "Refactor Frontend/src/pages/SearchPage.tsx: replace inline FilterPanel with 'import { FilterPanel } from @/components/marketplace'; replace inline ListingCardGrid with 'import { ListingCard } from @/components/marketplace'; add URL sync for filters (on change, update URL params via navigate); implement pagination (page state, slice results to 20 per page, show pagination controls); optional: add virtual scrolling if results > 50 AND layout === 'list' (check if @tanstack/react-virtual available; if not, use fallback grid)",
+    "Ensure HomePage and SearchPage are fully optimized: proper key prop stability, memoization, lazy image loading, debounced search, efficient re-renders",
+    "Test RTL mode: set lang to 'ar', verify layout flips correctly, icons flip where needed, spacing is logical",
+    "Accessibility verification: test keyboard navigation (Tab, Enter, Esc), screen reader (ARIA labels, semantic HTML), contrast (4.5:1), touch targets (44px+)"
+  ],
+  "acceptance_criteria": [
+    "HomePage wrapped in React.lazy with Suspense fallback",
+    "HomePage uses new marketplace components (CategoryTile, SearchBar)",
+    "SearchPage uses new marketplace components (FilterPanel, ListingCard)",
+    "SectionHeader, PromoBanner, BusinessCard wrapped in React.memo",
+    "Key props use listing.id, not index, in all loops",
+    "All images lazy-load with LQIP blur-up",
+    "No hardcoded colors; all use design tokens from tailwind.config.js",
+    "Search input has aria-label and role",
+    "URLs sync: filter/sort changes update URL params",
+    "Pagination implemented with 20 items per page",
+    "RTL mode works: layout flips, icons properly positioned, spacing logical",
+    "Keyboard navigation works: Tab, Enter, Esc, Arrow keys",
+    "4.5:1 contrast ratio maintained throughout",
+    "Touch targets 44px minimum",
+    "npm run typecheck passes with zero errors",
+    "npm run build succeeds without warnings"
+  ],
+  "verification": [
+    "npm run typecheck — should pass",
+    "npm run build — should succeed with no errors or warnings",
+    "npm run dev: load HomePage, verify components render, images load lazily, categories display",
+    "npm run dev: search for a product, verify filters work, results paginate (20 per page), URL updates",
+    "Test RTL: open DevTools, set I18nContext to 'ar', reload, verify layout, spacing, icons flip correctly",
+    "Keyboard test: navigate using Tab, Enter, Esc; verify focus visible, interactions work",
+    "Accessibility test: use browser accessibility inspector (DevTools > Accessibility), verify ARIA labels, semantic HTML, contrast ratios"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

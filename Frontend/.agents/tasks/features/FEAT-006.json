@@ -1,0 +1,30 @@
+{
+  "id": "FEAT-006",
+  "type": "feat",
+  "description": "Expand i18n infrastructure: fix formatPrice in I18nContext.tsx to use 'sdg' instead of 'egp' (MARBOU is Sudan-based, currency is Sudanese Pound), and create 3 organized translation JSON files (ui.json ~60 keys, marketplace.json ~60 keys, errors.json ~40 keys) for navigation, buttons, labels, marketplace fields, filters, and validation messages. Maintains backward compatibility with existing translations.ts.",
+  "status": "pending",
+  "steps": [
+    "Modify Frontend/src/i18n/I18nContext.tsx: update formatPrice function to use t('sdg') instead of t('egp'); ensure 'sdg' translation key exists in translations.ts",
+    "Verify Frontend/src/i18n/translations.ts: add 'sdg' translation key if missing (Arabic: 'الدينار السوداني', English: 'SDG')",
+    "Create Frontend/src/i18n/translations/ui.json: organize ~60 keys in { \"ar\": {...}, \"en\": {...} } structure for navigation (home, search, addListing, messages, account, login, logout), buttons (add, save, delete, cancel, apply, reset), labels (required, optional, error, success), placeholders (searchPlaceholder, enterName, etc.)",
+    "Create Frontend/src/i18n/translations/marketplace.json: organize ~60 keys for listing fields (title, description, price, condition, location), categories (vehicles, realEstate, electronics, etc.), search/filters (minPrice, maxPrice, city, filterLabel), sorting (newest, lowestPrice, highestPrice, relevance)",
+    "Create Frontend/src/i18n/translations/errors.json: organize ~40 keys for validation messages (required field, invalid email, invalid phone, invalid price), network errors (offline, slowConnection, retrying), and general errors (serverError, tryAgain)",
+    "Keep Frontend/src/i18n/translations.ts working: can remain standalone or import/merge the JSON files; do not break existing t() usage in components"
+  ],
+  "acceptance_criteria": [
+    "formatPrice now displays SDG currency (or 'الدينار السوداني' in Arabic)",
+    "ui.json, marketplace.json, errors.json created with proper structure ({ar: {...}, en: {...}})",
+    "All translation keys are properly scoped and organized by domain",
+    "Existing t() calls in components still work without modification",
+    "'sdg' key exists in translations and displays correctly",
+    "npm run typecheck passes with zero errors"
+  ],
+  "verification": [
+    "npm run typecheck — should pass",
+    "Import translations: verify new JSON files can be imported",
+    "Test price formatting: manual test in dev server shows 'SDG' or 'الدينار السوداني'",
+    "Verify existing pages still render correct translations"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

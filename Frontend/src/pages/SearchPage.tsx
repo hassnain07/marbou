@@ -1,14 +1,16 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, memo } from 'react';
 import { useI18n } from '@/i18n/I18nContext';
 import { useApp } from '@/context/AppContext';
 import { useRouter } from '@/router/Router';
-import { ListingCardGrid } from '@/components/ListingCard';
+import { ListingCard, ListingCardGrid, FilterPanel, type FilterState, SearchBar } from '@/components/marketplace';
 import { EmptyState, Skeleton } from '@/components/ui';
 import { listings, categories, sudanCities } from '@/data/mockData';
 import {
-  Search, SlidersHorizontal, X, Grid, List, MapPin, ChevronDown, Save,
+  Search, SlidersHorizontal, X, Grid, List, MapPin, Save,
 } from 'lucide-react';
 import type { TranslationKey } from '@/i18n/translations';
+
+const ITEMS_PER_PAGE = 20;
 
 export function SearchPage() {
   const { t, lang, formatPrice } = useI18n();
@@ -17,27 +19,50 @@ export function SearchPage() {
 
   const urlParams = new URLSearchParams(path.split('?')[1] || '');
   const initialQuery = urlParams.get('q') || '';
+  const initialPage = parseInt(urlParams.get('page') || '1');
   const initialCategory = urlParams.get('category') || '';
   const initialSort = urlParams.get('sort') || 'relevance';
 
   const [query, setQuery] = useState(initialQuery);
-  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
-  const [selectedSub, setSelectedSub] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
-  const [condition, setCondition] = useState<'all' | 'new' | 'used'>('all');
+  const [filters, setFilters] = useState<FilterState>({
+    category: initialCategory || undefined,
+    subcategory: urlParams.get('subcategory') || undefined,
+    city: urlParams.get('city') || undefined,
+    minPrice: urlParams.get('minPrice') ? parseInt(urlParams.get('minPrice')!) : undefined,
+    maxPrice: urlParams.get('maxPrice') ? parseInt(urlParams.get('maxPrice')!) : undefined,
+    condition: urlParams.get('condition') || undefined,
+  });
   const [sort, setSort] = useState(initialSort);
   const [layout, setLayout] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(initialPage);
+
+  // Sync filters to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (query) params.set('q', query);
+    if (filters.category) params.set('category', filters.category);
+    if (filters.subcategory) params.set('subcategory', filters.subcategory);
+    if (filters.city) params.set('city', filters.city);
+    if (filters.minPrice !== undefined) params.set('minPrice', String(filters.minPrice));
+    if (filters.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));
+    if (filters.condition) params.set('condition', filters.condition);
+    if (sort !== 'relevance') params.set('sort', sort);
+    if (currentPage > 1) params.set('page', String(currentPage));
+
+    const newPath = `/search${params.toString() ? `?${params.toString()}` : ''}`;
+    if (newPath !== path) {
+      navigate(newPath);
+    }
+  }, [query, filters, sort, currentPage, path, navigate]);
 
   useEffect(() => {
     setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 400);
+    const timer = setTimeout(() => setLoading(false), 300);
     return () => clearTimeout(timer);
-  }, [query, selectedCategory, selectedSub, selectedCity, minPrice, maxPrice, condition, sort]);
+  }, [query, filters, sort]);
 
   const results = useMemo(() => {
     let filtered = listings.filter((l) => l.status === 'published');
@@ -53,26 +78,26 @@ export function SearchPage() {
         l.cityAr.includes(query)
       );
     }
-    if (selectedCategory) {
-      filtered = filtered.filter((l) => l.category === selectedCategory);
+    if (filters.category) {
+      filtered = filtered.filter((l) => l.category === filters.category);
     }
-    if (selectedSub) {
-      filtered = filtered.filter((l) => l.subcategory === selectedSub);
+    if (filters.subcategory) {
+      filtered = filtered.filter((l) => l.subcategory === filters.subcategory);
     }
-    if (selectedCity) {
+    if (filters.city) {
       filtered = filtered.filter((l) => {
-        const city = sudanCities.find((c) => c.id === selectedCity);
+        const city = sudanCities.find((c) => c.id === filters.city);
         return city && (l.city === city.name || l.cityAr === city.nameAr);
       });
     }
-    if (minPrice) {
-      filtered = filtered.filter((l) => l.price >= parseInt(minPrice));
+    if (filters.minPrice !== undefined) {
+      filtered = filtered.filter((l) => l.price >= filters.minPrice!);
     }
-    if (maxPrice) {
-      filtered = filtered.filter((l) => l.price <= parseInt(maxPrice));
+    if (filters.maxPrice !== undefined) {
+      filtered = filtered.filter((l) => l.price <= filters.maxPrice!);
     }
-    if (condition !== 'all') {
-      filtered = filtered.filter((l) => l.condition === condition);
+    if (filters.condition && filters.condition !== 'all') {
+      filtered = filtered.filter((l) => l.condition === filters.condition);
     }
 
     switch (sort) {
@@ -94,113 +119,105 @@ export function SearchPage() {
     }
 
     return filtered;
-  }, [query, selectedCategory, selectedSub, selectedCity, minPrice, maxPrice, condition, sort]);
+  }, [query, filters, sort]);
 
-  const activeCategory = categories.find((c) => c.id === selectedCategory);
+  // Pagination
+  const totalPages = Math.ceil(results.length / ITEMS_PER_PAGE);
+  const paginatedResults = useMemo(() => {
+    const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+    return results.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+  }, [results, currentPage]);
+
+  const activeCategory = categories.find((c) => c.id === filters.category);
   const resetFilters = () => {
-    setSelectedCategory('');
-    setSelectedSub('');
-    setSelectedCity('');
-    setMinPrice('');
-    setMaxPrice('');
-    setCondition('all');
+    setFilters({});
+    setCurrentPage(1);
   };
 
-  const hasActiveFilters = selectedCategory || selectedSub || selectedCity || minPrice || maxPrice || condition !== 'all';
+  const handleFilterChange = (newFilters: FilterState) => {
+    setFilters(newFilters);
+    setCurrentPage(1);
+  };
 
-  const FilterPanel = () => (
-    <div className="space-y-4">
-      <div>
-        <label className="text-sm font-bold text-primary-700 mb-2 block">{t('categories')}</label>
-        <select value={selectedCategory} onChange={(e) => { setSelectedCategory(e.target.value); setSelectedSub(''); }} className="input">
-          <option value="">{t('all')}</option>
-          {categories.map((c) => <option key={c.id} value={c.id}>{t(c.key)}</option>)}
-        </select>
-      </div>
-      {activeCategory && activeCategory.subcategories.length > 0 && (
-        <div>
-          <label className="text-sm font-bold text-primary-700 mb-2 block">{t('categories')}</label>
-          <div className="flex flex-wrap gap-2">
-            {activeCategory.subcategories.map((s) => (
-              <button
-                key={s.id}
-                onClick={() => setSelectedSub(selectedSub === s.id ? '' : s.id)}
-                className={selectedSub === s.id ? 'chip-active' : 'chip-default'}
-              >
-                {t(s.key)}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-      <div>
-        <label className="text-sm font-bold text-primary-700 mb-2 block">{t('location')}</label>
-        <select value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} className="input">
-          <option value="">{t('all')}</option>
-          {sudanCities.map((c) => <option key={c.id} value={c.id}>{lang === 'ar' ? c.nameAr : c.name}</option>)}
-        </select>
-      </div>
-      <div>
-        <label className="text-sm font-bold text-primary-700 mb-2 block">{t('price')}</label>
-        <div className="flex gap-2">
-          <input type="number" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} placeholder={t('minPrice')} className="input text-sm" />
-          <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} placeholder={t('maxPrice')} className="input text-sm" />
-        </div>
-      </div>
-      <div>
-        <label className="text-sm font-bold text-primary-700 mb-2 block">{t('condition')}</label>
-        <div className="flex gap-2">
-          {(['all', 'new', 'used'] as const).map((c) => (
-            <button key={c} onClick={() => setCondition(c)} className={condition === c ? 'chip-active' : 'chip-default'}>
-              {c === 'all' ? t('all') : c === 'new' ? t('new') : t('used')}
-            </button>
-          ))}
-        </div>
-      </div>
-      {hasActiveFilters && (
-        <button onClick={resetFilters} className="btn-secondary w-full text-sm">
-          <X className="w-4 h-4" />{t('reset')}
+  const handleSaveSearch = () => {
+    addSavedSearch(query, query);
+    showToast(t('saveSearch'), 'success');
+  };
+
+  const PaginationControls = memo(function PaginationControlsComponent() {
+    return (
+      <div className="flex items-center justify-center gap-2 mt-6 pt-6 border-t border-sand-100">
+        <button
+          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          disabled={currentPage === 1}
+          className="px-3 py-2 rounded-lg border border-sand-200 text-sm font-medium text-primary-600 hover:bg-sand-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          aria-label={t('back')}
+        >
+          {t('back')}
         </button>
-      )}
-    </div>
-  );
+        <div className="flex items-center gap-1">
+          {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
+            const pageNum = currentPage > 3 ? currentPage - 2 + i : i + 1;
+            if (pageNum > totalPages) return null;
+            return (
+              <button
+                key={pageNum}
+                onClick={() => setCurrentPage(pageNum)}
+                className={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  pageNum === currentPage
+                    ? 'bg-primary-600 text-white'
+                    : 'border border-sand-200 text-primary-600 hover:bg-sand-50'
+                }`}
+                aria-label={`Page ${pageNum}`}
+                aria-current={pageNum === currentPage ? 'page' : undefined}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
+        </div>
+        <button
+          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          disabled={currentPage === totalPages}
+          className="px-3 py-2 rounded-lg border border-sand-200 text-sm font-medium text-primary-600 hover:bg-sand-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          aria-label={t('next')}
+        >
+          {t('next')}
+        </button>
+        <span className="text-sm text-primary-400 ms-2">
+          {currentPage} / {totalPages}
+        </span>
+      </div>
+    );
+  });
 
   return (
     <div className="py-4">
       {/* Search bar */}
-      <div className="flex gap-2 mb-4">
-        <div className="relative flex-1">
-          <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-300" />
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t('searchPlaceholder')}
-            className="input ps-10"
-          />
-        </div>
-        <button
-          onClick={() => setShowFilters(true)}
-          className="btn-secondary px-3 lg:hidden"
-        >
-          <SlidersHorizontal className="w-4 h-4" />
-        </button>
+      <div className="mb-4">
+        <SearchBar
+          value={query}
+          onChange={setQuery}
+          onSubmit={(value) => {
+            setQuery(value);
+            setCurrentPage(1);
+          }}
+          placeholder={t('searchPlaceholder')}
+          suggestions={categories.map((c) => t(c.key))}
+          showFilters
+          onFilterToggle={() => setShowFilters(true)}
+        />
       </div>
 
       <div className="flex gap-6">
         {/* Desktop filters */}
         <aside className="hidden lg:block w-64 shrink-0">
-          <div className="card p-4 sticky top-20">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-primary-800 flex items-center gap-2">
-                <SlidersHorizontal className="w-4 h-4" />{t('filters')}
-              </h3>
-              <button onClick={() => addSavedSearch(query, query)} className="text-xs text-primary-500 hover:text-primary-700 flex items-center gap-1">
-                <Save className="w-3.5 h-3.5" />{t('saveSearch')}
-              </button>
-            </div>
-            <FilterPanel />
-          </div>
+          <FilterPanel
+            filters={filters}
+            onChange={handleFilterChange}
+            onReset={resetFilters}
+            resultCount={paginatedResults.length}
+          />
         </aside>
 
         {/* Results */}
@@ -210,7 +227,23 @@ export function SearchPage() {
               <span className="font-bold text-primary-700">{results.length}</span> {t('resultsCount')}
             </p>
             <div className="flex items-center gap-2">
-              <select value={sort} onChange={(e) => setSort(e.target.value)} className="input py-1.5 text-sm w-auto">
+              <button
+                onClick={handleSaveSearch}
+                className="text-xs text-primary-500 hover:text-primary-700 flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-sand-50 transition-colors"
+                aria-label={t('saveSearch')}
+              >
+                <Save className="w-3.5 h-3.5" aria-hidden="true" />
+                {t('saveSearch')}
+              </button>
+              <select
+                value={sort}
+                onChange={(e) => {
+                  setSort(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="input py-1.5 text-sm w-auto"
+                aria-label={t('sortBy')}
+              >
                 <option value="relevance">{t('relevance')}</option>
                 <option value="newest">{t('newest')}</option>
                 <option value="lowestPrice">{t('lowestPrice')}</option>
@@ -218,15 +251,30 @@ export function SearchPage() {
                 <option value="nearby">{t('nearby')}</option>
               </select>
               <div className="hidden sm:flex bg-sand-100 rounded-lg p-1">
-                <button onClick={() => setLayout('grid')} className={`p-1.5 rounded-md ${layout === 'grid' ? 'bg-white shadow-sm text-primary-700' : 'text-primary-400'}`}>
-                  <Grid className="w-4 h-4" />
+                <button
+                  onClick={() => setLayout('grid')}
+                  className={`p-1.5 rounded-md transition-colors ${layout === 'grid' ? 'bg-white shadow-sm text-primary-700' : 'text-primary-400'}`}
+                  aria-label={t('grid')}
+                  aria-pressed={layout === 'grid'}
+                >
+                  <Grid className="w-4 h-4" aria-hidden="true" />
                 </button>
-                <button onClick={() => setLayout('list')} className={`p-1.5 rounded-md ${layout === 'list' ? 'bg-white shadow-sm text-primary-700' : 'text-primary-400'}`}>
-                  <List className="w-4 h-4" />
+                <button
+                  onClick={() => setLayout('list')}
+                  className={`p-1.5 rounded-md transition-colors ${layout === 'list' ? 'bg-white shadow-sm text-primary-700' : 'text-primary-400'}`}
+                  aria-label={t('list')}
+                  aria-pressed={layout === 'list'}
+                >
+                  <List className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
-              <button onClick={() => setShowMap(!showMap)} className={`btn-secondary px-3 py-1.5 text-sm ${showMap ? 'bg-primary-50' : ''}`}>
-                <MapPin className="w-4 h-4" />
+              <button
+                onClick={() => setShowMap(!showMap)}
+                className={`btn-secondary px-3 py-1.5 text-sm transition-colors ${showMap ? 'bg-primary-50' : ''}`}
+                aria-label={t('mapView')}
+                aria-pressed={showMap}
+              >
+                <MapPin className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -234,14 +282,19 @@ export function SearchPage() {
           {showMap && (
             <div className="card p-0 overflow-hidden mb-4">
               <div className="relative h-64 bg-gradient-to-br from-primary-50 to-sand-100 flex items-center justify-center">
-                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 30% 40%, #3a8a57 2px, transparent 2px), radial-gradient(circle at 70% 60%, #3a8a57 2px, transparent 2px)', backgroundSize: '40px 40px' }} />
+                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 30% 40%, #3a8a57 2px, transparent 2px), radial-gradient(circle at 70% 60%, #3a8a57 2px, transparent 2px)', backgroundSize: '40px 40px' }} aria-hidden="true" />
                 {results.slice(0, 8).map((l, i) => (
                   <div
                     key={l.id}
                     className="absolute bg-primary-600 text-white rounded-full p-2 shadow-lg cursor-pointer hover:scale-110 transition-transform"
                     style={{ top: `${20 + (i % 4) * 20}%`, left: `${15 + (i % 5) * 18}%` }}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => navigate(`/listing/${l.id}`)}
+                    onKeyDown={(e) => e.key === 'Enter' && navigate(`/listing/${l.id}`)}
+                    aria-label={`${l.title} at ${l.city}`}
                   >
-                    <MapPin className="w-4 h-4" />
+                    <MapPin className="w-4 h-4" aria-hidden="true" />
                   </div>
                 ))}
                 <div className="relative z-10 text-center">
@@ -253,7 +306,7 @@ export function SearchPage() {
           )}
 
           {loading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className={layout === 'list' ? 'space-y-3' : 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4'}>
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="card overflow-hidden">
                   <Skeleton className="h-40 w-full rounded-none" />
@@ -273,31 +326,24 @@ export function SearchPage() {
               action={<button onClick={resetFilters} className="btn-primary text-sm">{t('reset')}</button>}
             />
           ) : (
-            <ListingCardGrid listings={results} layout={layout} />
+            <>
+              <ListingCardGrid listings={paginatedResults} layout={layout} />
+              {totalPages > 1 && <PaginationControls />}
+            </>
           )}
         </div>
       </div>
 
       {/* Mobile filter drawer */}
       {showFilters && (
-        <div className="fixed inset-0 z-50 lg:hidden animate-fade-in">
-          <div className="absolute inset-0 bg-primary-950/40" onClick={() => setShowFilters(false)} />
-          <div className="absolute bottom-0 inset-x-0 bg-white rounded-t-2xl max-h-[85vh] overflow-y-auto animate-slide-up">
-            <div className="flex items-center justify-between p-4 border-b border-sand-100 sticky top-0 bg-white">
-              <h3 className="font-bold text-primary-800">{t('filters')}</h3>
-              <button onClick={() => setShowFilters(false)} className="p-1.5 rounded-lg hover:bg-sand-100">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-4">
-              <FilterPanel />
-            </div>
-            <div className="sticky bottom-0 bg-white border-t border-sand-100 p-4 flex gap-2">
-              <button onClick={resetFilters} className="btn-secondary flex-1">{t('reset')}</button>
-              <button onClick={() => setShowFilters(false)} className="btn-primary flex-1">{t('apply')} ({results.length})</button>
-            </div>
-          </div>
-        </div>
+        <FilterPanel
+          filters={filters}
+          onChange={handleFilterChange}
+          onReset={resetFilters}
+          resultCount={results.length}
+          isMobile
+          onClose={() => setShowFilters(false)}
+        />
       )}
     </div>
   );
@@ -318,7 +364,7 @@ export function CategoryPage() {
   return (
     <div className="py-4">
       <div className="flex items-center gap-1.5 text-sm text-primary-400 mb-3">
-        <button onClick={() => navigate('/')} className="hover:text-primary-600">{t('home')}</button>
+        <button onClick={() => navigate('/')} className="hover:text-primary-600 transition-colors">{t('home')}</button>
         <span className="text-sand-300">/</span>
         <span className="text-primary-600 font-medium">{t(category.key)}</span>
       </div>

@@ -39,8 +39,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const formatPrice = (price: number, perMonth = false) => {
     const formatted = lang === 'ar'
-      ? `${price.toLocaleString('ar-EG')} ${t('egp')}`
-      : `${price.toLocaleString('en-US')} ${t('egp')}`;
+      ? `${price.toLocaleString('ar-EG')} ${t('sdg')}`
+      : `${price.toLocaleString('en-US')} ${t('sdg')}`;
     return perMonth ? `${formatted} ${t('perMonth')}` : formatted;
   };
 

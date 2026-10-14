@@ -271,6 +271,9 @@ export const translations = {
     postJob: 'إعلان وظيفة',
     wantedListing: 'مطلوب',
     selectCategory: 'اختر التصنيف',
+    selectAll: 'اختر الكل',
+    category: 'التصنيف',
+    refurbished: 'مجدد',
     enterDetails: 'أدخل التفاصيل',
     addPhotosVideo: 'أضف صور وفيديو',
     enterPriceLocation: 'أدخل السعر والموقع',
@@ -584,6 +587,7 @@ export const translations = {
 
     // Misc
     egp: 'ج.س',
+    sdg: 'الدينار السوداني',
     perMonth: '/شهر',
     negotiable: 'قابل للتفاوض',
     verifiedBusiness: 'نشاط موثق',
@@ -952,6 +956,9 @@ export const translations = {
     postJob: 'Post Job',
     wantedListing: 'Wanted',
     selectCategory: 'Select Category',
+    selectAll: 'Select All',
+    category: 'Category',
+    refurbished: 'Refurbished',
     enterDetails: 'Enter Details',
     addPhotosVideo: 'Add Photos & Video',
     enterPriceLocation: 'Enter Price & Location',
@@ -1250,6 +1257,7 @@ export const translations = {
     bookingComingSoon: 'Bookings will be available soon',
 
     egp: 'SDG',
+    sdg: 'SDG',
     perMonth: '/month',
     negotiable: 'Negotiable',
     verifiedBusiness: 'Verified Business',

@@ -2,7 +2,7 @@
   "id": "FEAT-006",
   "type": "feat",
   "description": "Expand i18n infrastructure: fix formatPrice in I18nContext.tsx to use 'sdg' instead of 'egp' (MARBOU is Sudan-based, currency is Sudanese Pound), and create 3 organized translation JSON files (ui.json ~60 keys, marketplace.json ~60 keys, errors.json ~40 keys) for navigation, buttons, labels, marketplace fields, filters, and validation messages. Maintains backward compatibility with existing translations.ts.",
-  "status": "pending",
+  "status": "completed",
   "steps": [
     "Modify Frontend/src/i18n/I18nContext.tsx: update formatPrice function to use t('sdg') instead of t('egp'); ensure 'sdg' translation key exists in translations.ts",
     "Verify Frontend/src/i18n/translations.ts: add 'sdg' translation key if missing (Arabic: 'الدينار السوداني', English: 'SDG')",

@@ -30,7 +30,7 @@ function ListingCardComponent({ listing, layout = 'grid', loading = false, dataS
   const canCompare = listing.category === 'vehicles' || listing.category === 'real-estate' || listing.category === 'electronics';
 
   // LQIP blur-up effect with gradient fallback
-  const imgStyle: React.CSSProperties = shouldUseSaver
+  const imgStyle: React.CSSProperties | undefined = shouldUseSaver
     ? { background: `linear-gradient(135deg, #dcede0, #f4e9d0)`, height: '100%' }
     : blurDataURL
       ? {

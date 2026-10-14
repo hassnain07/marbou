@@ -689,6 +689,17 @@ export const translations = {
     alreadyHaveAccount: 'لديك حساب بالفعل؟',
     dontHaveAccount: 'ليس لديك حساب؟',
     loginSubtitle: 'أدخل بياناتك للمتابعة',
+    
+    // Marketplace components
+    featured: 'مميز',
+    selectCity: 'اختر المدينة',
+    selectArea: 'اختر المنطقة',
+    city: 'المدينة',
+    clear: 'مسح',
+    addFavorite: 'إضافة إلى المفضلة',
+    removeFavorite: 'إزالة من المفضلة',
+    addCompare: 'إضافة للمقارنة',
+    removeCompare: 'إزالة من المقارنة',
   },
   en: {
     brandName: 'MARBOU',
@@ -1344,6 +1355,17 @@ export const translations = {
     alreadyHaveAccount: 'Already have an account?',
     dontHaveAccount: "Don't have an account?",
     loginSubtitle: 'Enter your credentials to continue',
+    
+    // Marketplace components
+    featured: 'Featured',
+    selectCity: 'Select City',
+    selectArea: 'Select Area',
+    city: 'City',
+    clear: 'Clear',
+    addFavorite: 'Add to Favorites',
+    removeFavorite: 'Remove from Favorites',
+    addCompare: 'Add to Compare',
+    removeCompare: 'Remove from Compare',
   },
 } as const;
 

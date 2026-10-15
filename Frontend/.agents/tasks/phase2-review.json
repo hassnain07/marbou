@@ -1,0 +1,69 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "id": "MISSING-MEDIAUPLOADERUPLOADER",
+      "severity": "HIGH",
+      "file": "src/components/MediaUploader.tsx",
+      "description": "MediaUploader component does not exist as a standalone module. Photo upload/reorder/cover selection logic is embedded inline in AddListingPage.tsx. This creates code duplication risk across pages (SellerProfilePage banner upload, edit listing, etc.) and violates Phase 2 design of reusable shared components.",
+      "suggestion": "Extract photo handling logic from AddListingPage (lines ~320-380) into src/components/MediaUploader.tsx. Component should accept: photos array, coverIndex, onChange handler, onCoverChange handler. Export as default or named export. Update AddListingPage to import and use. This unblocks reuse in other pages."
+    },
+    {
+      "id": "MISSING-DYNAMICFORM",
+      "severity": "HIGH",
+      "file": "src/components/DynamicForm.tsx",
+      "description": "DynamicForm component does not exist. Category-driven field rendering via getFields() pattern is embedded inline in AddListingPage (~lines 40-70). This pattern is needed for jobs details, services forms, and business profile specs, but there's no reusable component to avoid duplication.",
+      "suggestion": "Extract getFields() logic and field rendering from AddListingPage into src/components/DynamicForm.tsx. Component should accept: categoryId, specs object, fields array, onChange handler. Render fields conditionally by type (text/number/select/checkbox/date). Export and use in AddListingPage, JobDetailPage, and other category-specific forms."
+    },
+    {
+      "id": "MISSING-CONFIRMDIALOG",
+      "severity": "HIGH",
+      "file": "src/components/ConfirmDialog.tsx",
+      "description": "ConfirmDialog component does not exist as a reusable module. Confirmation prompts for delete, mark-sold, report actions are not consistently handled. Need for this component is confirmed by Phase 2 plan (delete listing, mark sold, report listing, clear compare, etc.).",
+      "suggestion": "Create src/components/ConfirmDialog.tsx. Export function signature: ConfirmDialog({ open, onClose, title, message, confirmText, cancelText, isDanger, onConfirm, loading }). Render Modal with two buttons (Cancel / Confirm, danger=red). Add to ui.tsx exports. Wire in AccountPage (my-listings delete), SellerProfilePage (report), ComparePage (clear all)."
+    },
+    {
+      "id": "MISSING-AUTHGATESHEET",
+      "severity": "HIGH",
+      "file": "src/components/AuthGateSheet.tsx",
+      "description": "AuthGateSheet component does not exist. Phase 2 plan specifies a bottom-sheet modal for sign-in prompts on gated actions (message, offer, chat). This is a foundational global component missing from the codebase.",
+      "suggestion": "Create src/components/AuthGateSheet.tsx as a bottom-sheet modal. Add state to AppContext: gatedActionType ('message' | 'offer' | 'chat' | null). Render in App.tsx alongside Toast. Sheet should show sign-in options (Email/Google/Facebook/Apple), 'Sign up' link, close button. Trigger via showAuthGate('message') call when non-auth user clicks message/offer buttons."
+    },
+    {
+      "id": "NO-FEATURE-FLAGS",
+      "severity": "MEDIUM",
+      "file": "src/context/AppContext.tsx",
+      "description": "Feature flags (ENABLE_JOBS, ENABLE_MONETIZATION, ENABLE_AUCTIONS, ENABLE_BARTER) are not implemented. Pages are routable but not gated. Phase 2 plan specifies these flags should control page visibility. Without them, feature toggles cannot be tested or deployed incrementally.",
+      "suggestion": "Add featureFlags object to AppContext: { ENABLE_JOBS: true, ENABLE_MONETIZATION: true, ENABLE_AUCTIONS: false, ENABLE_BARTER: false }. Update App.tsx route rendering to check flags (if root === 'jobs' && !featureFlags.ENABLE_JOBS return ComingSoonPage). Allow flags to be toggled in admin/settings for Phase 3."
+    },
+    {
+      "id": "NO-SUSPENSION-SCREENS",
+      "severity": "MEDIUM",
+      "file": "src/App.tsx",
+      "description": "Suspended account overlay and force-update/maintenance screens do not exist. Phase 2 plan specifies a full-screen suspension notice if user.status === 'suspended'. This is a blocking UX concern for moderation workflows.",
+      "suggestion": "Create src/components/SuspensionOverlay.tsx and src/components/MaintenanceScreen.tsx. In App.tsx, check auth.user?.status === 'suspended' and render SuspensionOverlay (non-dismissible except logout). Display reason, support link, no escape. Wire mock suspension status in AuthContext for testing."
+    },
+    {
+      "id": "NO-COMPARE-FRAMEWORK",
+      "severity": "MEDIUM",
+      "file": "src/pages/FavoritesCompareMessages.tsx",
+      "description": "Compare page exists but lacks abstraction for spec comparison. Comparison logic is hardcoded in the page component. Phase 2 plan specifies reusable spec comparison and table rendering components. Without abstraction, spec comparison logic is difficult to test and maintain.",
+      "suggestion": "Create src/utils/compare-specs.ts utility that takes two Listing objects and returns comparable specs with difference highlights. Create src/components/CompareTable.tsx component that renders a side-by-side table of listings with specs. Use in ComparePage."
+    },
+    {
+      "id": "JOBS-APPLY-INCOMPLETE",
+      "severity": "MEDIUM",
+      "file": "src/pages/JobsServicesBusiness.tsx",
+      "description": "Jobs apply flow is minimal. Apply modal form exists but success flow doesn't clearly persist applications to AppContext.appliedJobs. CV upload form is not fully wired. User's job applications are not visible after apply.",
+      "suggestion": "Update ApplyModal component (in JobsServicesBusiness.tsx) to call addAppliedJob(jobId, status, date) on successful submit. Verify AppContext has appliedJobs array and function. Show success toast with 'View Applications' link to /account/job-applications. Ensure CV upload is properly handled (mock upload with file name display)."
+    },
+    {
+      "id": "MISSING-SHARED-COMPONENTS-LINT",
+      "severity": "LOW",
+      "file": "src/components/",
+      "description": "Four planned shared components are missing as standalone files: MediaUploader.tsx, DynamicForm.tsx, AuthGateSheet.tsx, ConfirmDialog.tsx. These are only noted as missing, not as lint errors, because they are not imported. But their absence will cause issues as more pages are added.",
+      "suggestion": "Extract all four components before Phase 3 begins to establish a reusable component library pattern. This is architectural debt that grows over time."
+    }
+  ],
+  "reviewDoc": "d:\\codeclub\\Marbou\\marbouProj(Main)\\Frontend\\.agents\\tasks\\phase2-review.md"
+}

@@ -58,9 +58,9 @@ export function AccountPage() {
 
   return (
     <div className="py-4 max-w-6xl mx-auto">
-      <div className="flex gap-6">
-        {/* Sidebar */}
-        <aside className="hidden md:block w-56 shrink-0">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+        {/* Sidebar - hidden on mobile */}
+        <aside className="hidden md:block w-48 shrink-0">
           <div className="card p-3 sticky top-20">
             <div className="flex items-center gap-3 p-3 mb-2">
               <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
@@ -77,11 +77,23 @@ export function AccountPage() {
           </div>
         </aside>
 
-        {/* Mobile tab selector */}
+        {/* Mobile tab selector - horizontal scrollable on small screens */}
         <div className="md:hidden mb-4">
-          <select value={tabId} onChange={(e) => navigate(`/account/${e.target.value}`)} className="input">
-            {TABS.map((tab) => <option key={tab.id} value={tab.id}>{t(tab.id as TranslationKey)}</option>)}
-          </select>
+          <div className="flex gap-2 overflow-x-auto no-scrollbar px-0">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => navigate(`/account/${tab.id}`)}
+                className={`whitespace-nowrap px-3 py-2 rounded-lg text-sm font-medium transition-all shrink-0 ${
+                  tabId === tab.id
+                    ? 'bg-primary-600 text-white'
+                    : 'bg-sand-100 text-primary-600 hover:bg-sand-200'
+                }`}
+              >
+                {t(tab.id as TranslationKey)}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Content */}
@@ -137,10 +149,10 @@ export function AccountPage() {
           )}
 
           {tabId === 'profile' && (
-            <div className="card p-6 max-w-2xl">
+            <div className="card p-4 sm:p-6 max-w-2xl w-full">
               <h1 className="text-xl font-bold text-primary-800 mb-4">{t('profile')}</h1>
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-20 h-20 rounded-full bg-primary-100 flex items-center justify-center">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+                <div className="w-20 h-20 rounded-full bg-primary-100 flex items-center justify-center shrink-0">
                   <User className="w-10 h-10 text-primary-500" />
                 </div>
                 <div>
@@ -151,24 +163,24 @@ export function AccountPage() {
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-medium text-primary-600 mb-1.5 block">{t('contactDetails')}</label>
-                  <input className="input" defaultValue="Demo User" />
+                  <input className="input w-full" defaultValue="Demo User" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-primary-600 mb-1.5 block">Email</label>
-                  <input className="input" defaultValue="demo@marbou.sd" />
+                  <input className="input w-full" defaultValue="demo@marbou.sd" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-primary-600 mb-1.5 block">{t('call')}</label>
-                  <input className="input" defaultValue="+249 91 234 5678" />
+                  <input className="input w-full" defaultValue="+249 91 234 5678" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-primary-600 mb-1.5 block">{t('location')}</label>
-                  <select className="input">
+                  <select className="input w-full">
                     <option>Khartoum - Al-Riyadh</option>
                     <option>Omdurman - Al-Thawra</option>
                   </select>
                 </div>
-                <button onClick={() => showToast(t('successState'), 'success')} className="btn-primary">{t('save')}</button>
+                <button onClick={() => showToast(t('successState'), 'success')} className="btn-primary w-full">{t('save')}</button>
               </div>
             </div>
           )}
@@ -328,13 +340,13 @@ export function AccountPage() {
           )}
 
           {tabId === 'security' && (
-            <div className="max-w-2xl space-y-4">
+            <div className="max-w-2xl space-y-4 w-full">
               <h1 className="text-xl font-bold text-primary-800">{t('securityCenter')}</h1>
               <div className="card p-4">
                 <h3 className="font-bold text-primary-700 mb-3 flex items-center gap-2"><Shield className="w-4 h-4" />{t('password')}</h3>
-                <input type="password" className="input mb-2" placeholder="Current password" />
-                <input type="password" className="input mb-2" placeholder="New password" />
-                <button onClick={() => showToast(t('successState'), 'success')} className="btn-primary text-sm">{t('save')}</button>
+                <input type="password" className="input w-full mb-2" placeholder="Current password" />
+                <input type="password" className="input w-full mb-2" placeholder="New password" />
+                <button onClick={() => showToast(t('successState'), 'success')} className="btn-primary w-full text-sm">{t('save')}</button>
               </div>
               <div className="card p-4">
                 <h3 className="font-bold text-primary-700 mb-3">{t('twoFactor')}</h3>
@@ -350,14 +362,14 @@ export function AccountPage() {
                 <div className="space-y-2">
                   <div className="flex items-center gap-3 p-2 rounded-lg bg-sand-50">
                     <Smartphone className="w-5 h-5 text-primary-400" />
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-primary-700">iPhone 14 Pro</p>
                       <p className="text-xs text-primary-400">Khartoum · Active now</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-2 rounded-lg bg-sand-50">
                     <Laptop className="w-5 h-5 text-primary-400" />
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-primary-700">MacBook Pro</p>
                       <p className="text-xs text-primary-400">Khartoum · 2h ago</p>
                     </div>
@@ -369,11 +381,11 @@ export function AccountPage() {
           )}
 
           {tabId === 'settings' && (
-            <div className="max-w-2xl space-y-4">
+            <div className="max-w-2xl space-y-4 w-full">
               <h1 className="text-xl font-bold text-primary-800">{t('settings')}</h1>
               <div className="card p-4">
                 <h3 className="font-bold text-primary-700 mb-3">{t('languageSetting')}</h3>
-                <Link to="/" className="btn-secondary text-sm">{t('language')}</Link>
+                <Link to="/" className="btn-secondary text-sm w-full">{t('language')}</Link>
               </div>
               <div className="card p-4">
                 <h3 className="font-bold text-primary-700 mb-3">{t('dataSaver')}</h3>
@@ -398,11 +410,11 @@ export function AccountPage() {
               </div>
               <div className="card p-4">
                 <h3 className="font-bold text-primary-700 mb-3">{t('accountDeletion')}</h3>
-                <button onClick={() => setShowDeleteModal(true)} className="btn-danger text-sm"><Trash2 className="w-4 h-4" />{t('accountDeletion')}</button>
+                <button onClick={() => setShowDeleteModal(true)} className="btn-danger text-sm w-full"><Trash2 className="w-4 h-4" />{t('accountDeletion')}</button>
               </div>
               <div className="card p-4">
                 <h3 className="font-bold text-primary-700 mb-3">{t('dataExport')}</h3>
-                <button onClick={() => setShowExportModal(true)} className="btn-secondary text-sm"><Download className="w-4 h-4" />{t('dataExport')}</button>
+                <button onClick={() => setShowExportModal(true)} className="btn-secondary text-sm w-full"><Download className="w-4 h-4" />{t('dataExport')}</button>
               </div>
             </div>
           )}

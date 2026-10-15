@@ -735,6 +735,27 @@ export const translations = {
     removeFavorite: 'إزالة من المفضلة',
     addCompare: 'إضافة للمقارنة',
     removeCompare: 'إزالة من المقارنة',
+    
+    // AuthGateSheet keys
+    signInToContinue: 'تسجيل الدخول للمتابعة',
+    toUseFeature: 'لاستخدام هذه الميزة',
+    continueGoogle: 'متابعة مع جوجل',
+    continueFacebook: 'متابعة مع فيسبوك',
+    continueApple: 'متابعة مع أبل',
+    continueEmail: 'متابعة مع البريد الإلكتروني',
+    
+    // MediaUploader keys
+    dragPhotos: 'اسحب الصور هنا للرفع',
+    selectPhotos: 'اختر الصور',
+    maxPhotos: 'الحد الأقصى 10 صور',
+    setCoverPhoto: 'تعيين كصورة غلاف',
+    noPhotosAdded: 'لم يتم إضافة صور بعد',
+    
+    // DynamicForm keys
+    requiredFieldsMissing: 'يرجى ملء جميع الحقول المطلوبة',
+    
+    // AuthGateSheet keys (continued)
+    secureTransaction: 'معلوماتك آمنة ومشفرة',
   },
   en: {
     brandName: 'MARBOU',
@@ -1436,6 +1457,27 @@ export const translations = {
     removeFavorite: 'Remove from Favorites',
     addCompare: 'Add to Compare',
     removeCompare: 'Remove from Compare',
+    
+    // AuthGateSheet keys
+    signInToContinue: 'Sign In to Continue',
+    toUseFeature: 'To use this feature',
+    continueGoogle: 'Continue with Google',
+    continueFacebook: 'Continue with Facebook',
+    continueApple: 'Continue with Apple',
+    continueEmail: 'Continue with Email',
+    
+    // MediaUploader keys
+    dragPhotos: 'Drag photos here to upload',
+    selectPhotos: 'Select Photos',
+    maxPhotos: 'Max 10 photos',
+    setCoverPhoto: 'Set as cover photo',
+    noPhotosAdded: 'No photos added yet',
+    
+    // DynamicForm keys
+    requiredFieldsMissing: 'Please fill in all required fields',
+    
+    // AuthGateSheet keys (continued)
+    secureTransaction: 'Your information is secure and encrypted',
   },
 } as const;
 

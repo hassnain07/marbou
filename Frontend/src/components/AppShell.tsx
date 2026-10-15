@@ -3,6 +3,7 @@ import { useI18n } from '@/i18n/I18nContext';
 import { useApp } from '@/context/AppContext';
 import { Link, useRouter } from '@/router/Router';
 import { categories, sudanCities } from '@/data/mockData';
+import { Footer } from '@/components/Footer';
 import {
   Search, MapPin, Bell, MessageSquare, User, Plus, Home, Menu, X,
   Globe, ChevronDown, Store, Shield, ShoppingBag, Settings, Wifi, WifiOff, Gauge,
@@ -220,39 +221,61 @@ export function Header() {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-sand-100 shadow-sm">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4">
-        <div className="flex items-center gap-2 sm:gap-4 h-14 sm:h-16">
+    <header className="sticky top-0 z-30 bg-white border-b border-sand-100 shadow-sm overflow-hidden">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 h-14 sm:h-16 overflow-x-hidden">
+          {/* Logo - always visible */}
           <Logo />
+          
+          {/* Location selector - desktop only */}
           <div className="hidden md:block"><LocationSelector /></div>
-          <CategoryMenu />
-          <form
-            onSubmit={(e) => { e.preventDefault(); navigate(`/search?q=${encodeURIComponent(searchQuery)}`); }}
-            className="flex-1 max-w-xl"
-          >
-            <div className="relative">
+          
+          {/* Category menu - hidden on lg */}
+          <div className="hidden sm:block lg:hidden"><CategoryMenu /></div>
+          <div className="hidden lg:block"><CategoryMenu /></div>
+          
+          {/* Search - desktop, icon only on mobile */}
+          <div className="md:flex-1 md:max-w-xl hidden md:block">
+            <form
+              onSubmit={(e) => { e.preventDefault(); navigate(`/search?q=${encodeURIComponent(searchQuery)}`); }}
+              className="relative"
+            >
               <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-300" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={t('searchPlaceholder')}
-                className="input ps-10 pe-3 py-2 text-sm"
+                className="input ps-10 pe-3 py-2 text-sm w-full"
               />
-            </div>
-          </form>
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-            <LangSwitch />
-            <Link to="/messages" className="relative p-2 rounded-lg text-primary-500 hover:bg-primary-50 transition-colors">
-              <MessageSquare className="w-5 h-5" />
-              <span className="absolute top-1 end-1 w-2 h-2 bg-accent-500 rounded-full" />
-            </Link>
+            </form>
+          </div>
+          
+          {/* Right side actions */}
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0 md:ml-auto">
+            {/* Search icon on mobile */}
+            <button
+              onClick={() => navigate('/search')}
+              className="md:hidden p-2 rounded-lg text-primary-500 hover:bg-primary-50 transition-colors"
+              aria-label={t('search')}
+            >
+              <Search className="w-5 h-5" />
+            </button>
+            
+            {/* Notifications */}
             <Link to="/account/notifications" className="relative p-2 rounded-lg text-primary-500 hover:bg-primary-50 transition-colors">
               <Bell className="w-5 h-5" />
               <span className="absolute top-1 end-1 w-2 h-2 bg-error-500 rounded-full" />
             </Link>
+            
+            {/* Language switch */}
+            <div className="hidden sm:block"><LangSwitch /></div>
+            
+            {/* Network & demo role - desktop only */}
             <NetworkStatusControl />
             <DemoRoleSwitcher />
+            
+            {/* Auth buttons - hidden on mobile */}
             <Link to="/login" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-primary-600 hover:bg-primary-50 transition-colors">
               {t('login')}
             </Link>
@@ -281,16 +304,16 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-sand-100 shadow-[0_-2px_8px_rgba(0,0,0,0.06)]">
-      <div className="flex items-center justify-around h-16 px-1">
+    <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-sand-100 shadow-[0_-2px_8px_rgba(0,0,0,0.06)] safe-area-inset-bottom">
+      <div className="flex items-center justify-around h-16 px-1 pb-safe">
         {items.map((item, i) => (
           <button
             key={i}
             onClick={() => navigate(item.to)}
-            className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-colors ${item.active ? 'text-primary-600' : 'text-primary-400'}`}
+            className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-colors ${item.active ? 'text-primary-700' : 'text-primary-400'}`}
           >
             {item.center ? (
-              <div className="w-12 h-12 rounded-full bg-primary-600 text-white flex items-center justify-center shadow-lg -mt-6">
+              <div className="w-12 h-12 rounded-full bg-primary-700 text-white flex items-center justify-center shadow-lg -mt-6 transition-all hover:shadow-xl hover:scale-110">
                 {item.icon}
               </div>
             ) : (
@@ -306,7 +329,7 @@ export function BottomNav() {
         ))}
       </div>
       {compareList.length > 0 && (
-        <div className="absolute -top-14 inset-x-0 bg-primary-600 text-white px-4 py-2 flex items-center justify-between shadow-lg">
+        <div className="absolute -top-14 inset-x-0 bg-primary-700 text-white px-4 py-2 flex items-center justify-between shadow-lg">
           <span className="text-sm">{compareList.length} {t('compare')}</span>
           <button onClick={() => navigate('/compare')} className="text-sm font-bold underline">{t('compareListings')}</button>
         </div>
@@ -320,11 +343,12 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isDashboard = path.startsWith('/business') || path.startsWith('/admin');
 
   return (
-    <div className="min-h-screen bg-sand-50">
+    <div className="min-h-screen bg-sand-50 flex flex-col">
       <Header />
-      <main className={`${isDashboard ? '' : 'max-w-7xl mx-auto px-3 sm:px-4 py-4'} pb-20 md:pb-8`}>
+      <main className={`${isDashboard ? '' : 'max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4'} pb-20 md:pb-8 flex-1`}>
         {children}
       </main>
+      {!isDashboard && <Footer />}
       <BottomNav />
     </div>
   );

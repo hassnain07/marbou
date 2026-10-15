@@ -2,6 +2,14 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 
 export type DemoRole = 'buyer' | 'business' | 'admin';
 export type NetworkState = 'connected' | 'slow' | 'offline';
+export type GatedActionType = 'message' | 'offer' | 'chat' | 'favorite' | null;
+
+export interface FeatureFlags {
+  ENABLE_MONETIZATION: boolean;
+  ENABLE_JOBS: boolean;
+  ENABLE_AUCTIONS: boolean;
+  ENABLE_BARTER: boolean;
+}
 
 interface AppContextValue {
   favorites: string[];
@@ -32,6 +40,11 @@ interface AppContextValue {
   toggleSavedJob: (jobId: string) => void;
   location: { cityId: string; areaId: string };
   setLocation: (v: { cityId: string; areaId: string }) => void;
+  featureFlags: FeatureFlags;
+  setFeatureFlags: (flags: Partial<FeatureFlags>) => void;
+  gatedAction: GatedActionType;
+  showAuthGate: (action: GatedActionType) => void;
+  hideAuthGate: () => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -60,6 +73,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [appliedJobs, setAppliedJobs] = usePersistentState<any[]>('marbou-appliedJobs', []);
   const [savedJobs, setSavedJobs] = usePersistentState<string[]>('marbou-savedJobs', []);
   const [location, setLocation] = usePersistentState<{ cityId: string; areaId: string }>('marbou-location', { cityId: 'khartoum', areaId: 'riyadh' });
+  const [featureFlags, setFeatureFlagsState] = usePersistentState<FeatureFlags>('marbou-flags', {
+    ENABLE_MONETIZATION: true,
+    ENABLE_JOBS: true,
+    ENABLE_AUCTIONS: false,
+    ENABLE_BARTER: false,
+  });
+  const [gatedAction, setGatedAction] = useState<GatedActionType>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
@@ -108,6 +128,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setSavedJobs((prev) => (prev.includes(jobId) ? prev.filter((j) => j !== jobId) : [...prev, jobId]));
   };
 
+  const setFeatureFlags = (flags: Partial<FeatureFlags>) => {
+    setFeatureFlagsState((prev) => ({ ...prev, ...flags }));
+  };
+
+  const showAuthGate = (action: GatedActionType) => {
+    setGatedAction(action);
+  };
+
+  const hideAuthGate = () => {
+    setGatedAction(null);
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -123,6 +155,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         appliedJobs, applyToJob,
         savedJobs, toggleSavedJob,
         location, setLocation,
+        featureFlags, setFeatureFlags,
+        gatedAction, showAuthGate, hideAuthGate,
       }}
     >
       {children}

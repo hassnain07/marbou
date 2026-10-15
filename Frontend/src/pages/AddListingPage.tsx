@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useI18n } from '@/i18n/I18nContext';
 import { useApp } from '@/context/AppContext';
 import { useRouter } from '@/router/Router';
@@ -23,6 +23,30 @@ const INTENTS = [
 
 const DRAFT_KEY = 'marbou-addlisting-draft';
 
+// Simple mock translation function
+const getSimpleTranslation = (text: string, toArabic: boolean): string => {
+  if (!text) return '';
+  
+  const englishToArabic: Record<string, string> = {
+    'car': 'سيارة', 'house': 'منزل', 'phone': 'هاتف', 'laptop': 'كمبيوتر',
+    'apartment': 'شقة', 'villa': 'فيلا', 'land': 'أرض', 'office': 'مكتب',
+    'shop': 'محل', 'garage': 'كراج', 'truck': 'شاحنة', 'motorcycle': 'دراجة',
+    'furniture': 'أثاث', 'sofa': 'أريكة', 'table': 'طاولة', 'chair': 'كرسي',
+  };
+
+  if (toArabic) {
+    const words = text.toLowerCase().split(' ');
+    const translated = words.map(w => englishToArabic[w] || w).join(' ');
+    return translated;
+  } else {
+    // Reverse lookup
+    const arabicToEnglish = Object.fromEntries(Object.entries(englishToArabic).map(([k, v]) => [v, k]));
+    const words = text.split(' ');
+    const translated = words.map(w => arabicToEnglish[w] || w).join(' ');
+    return translated;
+  }
+};
+
 export function AddListingPage() {
   const { t, lang, formatPrice } = useI18n();
   const { navigate } = useRouter();
@@ -45,6 +69,12 @@ export function AddListingPage() {
   const [specs, setSpecs] = useState<Record<string, string>>({});
   const [showPreview, setShowPreview] = useState(false);
   const [syncState, setSyncState] = useState<'savedLocally' | 'waiting' | 'uploading' | 'saved' | 'retry'>('savedLocally');
+  
+  // Track auto-translation state
+  const [titleAutoTranslated, setTitleAutoTranslated] = useState(false);
+  const [titleArAutoTranslated, setTitleArAutoTranslated] = useState(false);
+  const titleDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  const titleArDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load draft
   useEffect(() => {
@@ -70,6 +100,49 @@ export function AddListingPage() {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
     setSyncState(networkState === 'offline' ? 'waiting' : 'savedLocally');
   }, [step, intent, category, subcategory, photos, coverIndex, price, negotiable, city, area, title, titleAr, description, specs, networkState]);
+
+  // Handle title (English) auto-translate to Arabic
+  const handleTitleChange = (value: string) => {
+    setTitle(value);
+    
+    // Clear existing timeout
+    if (titleDebounceRef.current) clearTimeout(titleDebounceRef.current);
+    
+    // Set new debounced translation
+    titleDebounceRef.current = setTimeout(() => {
+      if (value && (titleAr === '' || titleArAutoTranslated)) {
+        const translated = getSimpleTranslation(value, true);
+        setTitleAr(translated);
+        setTitleArAutoTranslated(true);
+      }
+    }, 300);
+  };
+
+  // Handle title (Arabic) auto-translate to English
+  const handleTitleArChange = (value: string) => {
+    setTitleAr(value);
+    
+    // Clear existing timeout
+    if (titleArDebounceRef.current) clearTimeout(titleArDebounceRef.current);
+    
+    // Set new debounced translation
+    titleArDebounceRef.current = setTimeout(() => {
+      if (value && (title === '' || titleAutoTranslated)) {
+        const translated = getSimpleTranslation(value, false);
+        setTitle(translated);
+        setTitleAutoTranslated(true);
+      }
+    }, 300);
+  };
+
+  // Allow manual editing to break auto-translation
+  const handleTitleManualEdit = () => {
+    setTitleAutoTranslated(false);
+  };
+
+  const handleTitleArManualEdit = () => {
+    setTitleArAutoTranslated(false);
+  };
 
   const activeCategory = categories.find((c) => c.id === category);
 
@@ -256,11 +329,24 @@ export function AddListingPage() {
             <h2 className="text-lg font-bold text-primary-800">{t('enterDetails')}</h2>
             <div>
               <label className="text-sm font-medium text-primary-600 mb-1.5 block">{t('title')} ({lang === 'ar' ? 'عربي' : 'English'})</label>
-              <input value={title} onChange={(e) => setTitle(e.target.value)} className="input" placeholder={lang === 'ar' ? 'عنوان الإعلان' : 'Listing title'} />
+              <input 
+                value={title} 
+                onChange={(e) => { handleTitleChange(e.target.value); handleTitleManualEdit(); }}
+                className="input" 
+                placeholder={lang === 'ar' ? 'عنوان الإعلان' : 'Listing title'} 
+              />
+              {titleAutoTranslated && <p className="text-[11px] text-primary-300 mt-1">{lang === 'ar' ? '(مترجم تلقائياً)' : '(Auto-translated)'}</p>}
             </div>
             <div>
               <label className="text-sm font-medium text-primary-600 mb-1.5 block">{t('title')} ({lang === 'ar' ? 'إنجليزي' : 'Arabic'})</label>
-              <input value={titleAr} onChange={(e) => setTitleAr(e.target.value)} className="input" placeholder={lang === 'ar' ? 'Listing title' : 'عنوان الإعلان'} dir={lang === 'ar' ? 'ltr' : 'rtl'} />
+              <input 
+                value={titleAr} 
+                onChange={(e) => { handleTitleArChange(e.target.value); handleTitleArManualEdit(); }}
+                className="input" 
+                placeholder={lang === 'ar' ? 'Listing title' : 'عنوان الإعلان'} 
+                dir={lang === 'ar' ? 'ltr' : 'rtl'} 
+              />
+              {titleArAutoTranslated && <p className="text-[11px] text-primary-300 mt-1">{lang === 'ar' ? '(مترجم تلقائياً)' : '(Auto-translated)'}</p>}
             </div>
             {fields.map((field) => (
               <div key={field.key}>

@@ -1,25 +1,47 @@
 {
   "id": "FEAT-002",
   "type": "feat",
-  "description": "Add global accessibility and styling utilities to index.css: @media (prefers-reduced-motion: reduce) rule to disable animations for users who prefer reduced motion, confirm .no-scrollbar utility class exists, verify Google Fonts imports (Cairo, Noto Kufi Arabic, Inter) are loaded correctly. These utilities support accessibility requirements and visual consistency across the app.",
-  "status": "completed",
+  "description": "Complete listing detail page (DET-01, DET-02) with pixel-perfect gallery, price badge, specs table, description, map placeholder, seller card with trust badges, similar listings carousel, contact/chat/offer/report/share/favorite buttons, breadcrumb, status ribbon overlays, and fullscreen gallery modal with zoom, swipe, video placeholder, and image counter.",
+  "status": "pending",
   "steps": [
-    "Add @media (prefers-reduced-motion: reduce) rule to Frontend/src/index.css after @layer base section, setting animation, transition to none for all elements",
-    "Verify .no-scrollbar utility class exists in index.css (should already be present from exploration); if missing, add webkit and standard scrollbar hiding",
-    "Verify @import url for Google Fonts (Cairo, Noto Kufi Arabic, Inter) is present at top of index.css with correct weights (400, 500, 600, 700) and display=swap"
+    "1. Enhance ListingDetailPage.tsx image gallery: add status ribbon overlay (Sold/Rented/Expired) using StatusBadge + absolute positioning, ensure ribbon appears on cover image when present.",
+    "2. Add DET-02 fullscreen lightbox/modal component: clicking image count (e.g., '3/8') opens fullscreen modal with active image, zoom to 150%/200% buttons (or pinch on mobile), left/right arrows for swipe (or swipe gesture), video play button placeholder (Video icon, no real video support), image counter display, close button (X), keyboard arrow key support.",
+    "3. Enhance breadcrumb: add proper navigation via router (Home > Category > Title), clickable links, handle long titles with line-clamp.",
+    "4. Complete specs table: 2-column grid on desktop, single column on mobile; key/value pairs from listing.specs with EAV structure; handle missing specs gracefully.",
+    "5. Add market price insights section: show lowest/average/highest price range with visual indicator (gradient bar with marker at current price); use formatPrice utility; add disclaimer text.",
+    "6. Complete location section: replace placeholder grid with styled mock map (radial gradient + marker icon + location label overlay), non-interactive.",
+    "7. Complete seller card (sidebar): show seller avatar, name (clickable to /seller/:name), rating stars + numeric rating, member-since date, verified badge if applicable, 'View Details' button to seller profile, 'View Business' button if listing.businessId exists, action buttons (Call, Message, WhatsApp), Block button (mock).",
+    "8. Add similar listings carousel (horizontal scroll, 5 max): filter by category, exclude self, slice first 5.",
+    "9. Add recently viewed carousel (from localStorage 'marbou-recent'): fetch and render like similar listings.",
+    "10. Add reviews section: show business rating + count if business exists, review list with avatar + author + rating + text + date, reply (if exists) indented; 'Write Review' button opens modal; modal has star picker (1-5), textarea, submit button.",
+    "11. Add safety tips section (warning-50 bg): bullet points on meeting, inspecting, paying.",
+    "12. Ensure all sections support AR/EN: listing title, description, specs keys/values, seller name, breadcrumb labels, button text.",
+    "13. Add loading skeleton for images; empty state if no images.",
+    "14. Mobile sticky footer: Contact bar fixed to bottom-16 (above nav) with Call + Message buttons on md:hidden."
   ],
   "acceptance_criteria": [
-    "@media (prefers-reduced-motion: reduce) rule is present and disables all animations and transitions",
-    ".no-scrollbar class hides scrollbars on webkit and standard browsers",
-    "All three Google Fonts (Cairo, Noto Kufi Arabic, Inter) load successfully",
-    "Browser DevTools: when prefers-reduced-motion is enabled, animations should not play",
-    "npm run build completes without CSS warnings or errors"
+    "Fullscreen lightbox opens on image count click; displays current image, arrows navigate, counter shows '3/8', close button (X) returns to detail page.",
+    "Status ribbons (Sold/Rented/Expired) appear on cover image and detail header.",
+    "Specs table shows 2 columns on desktop, 1 on mobile; all EAV attributes render with keys/values.",
+    "Market price insights section displays lowest/average/highest prices with gradient range bar and marker.",
+    "Seller card shows all info: avatar, name (clickable), rating + count, member since, verified badge, View Details + View Business buttons, Call/Message/WhatsApp/Block buttons.",
+    "Similar listings carousel scrolls horizontally, shows 5 max, each a ListingCard; no scroll on mobile if < 3 items.",
+    "Recently viewed carousel renders same way.",
+    "Reviews section shows business rating (if exists), review list with replies, Write Review button opens modal with star picker and textarea.",
+    "Safety tips section visible with icon and bullet points.",
+    "AR/EN switching: all text translates, layout mirrors (text-align, flex direction, arrow icon direction).",
+    "Breadcrumb navigates via router; long titles truncate with ellipsis.",
+    "Mobile contact bar sticks to bottom; desktop shows in sidebar."
   ],
   "verification": [
-    "npm run build — should complete with no CSS errors",
-    "Inspect source: verify @media rule and .no-scrollbar in compiled CSS",
-    "Browser DevTools > Rendering > prefers-reduced-motion: set to 'reduce', reload page, verify animations are disabled"
+    "npm run typecheck — no errors in ListingDetailPage.",
+    "npm run dev — visit /listing/lst-001 (or any valid ID from mockData). Confirm full detail page loads, image gallery displays, status ribbon visible, click image counter, fullscreen modal opens, arrow keys navigate, close button works.",
+    "Click breadcrumb links; confirm navigation works. Switch to AR; confirm RTL layout and Arabic text.",
+    "Scroll to seller card; click 'View Details' → /seller/:name, 'View Business' → /business/:id.",
+    "Scroll through specs table, market price section, reviews. Click 'Write Review', fill form, submit; confirm review appears in list.",
+    "On mobile, verify sticky contact bar at bottom; call/message buttons functional (show toast).",
+    "Observe loading skeleton while images load; test with invalid listing ID, confirm empty state with 'No Results' message."
   ],
   "blocked_reason": null,
-  "findings": "✅ All requirements met: (1) Added @media (prefers-reduced-motion: reduce) rule to index.css after @layer base section, disabling animations and transitions with !important. (2) Verified .no-scrollbar class exists with webkit and standard scrollbar hiding (-ms-overflow-style: none, scrollbar-width: none). (3) Verified Google Fonts imports at top of index.css: Cairo, Noto Kufi Arabic, Inter all loaded with correct weights (400, 500, 600, 700) and display=swap parameter. Build completed successfully without CSS errors."
+  "findings": ""
 }

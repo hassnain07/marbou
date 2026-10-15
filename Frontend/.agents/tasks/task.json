@@ -1,7 +1,13 @@
 {
-  "task_id": "task-phase1-frontend-design",
-  "task_description": "MARBOU Frontend Phase 1: Design tokens, form components, marketplace components, and page optimization for pixel-perfect, scalable UI supporting thousands of users.",
+  "task_id": "task-phase2-implementation",
+  "task_description": "Implement all Phase 2 screens and components: Auth Flow (7 screens), Listing Detail (gallery + modal), Add/Edit Listing Wizard enhancements, User Profile ecosystem (my listings, favorites, saved searches, offers), Messaging, Jobs flow, Business profiles, and global polish (auth gate sheet, empty states, confirm dialogs, feature flags, offline support)",
   "status": "pending",
-  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004", "FEAT-005", "FEAT-006", "FEAT-007"],
+  "feature_order": [
+    "FEAT-001",
+    "FEAT-002",
+    "FEAT-003",
+    "FEAT-004",
+    "FEAT-005"
+  ],
   "blocked_reason": null
 }

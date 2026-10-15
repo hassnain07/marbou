@@ -24,6 +24,11 @@ const AdminDashboard = lazy(() => import('@/pages/AdminDashboard').then((m) => (
 const SellerProfilePage = lazy(() => import('@/pages/SellerProfilePage').then((m) => ({ default: m.SellerProfilePage })));
 const RegisterPage = lazy(() => import('@/pages/AuthPages').then((m) => ({ default: m.RegisterPage })));
 const LoginPage = lazy(() => import('@/pages/AuthPages').then((m) => ({ default: m.LoginPage })));
+const SignInHubPage = lazy(() => import('@/pages/AuthPages').then((m) => ({ default: m.SignInHubPage })));
+const OTPPage = lazy(() => import('@/pages/AuthPages').then((m) => ({ default: m.OTPPage })));
+const ForgotPasswordPage = lazy(() => import('@/pages/AuthPages').then((m) => ({ default: m.ForgotPasswordPage })));
+const ResetPasswordPage = lazy(() => import('@/pages/AuthPages').then((m) => ({ default: m.ResetPasswordPage })));
+const AddEmailPage = lazy(() => import('@/pages/AuthPages').then((m) => ({ default: m.AddEmailPage })));
 const HelpPage = lazy(() => import('@/pages/HelpPage').then((m) => ({ default: m.HelpPage })));
 const ComingSoonPage = lazy(() => import('@/pages/HelpPage').then((m) => ({ default: m.ComingSoonPage })));
 
@@ -79,7 +84,7 @@ function Routes() {
   const parts = path.split('?')[0].split('/').filter(Boolean);
   const root = parts[0] || '';
   const isDashboard = root === 'business' || root === 'admin';
-  const isAuth = root === 'register' || root === 'login';
+  const isAuth = root === 'register' || root === 'login' || root === 'signin' || root === 'forgot-password' || root === 'reset-password' || root === 'add-email';
 
   const renderPage = () => {
     if (!root || root === 'home') return <Suspense fallback={<HomePageSkeleton />}><HomePage /></Suspense>;
@@ -99,8 +104,18 @@ function Routes() {
     if (root === 'business' && parts[1] && parts[1].startsWith('biz-')) return <Suspense fallback={<LoadingSkeleton />}><BusinessProfilePage /></Suspense>;
     if (root === 'business') return <Suspense fallback={<LoadingSkeleton />}><BusinessDashboard /></Suspense>;
     if (root === 'admin') return <Suspense fallback={<LoadingSkeleton />}><AdminDashboard /></Suspense>;
+    
+    // Auth routes - FEAT-001
+    if (root === 'signin') return <Suspense fallback={<LoadingSkeleton />}><SignInHubPage /></Suspense>;
     if (root === 'register') return <Suspense fallback={<LoadingSkeleton />}><RegisterPage /></Suspense>;
-    if (root === 'login') return <Suspense fallback={<LoadingSkeleton />}><LoginPage /></Suspense>;
+    if (root === 'login') {
+      if (parts[1] === 'otp') return <Suspense fallback={<LoadingSkeleton />}><OTPPage /></Suspense>;
+      return <Suspense fallback={<LoadingSkeleton />}><LoginPage /></Suspense>;
+    }
+    if (root === 'forgot-password') return <Suspense fallback={<LoadingSkeleton />}><ForgotPasswordPage /></Suspense>;
+    if (root === 'reset-password') return <Suspense fallback={<LoadingSkeleton />}><ResetPasswordPage /></Suspense>;
+    if (root === 'add-email') return <Suspense fallback={<LoadingSkeleton />}><AddEmailPage /></Suspense>;
+    
     if (root === 'seller') return <Suspense fallback={<LoadingSkeleton />}><SellerProfilePage /></Suspense>;
     if (root === 'help') return <Suspense fallback={<LoadingSkeleton />}><HelpPage /></Suspense>;
 

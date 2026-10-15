@@ -1,27 +1,38 @@
 {
   "id": "FEAT-001",
   "type": "feat",
-  "description": "Extend Tailwind config with complete design token system: boxShadow (xs, sm with tinted primary shadows, md, lg, xl), zIndex layers (base 0, sticky 10, floating 20, header 30, overlay 40, modal 50, toast 60), animation keyframes (bounceIn, pulseSlow, shake, successCheck, flipRtl) and animations (bounce-in, pulse-slow, shake, success-check, flip-rtl), borderRadius enhancements (xs 2px, sm 4px). This locks in the visual design language for all subsequent components.",
-  "status": "completed",
+  "description": "Complete authentication flow (AUTH-01 through AUTH-07): Replace AuthPages.tsx stubs with pixel-perfect screens including sign-in hub with social buttons, register form, login form, OTP verification (6-digit code with resend and countdown timer), password reset request/reset screens, and email verification for social users. All screens must support AR/EN, have proper error/validation states, keyboard navigation, and form persistence.",
+  "status": "pending",
   "steps": [
-    "Extend theme.extend.boxShadow in Frontend/tailwind.config.js with 5 shadow layers (xs: primary-950 tinted, sm: primary-950 tinted, md: standard, lg: standard, xl: standard)",
-    "Add theme.extend.zIndex with 7 layers: base (0), sticky (10), floating (20), header (30), overlay (40), modal (50), toast (60)",
-    "Add theme.extend.keyframes with 5 new animations: bounceIn (fade + bounce), pulseSlow (slow pulse), shake (horizontal shake), successCheck (checkmark draw), flipRtl (180deg flip with RTL direction)",
-    "Add theme.extend.animation with 5 new animation classes corresponding to keyframes: bounce-in, pulse-slow, shake, success-check, flip-rtl",
-    "Verify borderRadius extends with xs (2px) and confirm sm (4px) already exists in Tailwind defaults"
+    "1. Enhance AuthPages.tsx with complete AUTH-01 (Sign-in hub with Google/Facebook/Apple buttons, email option, terms link) - add SocialSignIn component inline with brand logo and hero messaging.",
+    "2. Complete AUTH-02 (Register form) - name, email, phone (+249), password confirm, terms checkbox; add account type selector (buyer_seller vs business) with icon; implement business-only fields (businessName, businessCategory dropdown from categories); form validation on submit.",
+    "3. Complete AUTH-03 (Login form) - email, password, forgot password link, remember me checkbox; add show/hide password toggle; Enter key to submit.",
+    "4. Add AUTH-04 (OTP verification modal/page) - 6 input fields for digit entry (auto-focus on digit entry), resend button with 60-sec countdown timer, error message on invalid code.",
+    "5. Add AUTH-05 (Forgot password request) - email input, validation, send reset link button; success message shows email confirmation.",
+    "6. Add AUTH-06 (New password screen) - password + confirm password inputs, password strength meter (0-100%), validation rules display, reset button.",
+    "7. Add AUTH-07 (Add email for social users) - email input, verification code option, submit button; used when social auth returns no email.",
+    "8. Update AuthContext.ts to track auth step (signin / register / login / otp / forgot / reset / add-email) and data (email, code, etc.); mock API call sequence with 500ms delay.",
+    "9. Add i18n translation keys for all auth strings (if missing): signInHub, socialSignIn, createAccount, registerSubtitle, loginSubtitle, otpTitle, resendCode, resetPassword, addEmail, passwordStrength, etc.",
+    "10. Ensure all screens responsive (mobile-first), RTL-safe (flex direction, text-align, icon placement), accessible (form labels, error announcements, autofocus), and have loading states on submit buttons."
   ],
   "acceptance_criteria": [
-    "All 5 boxShadow variants compile and are usable via @apply shadow-xs, shadow-sm, etc.",
-    "All 7 zIndex layers are accessible via z-base, z-sticky, z-floating, z-header, z-overlay, z-modal, z-toast",
-    "All 5 animation keyframes and animations are defined and testable via @apply animate-bounce-in, etc.",
-    "npm run typecheck passes with zero errors",
-    "No console errors or warnings during npm run build"
+    "All 7 auth screens render without errors when navigating /register, /login, or triggering state changes in AuthContext.",
+    "Form validation catches empty fields, invalid emails, password mismatch, and short passwords; displays error messages.",
+    "OTP screen shows 6 input fields, auto-advances focus between fields on digit entry, countdown timer ticks down and re-enables resend button after 60 sec.",
+    "Social buttons (Google/Facebook/Apple) show mock login toast (no real auth backend in Phase 2).",
+    "AR/EN switching preserves form state and renders RTL layout (text-align, flex direction, icon placement corrected).",
+    "localStorage does NOT persist auth forms (security), but remember-me flag in AuthContext is respected.",
+    "Password strength meter updates on input; confirmation field validates match.",
+    "All buttons/inputs have focus states; keyboard Enter submits forms."
   ],
   "verification": [
-    "npm run typecheck — should pass with no errors",
-    "npm run build — should complete successfully",
-    "Inspect compiled CSS: verify shadow, z-index, animation classes are present"
+    "npm run typecheck — no errors in AuthPages.tsx or AuthContext.",
+    "npm run dev — dev server runs. Visit http://localhost:5173/register, fill form, click create account; confirm no unhandled errors and success toast appears. Switch to AR; check RTL layout and Arabic translation.",
+    "Visit /login, enter credentials, press Enter; confirm login succeeds and redirects to /account. Test forgot password link flow.",
+    "Test OTP entry: click resend, observe 60-sec countdown; wait countdown to 0, click resend again; confirm timer resets.",
+    "Test password reset: email → OTP → new password flow with strength meter and validation.",
+    "Test social sign-in buttons; confirm toast message and no JS errors."
   ],
   "blocked_reason": null,
-  "findings": "All steps implemented successfully. Extended boxShadow with 5 variants (xs, sm, md, lg, xl) using primary-950 tinted colors for xs and sm. Added zIndex 7-layer system (base 0 through toast 60). Implemented 5 new keyframes (bounceIn, pulseSlow, shake, successCheck, flipRtl) with corresponding animation classes. Verified borderRadius—Tailwind defaults already provide sm (4px); added xs (2px) to custom config for completeness. npm run typecheck passed with zero errors. npm run build completed successfully with no warnings related to design tokens.",
+  "findings": ""
 }

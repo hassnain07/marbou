@@ -1,39 +1,43 @@
 {
   "id": "FEAT-004",
   "type": "feat",
-  "description": "Create 8 reusable form components in Frontend/src/components/form/ with WCAG AA accessibility, RTL support, and Tailwind design tokens. Components: TextInput (text, email, tel, url, password with validation), TextArea (auto-resize, character count), Select (with keyboard navigation and searchable option), PhoneInput (Sudan +249 prefix, format validation), PriceInput (currency selector, thousand separators, SDG default), DatePicker (native input wrapper), FileUpload (drag-drop, progress, multi-file), and barrel index export.",
-  "status": "completed",
+  "description": "Complete user profile ecosystem (PRF-01, MY-01, MY-02, PRF-20, PRF-03, PRF-04): build account menu with sections (My Listings, Favorites, Saved Searches, My Jobs, My Offers, Settings, Help, Logout), implement My Listings with tabs (Active/Drafts/Expired/Sold/Hidden) and card actions (Edit/Boost/Mark Sold/Delete/Relist), implement Edit Listing wizard (same as Add Listing but pre-filled), implement public seller profile with cover, avatar, rating, member since, trust badges, listings grid, reviews list, and Report button, and complete Favorites and Saved Searches list views.",
+  "status": "pending",
   "steps": [
-    "Create Frontend/src/components/form/TextInput.tsx: component with props (id, name, label, value, onChange, placeholder, error, helperText, disabled, required, type, maxLength, showCount); handle states (default, focus ring-primary-200, error border-error-500, disabled opacity-50); RTL logical padding (ps-); ARIA (aria-invalid, aria-describedby, aria-required); design: rounded-xl, border-sand-200, focus:ring-primary-100",
-    "Create Frontend/src/components/form/TextArea.tsx: same props/states as TextInput plus rows, autoResize; implement onInput listener to auto-adjust height; display character count",
-    "Create Frontend/src/components/form/Select.tsx: props (id, name, label, value, onChange, options, placeholder, error, disabled, required, searchable); RTL arrow flip via scale-x-[-1]; keyboard support (arrows, Enter, Esc); ARIA (role='listbox', aria-selected); render <select> for non-searchable, custom dropdown for searchable",
-    "Create Frontend/src/components/form/PhoneInput.tsx: props (value, onChange, error, label, disabled, required); fixed '+249' prefix in read-only box on start; format on blur (+249 XX XXX XXXX); validate /^(09|01)[0-9]{8}$/; RTL logical layout",
-    "Create Frontend/src/components/form/PriceInput.tsx: props (value, onChange, currency default SDG, onCurrencyChange, min, max, error, label, disabled); thousand separators via toLocaleString; inline currency selector dropdown",
-    "Create Frontend/src/components/form/DatePicker.tsx: props (value ISO string, onChange, label, error, disabled, required, min, max); use native <input type='date'> wrapped with MARBOU styling; add comment about future Hijri support",
-    "Create Frontend/src/components/form/FileUpload.tsx: props (onUpload, maxFiles default 10, maxSizeMB default 5, accept default 'image/*', files UploadFile[], onRemove); define UploadFile type (id, file, preview, progress, error?, status); UI: drag-drop zone + click; per-file: thumbnail, progress bar, error, remove button; drag state: dashed border primary-300, bg-primary-50",
-    "Create Frontend/src/components/form/index.ts: barrel export for all 7 components",
-    "Ensure all components use TypeScript strict, zero 'any', design tokens only, React.memo where appropriate"
+    "1. Refactor AccountPage.tsx menu structure: simplify sidebar to sections (Profile, My Activity, Preferences, Support), keep tab routing via /account/:tab but organize tabs into logical groups for better UX.",
+    "2. Implement PRF-01 (Profile menu): user info card at top (avatar, name, email), sections with clickable rows: My Listings, Favorites, Saved Searches, My Jobs (applications), My Offers, Settings, Help, Logout; icons per section.",
+    "3. Implement MY-01 (My Listings): tab selector (Active/Drafts/Expired/Sold/Hidden); grid of listing cards with status badge + action menu (3-dot icon). Actions: Edit (→ Edit Listing wizard pre-filled), Boost (opens modal with boost duration/cost options), Mark Sold (confirm, update status), Delete (confirm), Relist (copy draft). Empty state if no listings in tab.",
+    "4. Implement MY-02 (Edit Listing): reuse AddListingPage wizard but pre-populate all fields from listing; routes to /edit-listing/:id; all 7 steps pre-filled; save button updates listing in myListings; 'Cancel' returns to /account/my-listings.",
+    "5. Create SellerProfilePage (PRF-20): header with cover image (or gradient), seller avatar (larger, centered), seller name, rating stars + count, member since year, trust badges (Verified Seller, Fast Responder, etc.), follow button (toggle), description (if available), sections: Listings (grid), Reviews (reviews from sampleReviews filtered by seller), Staff (mocked list with avatars + names), Report button (modal with reason select).",
+    "6. Complete FavoritesPage (PRF-03): show ListingCardGrid of favorite listings; each card shows price-at-save vs current price indicator (green if price down, red if up); status badges (Sold/Rented overlay); empty state with 'Browse Listings' link.",
+    "7. Complete SavedSearchesPage (PRF-04): show list of saved searches (title, filter summary, alert frequency badge, date saved, delete button); each row is clickable to re-run that search; empty state with 'Start Searching' link; add logic to save new searches (from AccountPage or SearchPage).",
+    "8. Add mock data for My Listings: add myListings array to mockData.ts with 5-10 listings in various statuses (active, draft, expired, sold, hidden); each has full details for edit view.",
+    "9. Add mock data for Saved Searches: add savedSearches array with 3-5 searches (e.g., 'Toyota Cars in Khartoum', 'Apartments Under 1M'); each has filter object and date.",
+    "10. Implement Boost modal (MY-01): show boost options (7-day, 14-day, 30-day) with costs; select one, click 'Boost', confirm success toast and update listing display.",
+    "11. Implement Edit confirmation: warn user if unsaved changes before navigating away.",
+    "12. Ensure all screens support AR/EN, responsive (mobile-first), loading skeletons, error states (if myListings empty)."
   ],
   "acceptance_criteria": [
-    "All 7 form components created and compile without errors",
-    "TextInput supports type, maxLength, showCount, validation, error states, disabled state, ARIA labels",
-    "TextArea auto-resizes, displays character count, supports same states as TextInput",
-    "Select supports keyboard navigation (arrows, Enter, Esc), searchable option, ARIA role and attributes",
-    "PhoneInput validates Sudanese mobile (+249 format), shows fixed prefix, formats on blur",
-    "PriceInput shows thousand separators, supports currency selector, defaults to SDG",
-    "DatePicker uses native input type='date', wraps with Tailwind styling",
-    "FileUpload supports drag-drop, multi-file, progress tracking, per-file error handling",
-    "All components have proper RTL logical padding/placement (ps-, pe-, start, end)",
-    "4.5:1 contrast ratio maintained for all text",
-    "44px minimum touch target size for buttons/inputs",
-    "npm run typecheck passes with zero errors"
+    "AccountPage sidebar shows sections organized by category (Profile, My Activity, Preferences, Support).",
+    "My Listings tab shows grid of listings, tabs (Active/Drafts/Expired/Sold/Hidden) filter correctly, 3-dot action menu works (Edit, Boost, Mark Sold, Delete, Relist).",
+    "Edit Listing page loads pre-filled form, wizard steps 0-6 show saved data, publish button updates listing, cancel returns to /account/my-listings.",
+    "Seller profile page shows cover image, avatar, name, rating stars + count, member since, badges, Follow button (toggles), Listings section with grid, Reviews section, Staff list, Report button (opens modal).",
+    "Favorites page shows ListingCardGrid, price-at-save indicator (color coded), status badges, empty state with link to search.",
+    "Saved Searches page shows list of searches, each clickable to re-run, alert frequency badge, delete button, empty state with link to start searching.",
+    "Boost modal shows 3 duration options, click one, confirm success toast.",
+    "All pages AR/EN responsive, loading states, proper error handling."
   ],
   "verification": [
-    "npm run typecheck — should pass",
-    "Import all components: verify imports work via 'import { TextInput, Select, ... } from @/components/form'",
-    "npm run build — includes all form components",
-    "Manually render each component in dev server and verify styling, states, RTL behavior"
+    "npm run typecheck — no errors in AccountPage, SellerProfilePage, Edit Listing components.",
+    "npm run dev — navigate to /account; sidebar shows sections, My Listings tab active by default.",
+    "Click 'My Listings' tab → grid shows 5+ listings with status badges, 3-dot menu on each card, click Edit → pre-filled wizard opens, fill in change, publish → update reflected, cancel → back to /account.",
+    "Click 'Favorites' → shows favorite listings with price indicator, empty state if none.",
+    "Click 'Saved Searches' → shows saved searches list, delete button works, empty state if none.",
+    "Navigate to /seller/Demo%20User (or any seller name) → profile page shows cover, avatar, rating, listings grid, reviews, staff, report button.",
+    "Click 'Follow' button → toggles on/off, state persists on refresh (localStorage).",
+    "On My Listings, click 3-dot → Boost → modal shows options → select one → success toast.",
+    "Switch AR → all text translates, layout mirrors (flex, text-align, avatar alignment)."
   ],
   "blocked_reason": null,
-  "findings": "✓ All 8 form components created with WCAG AA accessibility\n✓ Full RTL/LTR support via logical CSS (ps-, pe-, start, end)\n✓ Zero 'any' types - strict TypeScript throughout\n✓ All components use design tokens from tailwind.config.js\n✓ TextInput: supports all 5 types, maxLength, showCount, validation states, ARIA labels\n✓ TextArea: auto-resize on input, character count display, same accessibility as TextInput\n✓ Select: keyboard navigation (arrows, Enter, Esc), searchable variant, native <select> for non-searchable\n✓ PhoneInput: Sudan +249 format, validates /^(09|01)[0-9]{8}$/, formats on blur, read-only prefix\n✓ PriceInput: thousand separators, 4 currency options (SDG default), inline currency selector\n✓ DatePicker: native input type='date' with Tailwind styling, Hijri support noted for future\n✓ FileUpload: drag-drop, multi-file (max 10), per-file progress/status, preview thumbnails\n✓ Barrel export in index.ts with SelectOption interface exported\n✓ npm run typecheck: ✓ 0 errors\n✓ npm run build: ✓ 1589 modules, 462.81 kB gzipped\n✓ Touch targets: ≥44px minimum (py-2.5 = 10px + 2px border = 32px base, expanded via padding)\n✓ Contrast ratios: 4.5:1+ via primary-900 text on light backgrounds, dedicated error-600 for errors\n✓ Component memoization: React.memo applied where appropriate for performance\n✓ Ready for large-scale use: optimized, professional, production-ready"
+  "findings": ""
 }

@@ -307,6 +307,12 @@ export function BottomNav() {
 
   return (
     <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-sand-100 shadow-[0_-2px_8px_rgba(0,0,0,0.06)] safe-area-inset-bottom">
+      {compareList.length > 0 && (
+        <div className="bg-primary-700 text-white px-4 py-2 flex items-center justify-between shadow-sm border-b border-primary-800">
+          <span className="text-sm">{compareList.length} {t('compare')}</span>
+          <button onClick={() => navigate('/compare')} className="text-sm font-bold underline">{t('compareListings')}</button>
+        </div>
+      )}
       <div className="flex items-center justify-around h-16 px-1 pb-safe">
         {items.map((item, i) => (
           <button
@@ -330,12 +336,6 @@ export function BottomNav() {
           </button>
         ))}
       </div>
-      {compareList.length > 0 && (
-        <div className="absolute -top-14 inset-x-0 bg-primary-700 text-white px-4 py-2 flex items-center justify-between shadow-lg">
-          <span className="text-sm">{compareList.length} {t('compare')}</span>
-          <button onClick={() => navigate('/compare')} className="text-sm font-bold underline">{t('compareListings')}</button>
-        </div>
-      )}
     </nav>
   );
 }

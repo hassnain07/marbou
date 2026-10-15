@@ -94,6 +94,18 @@ export function AddListingPage() {
     }
   }, []);
 
+  // Cleanup debounce timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (titleDebounceRef.current) {
+        clearTimeout(titleDebounceRef.current);
+      }
+      if (titleArDebounceRef.current) {
+        clearTimeout(titleArDebounceRef.current);
+      }
+    };
+  }, []);
+
   // Save draft
   useEffect(() => {
     const draft = { step, intent, category, subcategory, photos, coverIndex, price, negotiable, city, area, title, titleAr, description, specs };
@@ -103,44 +115,56 @@ export function AddListingPage() {
 
   // Handle title (English) auto-translate to Arabic
   const handleTitleChange = (value: string) => {
-    // If user edits an auto-translated field, break the auto-link
-    if (titleAutoTranslated && value !== title) {
+    setTitle(value);
+    
+    // If field is cleared, reset the auto-translated flag
+    if (value === '') {
+      setTitleAutoTranslated(false);
+    } else if (titleAutoTranslated && value !== title) {
+      // If user edits an auto-translated field, break the auto-link
       setTitleAutoTranslated(false);
     }
-    setTitle(value);
     
     // Clear existing timeout
     if (titleDebounceRef.current) clearTimeout(titleDebounceRef.current);
     
     // Set new debounced translation
-    titleDebounceRef.current = setTimeout(() => {
-      if (value && (titleAr === '' || titleArAutoTranslated)) {
-        const translated = getSimpleTranslation(value, true);
-        setTitleAr(translated);
-        setTitleArAutoTranslated(true);
-      }
-    }, 300);
+    if (value) {
+      titleDebounceRef.current = setTimeout(() => {
+        if (titleAr === '' || titleArAutoTranslated) {
+          const translated = getSimpleTranslation(value, true);
+          setTitleAr(translated);
+          setTitleArAutoTranslated(true);
+        }
+      }, 300);
+    }
   };
 
   // Handle title (Arabic) auto-translate to English
   const handleTitleArChange = (value: string) => {
-    // If user edits an auto-translated field, break the auto-link
-    if (titleArAutoTranslated && value !== titleAr) {
+    setTitleAr(value);
+    
+    // If field is cleared, reset the auto-translated flag
+    if (value === '') {
+      setTitleArAutoTranslated(false);
+    } else if (titleArAutoTranslated && value !== titleAr) {
+      // If user edits an auto-translated field, break the auto-link
       setTitleArAutoTranslated(false);
     }
-    setTitleAr(value);
     
     // Clear existing timeout
     if (titleArDebounceRef.current) clearTimeout(titleArDebounceRef.current);
     
     // Set new debounced translation
-    titleArDebounceRef.current = setTimeout(() => {
-      if (value && (title === '' || titleAutoTranslated)) {
-        const translated = getSimpleTranslation(value, false);
-        setTitle(translated);
-        setTitleAutoTranslated(true);
-      }
-    }, 300);
+    if (value) {
+      titleArDebounceRef.current = setTimeout(() => {
+        if (title === '' || titleAutoTranslated) {
+          const translated = getSimpleTranslation(value, false);
+          setTitle(translated);
+          setTitleAutoTranslated(true);
+        }
+      }, 300);
+    }
   };
 
   const activeCategory = categories.find((c) => c.id === category);

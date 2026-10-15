@@ -69,8 +69,8 @@ function ListingCardComponent({ listing, layout = 'grid', loading = false, dataS
   if (layout === 'list') {
     return (
       <Link to={`/listing/${listing.id}`} className="block">
-        <div className="card overflow-hidden hover:shadow-md transition-all flex flex-row group">
-          <div className="relative w-40 sm:w-56 h-30 sm:h-42 shrink-0 bg-sand-100 overflow-hidden">
+        <div className="card overflow-hidden hover:shadow-md transition-all flex flex-row group min-w-0">
+          <div className="relative flex-shrink-0 bg-sand-100 overflow-hidden w-32 h-24 sm:w-40 sm:h-30 md:w-56 md:h-42">
             {listing.images.length > 0 ? (
               <img
                 src={listing.images[0]}
@@ -95,9 +95,9 @@ function ListingCardComponent({ listing, layout = 'grid', loading = false, dataS
               </div>
             )}
           </div>
-          <div className="flex-1 p-4 flex flex-col">
+          <div className="flex-1 p-3 sm:p-4 flex flex-col min-w-0">
             <div className="flex items-start justify-between gap-2">
-              <h3 className="font-bold text-primary-800 text-sm sm:text-base line-clamp-2 group-hover:text-primary-600 transition-colors">
+              <h3 className="font-bold text-primary-800 text-sm sm:text-base line-clamp-2 group-hover:text-primary-600 transition-colors break-words">
                 {title}
               </h3>
               <button
@@ -117,17 +117,17 @@ function ListingCardComponent({ listing, layout = 'grid', loading = false, dataS
             </div>
             <p className="text-lg font-bold text-primary-700 mt-1">{formatPrice(listing.price, listing.perMonth)}</p>
             {listing.negotiable && <span className="text-xs text-primary-400">{t('negotiable')}</span>}
-            <p className="text-xs text-primary-400 mt-1 flex items-center gap-1">
+            <p className="text-xs text-primary-400 mt-1 flex items-center gap-1 truncate">
               <MapPin className="w-3 h-3 shrink-0" aria-hidden="true" />
-              {city} - {area}
+              <span className="truncate">{city} - {area}</span>
             </p>
             {specsPreview && <p className="text-xs text-primary-500 mt-2 line-clamp-1">{specsPreview}</p>}
             <div className="flex items-center justify-between mt-auto pt-2">
-              <span className="text-xs text-primary-400 flex items-center gap-1">
+              <span className="text-xs text-primary-400 flex items-center gap-1 shrink-0">
                 <Eye className="w-3 h-3" aria-hidden="true" />
                 {formatNumber(listing.views)}
               </span>
-              <span className="text-xs text-primary-400">{formatDate(listing.postedAt)}</span>
+              <span className="text-xs text-primary-400 ml-2 shrink-0">{formatDate(listing.postedAt)}</span>
             </div>
           </div>
         </div>

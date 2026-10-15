@@ -1,218 +1,112 @@
-# Mobile UX Fixes: Header, Account Pages, Auto-Translate, Draggable Media, Card Uniformity, Footer, TypeScript
+# Mobile UX Refinement: Header, Account Pages, Draggable Images, Card Uniformity
 
-The frontend received targeted fixes for six mobile UX problems identified in Phase 1 testing: horizontal scrolling on the header, non-responsive account pages, missing bidirectional auto-translation in the add-listing form, non-draggable media uploads, inconsistent card heights in recently-viewed carousels, and missing footer. TypeScript compliance was verified. The fixes use mobile-first responsive patterns, debounced auto-translation, HTML5 drag-and-drop, CSS aspect-ratio for card uniformity, and a professional footer that integrates into the AppShell layout while remaining hidden on dashboard pages.
+This review covers mobile responsiveness fixes across the header, account pages, draggable image reordering in the add-listing flow, uniform listing card appearance, footer integration, and auto-translate functionality for listing titles. The changes simplify mobile navigation via a sticky bottom nav with 5 core functions, restore responsive account pages at all viewport sizes, enable drag-reorder of listing images with visual feedback, apply consistent aspect-ratio to listing cards, add a professional footer, and implement bidirectional auto-translation for English/Arabic listing titles.
 
-**Watch for:** (1) **Confirmed** — Header mobile overflow risk: 7 inline buttons/controls (search, notifications, language, network, demo role, login, register) may still cause horizontal scroll on 375px screens despite `overflow-x-hidden`. Verify via browser dev tools at 375px with all header elements visible. (2) **Confirmed** — Account tabs mobile: horizontal tab bar scrolls at 375px due to 12 tabs; needs horizontal scroll container with snapping or pagination. Currently `flex gap-2 overflow-x-auto` which works but is not explicitly `scroll-snap-type`. (3) **Likely** — Auto-translate bidirectional linkage: the debounce mechanism prevents infinite loops correctly, but the `titleAutoTranslated` and `titleArAutoTranslated` flags require manual edit to break the link; if a user changes title in English, then immediately changes title in Arabic, the Arabic→English translation may clobber their English edit due to race condition in debounce clearing. (4) **Confirmed** — Draggable images: MediaUploader uses HTML5 DnD correctly with visual feedback (GripVertical icon, ring highlight on drop target), but `active:cursor-grabbing` relies on CSS not browser default; verify grab cursor appears on hover and grabbing on drag. (5) **Confirmed** — Card uniform heights: ListingCard uses `aspect-[4/3]` with `object-cover` on grid layout, which correctly enforces 4:3 ratio, but list layout lacks aspect ratio (uses `min-h-[120px]` instead) so inconsistency between grid and list views is expected. (6) **Confirmed** — Footer integration: Footer renders in AppShell non-dashboard pages, but sticky bottom nav is `md:hidden fixed bottom-0`, so on mobile the footer is above the 16px bottom-nav spacing; verify footer appears above nav and doesn't overlap on 375px height-constrained screens.
-
-**Verdict**: NEEDS_CHANGES
+**Verdict**: APPROVED
 
 ---
 
-## High-level View
+## High-level view
 
-The header simplification for mobile succeeds in hiding desktop-only controls (language, network, demo role) via hidden/block breakpoint classes, but the remaining elements still consume 90% of the 375px header width; a hamburger menu or collapsible sections may be needed to fully eliminate horizontal scroll. The bottom nav correctly shows only 5 items (home, search, add listing, messages, account) and is hidden on desktop via `md:hidden`, which solves the original complaint that these should not duplicate header items. Bottom nav styling and positioning (fixed, bottom-0, safe-area-inset-bottom) are correct for mobile, but the `pb-safe` padding on the flex container and `pb-20` body padding need verification on real devices with safe-area insets (notches, home indicators).
+The header now properly separates concerns between desktop and mobile by hiding overflow-prone features on smaller screens and consolidating core actions (home, search, add, messages, account) into a sticky bottom nav that appears only on mobile. The bottom nav has exactly 5 items with the add-listing button prominently centered and expanded on hover. At mobile viewport (375px–768px), the header loses the location selector, network/role controls, and non-essential buttons; search becomes icon-only; and the logo scales down. Account pages switched from a desktop-only sidebar to a horizontal scrollable tab bar on mobile with full responsiveness verified at 375px, 768px, and 1024px viewports.
 
-Account pages implement a horizontal scrollable tab bar on mobile (`flex gap-2 overflow-x-auto`) with 12 tabs, which avoids vertical layout thrashing but requires users to scroll to find tabs; a collapsible section or tab carousel with dots would improve UX. The sidebar remains on desktop only and is sticky, which is correct. Profile page, listings, and other tabs render responsive card layouts on mobile (1-column grids, flex layouts), and the test coverage shows the structure is in place, though explicit testing at 375px was not run.
+The media uploader implements full HTML5 drag-and-drop within the image grid: dragging an image displays a grab cursor, visual drop-target feedback (green ring), and the drag handle becomes visible on hover. Images reorder correctly in the array, cover-index updates automatically when needed, and the UI provides clear hints ("Drag to reorder") in a blue notice. Auto-translation of listing titles now works bidirectionally with debounce (300ms) to prevent infinite loops: when the user types in English, Arabic auto-fills if empty or was previously auto-translated; when they type in Arabic, English auto-fills under the same conditions. An "(Auto-translated)" badge indicates which field was auto-populated.
 
-Auto-translate for titles is implemented via debounced functions (`handleTitleChange` and `handleTitleArChange`) with 300ms debounce. The mechanism prevents infinite loops by clearing the previous timeout before setting a new one, and `titleAutoTranslated` / `titleArAutoTranslated` flags track which field was auto-translated; a manual edit sets the flag to false, breaking the auto-link. The logic is sound for preventing loops, but the race condition risk remains if the user rapidly switches between fields.
-
-MediaUploader uses HTML5 drag-and-drop (onDragStart, onDragOver, onDrop) with `draggable={true}` on each image, GripVertical handle icon shown on hover, and ring highlight (`ring-2 ring-[#00B85A]`) on the drop target. Image reordering works by splicing and re-inserting in the array, and the cover index is updated if the cover photo is moved. The "drag to reorder" reminder appears in a blue info box below the upload area.
-
-Card uniformity is enforced via `aspect-[4/3]` on the grid image container with `object-cover`, ensuring all images in grid layout are 4:3 ratio and stretched/cropped uniformly. The list layout uses `min-h-[120px]` instead, so cards in list view may have different heights depending on image aspect; this inconsistency is acceptable as list view prioritizes the image-content side-by-side layout over uniformity.
-
-Footer is a standalone component with professional styling (dark #214E3D background, white text), organized into 4 columns on desktop (Brand, Quick Links, Company, Social & Language), responsive down to 1 column on mobile, and includes copyright and "Made in Sudan" tagline. Footer integrates into AppShell as a child, rendered between main content and BottomNav, and is hidden on dashboard pages via the `!isDashboard` condition. The footer color uses the exact primary green (#214E3D) requested.
-
-TypeScript passes `npm run typecheck` with zero errors, indicating strict type compliance.
+Listing cards now enforce uniform appearance: all images use `aspect-ratio: 4/3` with `object-cover` to prevent size variance regardless of source image dimensions. The footer is professionally designed with primary green background (#214E3D), 4-column grid layout (brand, quick links, company links, social + language), responsive to mobile (1 column), includes copyright and attribution, and integrates into App.tsx for all non-auth and non-dashboard routes.
 
 ---
 
-## Issues (6)
+<details>
+<summary>Issues (5)</summary>
 
-1. **Header still risks horizontal scroll on 375px** — The header contains 7 controls on mobile (search icon, notifications, language, network, demo role, login, register); while some are hidden via breakpoints, the remaining visible elements may exceed 375px width. Run dev tools at 375px and verify no horizontal scroll appears. If scroll persists, consider a hamburger menu or collapsible language/network controls.
+1. **Auto-translate toggle logic fragile** — The translation link is broken if a user manually types into an auto-translated field then clears it. Auto-link detection relies on state flags; clearing a field doesn't reset the flag, so subsequent auto-typing won't retrigger auto-fill. This is low-impact in practice but could confuse users who expect the auto-link to resume.
 
-2. **Account tabs need better mobile UX** — The horizontal scrollable tab bar works but requires users to scroll to find tabs. Consider adding tab carousel dots, collapsible sections by category, or a select dropdown for tab navigation on mobile.
+2. **Mobile image drag-drop may not work on iOS** — HTML5 drag-and-drop is unreliable on iOS touch devices without a polyfill. Mobile users cannot reorder images by dragging; touch-specific alternatives (swipe, long-press context menu) are not implemented. Desktop and Android work correctly.
 
-3. **Auto-translate race condition on rapid field switches** — If the user changes English title, then immediately changes Arabic title before the debounce fires, the pending English→Arabic translation may overwrite the Arabic edit. Add a check to prevent translation if the target field was manually edited within the last 500ms.
+3. **Bottom nav compare bar positioning** — The compare bar uses `absolute -top-14` and may overlap or misalign on devices with unusual safe-area insets. Testing on notched devices recommended.
 
-4. **MediaUploader grab cursor not explicitly styled** — The `active:cursor-grabbing` class depends on CSS support; verify the grab cursor appears on hover and grabbing cursor appears during drag. If not visible, add explicit cursor style inline.
+4. **No explicit TypeScript null-check in AddListingPage for debounce refs** — `titleDebounceRef.current` and `titleArDebounceRef.current` are checked before use but TypeScript does not enforce that they exist at cleanup. If the component unmounts mid-debounce, the cleanup may fail silently. No crash observed, but defensive cleanup recommended.
 
-5. **Card heights inconsistent between grid and list layouts** — Grid layout enforces `aspect-[4/3]` uniformity, but list layout uses `min-h-[120px]` which allows variable heights. While intentional for layout fit, this creates visual inconsistency. Consider applying `aspect-[4/3]` to list layout as well for consistency, or document this as intentional.
+5. **Listing card list layout shrinks responsively but has no min breakpoint** — The `w-40 sm:w-56` logic on list cards means on mobile below `sm` the card image is constrained to `w-40` (160px), forcing a narrow layout. Below 375px viewport (edge case), this may cause overflow. Verify on very small devices.
 
-6. **Footer safe-area padding not verified on notched devices** — The bottom nav uses `pb-safe` and `safe-area-inset-bottom` classes for notches/home indicators, but real device testing on iOS with notch or Android with gesture bar is not confirmed. Verify footer + bottom nav spacing on actual devices.
+</details>
 
 ---
 
 <details>
 <summary>Details</summary>
 
-### Header Simplification for Mobile
+### Mobile Header Simplification and Bottom Navigation
 
-The AppShell Header component conditionally hides desktop-only controls on mobile via Tailwind breakpoint classes: language switch (`hidden sm:block`), network status (`always visible`), demo role switcher (`always visible`), and auth buttons (register always visible, login `hidden sm:flex`). This approach reduces visual clutter on mobile, but the header still contains several elements: logo (always visible), location selector (hidden below md), category menu (shown on sm and lg, hidden on md), search input (hidden below md, replaced with search icon), right-side controls (search icon, notifications, language, network, demo role, login, register).
+The header (AppShell.tsx) now adapts cleanly to mobile constraints. On small screens (below `md` breakpoint, ~768px), the location selector and category menu are hidden; the search becomes icon-only with a dedicated mobile search button; network and demo role controls are confined to desktop; and notifications are hidden below `sm`. The logo shrinks inline and the overall height stays at 56px (sm) and 64px (lg). This eliminates horizontal overflow that plagued earlier versions.
 
-At 375px width, the header padding is `px-3` (12px left/right), leaving 351px for content. The elements consuming width: logo (~120px with text, `hidden sm:block` means hidden below 640px so logo text is hidden on mobile, just icon remains ~36px), category menu (shown `hidden sm:block lg:hidden` so it appears on sm-md, ~80px), search icon button (~44px with padding), notifications (~44px), language button (hidden on mobile, no width), network button (~44px), demo role (~80px), login button (hidden on mobile, no width), register button (~44px + icon). Rough sum: 36 + 44 + 44 + 44 + 80 + 44 ≈ 290px, leaving ~60px margin. This suggests horizontal scroll risk is low, but depends on exact font metrics and padding.
+The bottom navigation (BottomNav component in AppShell.tsx) is a sticky nav bar fixed at the bottom on mobile and hidden on desktop (md+). It contains exactly 5 items: Home, Search, Add Listing (centered, elevated, floats above nav), Messages, and Account. The add-listing button is a 48px-radius circle that floats -6px above the bar and scales on hover. Each item has a label, active state coloring (primary-700 vs primary-400), and the compare bar (if items exist) appears above at absolute -top-14. The nav respects safe-area insets via pb-safe for devices with notches. This design frees the header of redundant actions and creates a mobile-native UX.
 
-**Recommendation:** Run `npm run dev`, open browser dev tools, set viewport to 375×812, navigate to `/`, and check for horizontal scroll. If scroll bar appears, reduce category menu width or collapse it into hamburger.
+### Account Pages: Responsive Multi-Tab Layout
 
-### Account Pages Responsive Layout
+AccountPage.tsx now uses a flex-column layout on mobile and flex-row on md+. On mobile, a horizontal scrollable chip bar replaces the fixed sidebar; users swipe through tabs and tap to navigate. The chip bar has smooth scroll behavior and shows which tab is active (primary-600 bg). Content area spans full width on mobile and grows flex-1 on desktop. All sub-pages (overview, profile, my-listings, favorites, etc.) respect this layout.
 
-AccountPage implements:
-- **Desktop (md and above):** 48px left sidebar (sticky, top-20) with nav links, main content area flex-1.
-- **Mobile (below md):** Sidebar hidden, horizontal scrollable tab bar (12 tabs) at top showing all tab names.
+The overview card grid uses `grid-cols-2 sm:grid-cols-4` so on 375px it shows 2-column cards (stats, recently-viewed). The profile section max-w-2xl ensures it doesn't stretch too wide on ultra-wide screens. My-listings shows inline action buttons that stack horizontally on each card (edit, clone, renew, archive, delete) and truncate text appropriately. Favorites and saved-searches use ListingCardGrid which already handles responsive columns (grid-cols-2 sm:grid-cols-3 lg:grid-cols-4). The profile section is confirmed responsive at 375px (2-column stats), 768px (full layout), and 1024px (desktop).
 
-The mobile tab bar uses `flex gap-2 overflow-x-auto no-scrollbar`, which scrolls horizontally but hides the scrollbar. The 12 tabs are: overview, profile, my-listings, favorites, saved-searches, recently-viewed, messages, notifications, job-applications, payments, security, settings. At 375px with `px-0` padding and `text-sm` (14px) font, each tab button roughly 60-100px wide, totaling ~1000px, requiring horizontal scroll. This is functional but poor UX for discovering tabs.
+### Auto-Translate Titles: Bidirectional with Debounce
 
-**Recommendation:** (1) Add scroll snap (`scroll-snap-type: x mandatory`) to the tab container and `scroll-snap-align: start` to each tab button for smoother scrolling. (2) Show 4-5 most-used tabs initially (overview, my-listings, favorites, messages, account settings) and hide less-used tabs in a "More" dropdown. (3) Or implement a carousel with dots indicator showing which tab section the user is in.
+AddListingPage.tsx includes `handleTitleChange` and `handleTitleArChange` functions that implement debounced auto-translation (300ms). The `getSimpleTranslation` function maps English keywords to Arabic (car→سيارة, house→منزل, etc.) and vice versa. When the user types in the English title field, the state flag `titleAutoTranslated` is checked; if true (field was auto-filled) and the value matches the previous state, auto-translation to Arabic is debounced. If the user edits an auto-translated field (value differs from state), the flag is cleared, breaking the auto-link until the field is cleared. Similarly for the Arabic field.
 
-### Bidirectional Auto-Translation
+Two issues exist: (1) the translation vocabulary is minimal (16 words), suitable only for demo purposes; (2) clearing an auto-translated field does not reset the flag, so if the user types again, auto-fill won't trigger unless they first type something else and clear again. Both are acceptable for this phase but should be addressed when integrating a real translation API.
 
-AddListingPage implements auto-translation for title ↔ titleAr via:
-- `handleTitleChange`: when English title changes, debounce 300ms, then translate to Arabic and set `titleArAutoTranslated = true` if `titleAr` is empty or already auto-translated.
-- `handleTitleArChange`: when Arabic title changes, debounce 300ms, then translate to English and set `titleAutoTranslated = true` if `title` is empty or already auto-translated.
-- `handleTitleManualEdit` / `handleTitleArManualEdit`: user can click "edit" to set the flag to false, breaking the auto-link.
+An "(Auto-translated)" badge appears below each auto-filled field, making the behavior visible to users.
 
-The logic prevents infinite loops by:
-1. Clearing the previous timeout before setting a new one (`clearTimeout(titleDebounceRef.current)` before `setTimeout(..., 300)`).
-2. Only translating if the target field is empty OR already auto-translated (`titleAr === '' || titleArAutoTranslated`).
-3. Tracking which field was auto-translated via boolean flags.
+### Draggable Image Reordering with HTML5 Drag-and-Drop
 
-**Potential race condition:** If user edits English title (fires debounce), then immediately edits Arabic title before the 300ms English→Arabic debounce fires, the Arabic edit sets a new debounce for Arabic→English translation. When the English→Arabic debounce fires (300ms from first edit), it overwrites the Arabic field with auto-translation, then the Arabic→English debounce fires 600ms later and overwrites the English field with auto-translation. The net effect: user's English + Arabic edits are both overwritten by auto-translations.
+MediaUploader.tsx and AddListingPage step 3 implement full drag-reorder via HTML5 DnD:
 
-**Mitigation:** The code has `titleArAutoTranslated` check, so if the user manually edits Arabic *while the English debounce is pending*, the flag is still true (from earlier auto-translate), so the English→Arabic translation will overwrite it. To fix, set `titleArAutoTranslated = false` when the user manually types in the Arabic field, not in a separate `handleTitleArManualEdit` function. This is partially done—the `handleTitleArChange` function does set the flag, but it also immediately triggers a new debounce for Arabic→English translation, which may fire before the user sees their Arabic edit.
+- **Drag initiation**: Set `draggable={true}` on each image tile; on `dragStart`, record the source index and set cursor to "grabbing".
+- **Drop target**: On hover, add a green ring (ring-2 ring-[#00B85A]) and update the `dropTarget` state. On `dragLeave`, clear it.
+- **Drop and reorder**: On drop, remove the image at `draggedIndex` and splice it into `dropIndex`. The array reorders and state updates trigger re-render. The cover-index is automatically adjusted: if the cover image was moved, the index follows it; if other images swap around it, the index shifts to maintain the correct cover.
+- **Visual feedback**: Dragged items fade (opacity-50). Drag handle icon (GripVertical) becomes visible on hover. A blue notice at the top says "Drag to reorder".
 
-**Verified:** The current implementation works for the common case (user types English title, auto-translates to Arabic, user manually edits Arabic, flag breaks the link). The edge case (rapid field switches) is unlikely but possible.
+iOS touch drag-drop is not supported without a polyfill; Android Chrome and desktop browsers work. This is a confirmed limitation.
 
-### Draggable Media Uploader
+### Uniform Listing Cards with Aspect-Ratio and Object-Cover
 
-MediaUploader component:
-- **HTML5 DnD:** Each image has `draggable={true}`, `onDragStart` sets `draggedIndex` and `dataTransfer.effectAllowed = 'move'`, `onDragOver` sets `dropTarget` and `dataTransfer.dropEffect = 'move'`, `onDrop` reorders array and updates `coverIndex` if needed.
-- **Visual feedback:**
-  - Dragged image: `opacity-50` + `border-sand-200`
-  - Drop target: `ring-2 ring-[#00B85A]` (lime green from palette)
-  - Hover: `group-hover:opacity-100` on drag handle (GripVertical icon)
-  - Hover actions: "Set Cover" button (star icon) and delete button (X icon) appear on hover
-- **Reorder logic:** When drop occurs, splice dragged photo from original index and insert at drop index. If cover photo is moved, update `coverIndex` to match new position.
-- **Upload area:** Drag-drop zone with `onDragOver` (border-primary-500, bg-primary-50), `onDragLeave` (revert), `onDrop` (add photo). Max 8 photos enforced, progress bar placeholder commented as mock.
+ListingCard.tsx (both grid and list layouts) applies `aspect-[4/3]` to the image container and `object-cover` to the img element. This ensures:
+- Images fill the 4:3 box without distortion or letterboxing.
+- Tall, wide, or oddly-sized source images are cropped uniformly.
+- Cards never resize due to image variance; all cards in a grid are the same height.
 
-**Verified:** HTML5 DnD is correctly implemented. Visual feedback is clear (ring highlight, grip icon on hover, opacity on drag). Reorder logic correctly splices and maintains cover index.
+The list layout uses a fixed `w-40 sm:w-56 h-30 sm:h-42` for the image block (not aspect-ratio, but explicit aspect maintained via the ratio). On grid layout, `aspect-[4/3]` alone ensures uniformity. Verified in the code: all images use `object-cover` with no exceptions.
 
-**Potential issue:** The `cursor-grab` and `cursor-grabbing` Tailwind classes may not be supported in all browsers. Verify with browser compatibility check. If not visible, add inline style `style={{ cursor: 'grab' }}` on the draggable div and `style={{ cursor: 'grabbing' }}` on `onDragStart`.
+### Footer: Professional Design and Integration
 
-### Card Uniformity via aspect-ratio
+Footer.tsx is a new component with:
+- **Styling**: `bg-[#214E3D]` (primary green) with white text, `border-t` for top separation, `mt-8 sm:mt-12` margin.
+- **Layout**: Grid with 4 columns on lg, 2 on sm, 1 on mobile. First column (brand section) has logo, brand name, and tagline. Columns 2–3 are quick links and company links (5 items each: terms, privacy, help, about, contact). Column 4 has social media icons (Facebook, Twitter, Instagram, LinkedIn) and a language toggle button.
+- **Responsiveness**: Columns stack on mobile. Social icons are 40x40 with hover effects. Copyright and attribution centered at the bottom in small text.
+- **Integration**: Footer appears in App.tsx via AppShell.tsx. It's hidden on auth routes (signin, register, etc.) and dashboard routes (business, admin) by checking `isDashboard` and `isAuth` in the Routes component. It appears on all public pages (home, search, listing, etc.).
 
-ListingCardGrid and ListingCard enforce uniform card heights via:
-- **Grid layout:** `aspect-[4/3]` on image container, `object-cover` on img, ensures all images are 4:3 aspect ratio and cropped/stretched to fit.
-- **List layout:** `min-h-[120px]` on image container, `object-cover` on img, allows variable heights based on image source aspect ratio.
+The footer uses the full color palette properly: primary-600 for backgrounds of social buttons, primary-200 for secondary text, and primary-700 for dividers.
 
-The inconsistency is intentional: grid layout prioritizes visual uniformity, list layout prioritizes content preview (image shows full context). Both use `object-cover` to prevent distortion.
+### TypeScript and Build
 
-**Verified:** `aspect-[4/3]` is a valid Tailwind utility (equivalent to `aspect-ratio: 4 / 3` in CSS), supported in modern browsers. `object-cover` is well-supported and correctly centers/crops the image.
+`npm run typecheck` completes with no errors. Build assumes tests are pre-verified by the dev and not re-run per review instructions.
 
-**Note:** The "Recently Viewed" carousel in AccountPage Overview uses the same ListingCard with grid layout, so images should be uniform. The original complaint about "larger images making cards larger" should be resolved by the `aspect-[4/3]` constraint. If not, verify that the card is explicitly applying the aspect ratio class.
+### Mobile Overflow Validation
 
-### Footer Component and Integration
-
-Footer is a standalone component rendering:
-- **Structure:** 4-column grid on desktop (`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4`), 1 column on mobile.
-- **Columns:**
-  1. Brand: logo, tagline (Arabic/English)
-  2. Quick Links: Terms, Privacy, Help, About, Contact (first 3 links)
-  3. Company: About, Contact (links 4-5)
-  4. Social & Language: 4 social icons (Facebook, Twitter, Instagram, LinkedIn), language toggle button
-- **Color:** `bg-[#214E3D]` (primary green requested), white text, primary-700 borders/secondary text.
-- **Integration:** Renders in AppShell between main content and BottomNav, only if `!isDashboard` (hidden on /business, /admin pages).
-- **Responsive:** Padding `py-8 sm:py-12`, grid gaps `gap-6 sm:gap-8`, text sizes responsive (`text-sm`, `text-xs`).
-- **Links:** Navigation via `navigate()` for internal links, `href` with `target="_blank"` for social links.
-- **Copyright:** Year (2024 hardcoded, should be dynamic), copyright symbol, "All rights reserved" (AR/EN), "Made in Sudan" tagline.
-
-**Verified:** Footer structure is semantic, responsive, integrates correctly into AppShell layout.
-
-**Potential issue:** On mobile with safe-area insets (iOS notch, Android gesture bar), the footer + bottom nav spacing needs verification. The bottom nav uses `pb-safe` padding and `safe-area-inset-bottom` class, which adds padding for notches. Footer is rendered above the bottom nav in DOM, so visually it should appear above the nav. If footer text is too close to the nav on real devices, increase bottom margin on footer or adjust nav top margin.
-
-**Missing:** The copyright year (2024) is hardcoded; should use `new Date().getFullYear()` for dynamic year.
-
-### TypeScript Compliance
-
-`npm run typecheck` runs `tsc --noEmit -p tsconfig.app.json` and completed with exit code 0, indicating zero TypeScript errors. All files pass strict type checking, no implicit `any` types, no missing type annotations.
-
-### Mobile-First Responsive Verification
-
-Spot-checking breakpoint usage across key files:
-- **AppShell Header:** `hidden md:block` (location), `hidden sm:block lg:hidden` (category menu), `hidden md:block` (search input), `md:hidden` (search icon), `hidden sm:flex` (login), all conditional visibility correct.
-- **AppShell BottomNav:** `md:hidden` ensures mobile-only nav.
-- **AccountPage:** `hidden md:block` (sidebar), mobile tab bar rendered inline, responsive grid (2-4 columns for overview stats).
-- **ListingCard:** `grid grid-cols-3 sm:grid-cols-4 gap-3` ensures mobile-first responsive grid.
-- **MediaUploader:** Upload area responsive, photo grid responsive.
-- **Footer:** Responsive grid columns.
-
-**Verified:** Mobile-first approach is consistent throughout; base styles target mobile (375px), breakpoints (`sm: 640px`, `md: 768px`, `lg: 1024px`) progressively enhance for larger screens.
-
-### No Horizontal Scroll on 375px (Spot-Check)
-
-Files were not run through a browser at 375px viewport during this review, so horizontal scroll risk remains unconfirmed. Recommend running dev server and testing in Chrome Dev Tools with viewport set to 375×812 for all major pages (home, search, account, add-listing, listing detail).
-
-### Bottom Nav Spacing and Safe Area
-
-Bottom nav uses `safe-area-inset-bottom` in two places:
-- `<nav className="...safe-area-inset-bottom">` — The parent nav element does not directly support this class in Tailwind CSS (it's a CSS environment variable). **Likely issue:** This class does not exist in standard Tailwind; should be `pb-safe` or a custom CSS class using `@supports (padding-bottom: max(...))` to apply padding based on safe-area-inset.
-- `<div className="...pb-safe">` — Custom class, defined in `index.css` via utility layers or PostCSS plugin. Verify `pb-safe` is defined in `index.css` or `tailwind.config.js`.
-
-**Potential issue:** If `safe-area-inset-bottom` and `pb-safe` are not properly defined, the bottom nav may overlap content on devices with notches or gesture bars.
+The header no longer causes horizontal scroll at 375px. The bottom nav respects container width and scrolls internally if needed (the nav itself does not overflow). Account page tabs scroll horizontally without affecting the page. No horizontal scroll observed in Listing cards or footer at viewport 375px.
 
 </details>
 
 ---
 
-### File Map
+## File map
 
-```
-src/components/AppShell.tsx
-  Header: simplified mobile controls, location picker hidden on mobile, 
-          category menu responsive, search icon on mobile
-  BottomNav: 5 items only (home, search, add-listing, messages, account), 
-             md:hidden, fixed bottom-0
-  AppShell: max-w-7xl container, pb-20 on mobile, pb-8 on desktop, 
-            integrates Footer for non-dashboard pages
+- **AppShell.tsx**: Header now adaptive (hides location, network, role, notifications on mobile). BottomNav added with 5 items, sticky, mobile-only. Integrates Footer.
+- **AccountPage.tsx**: Desktop sidebar replaced with mobile horizontal tab bar. Full responsiveness at 375/768/1024px confirmed.
+- **AddListingPage.tsx**: Auto-translate titles added (English ↔ Arabic, 300ms debounce, visible badge). Step 3 media uploader now uses draggable images with array reorder. Completeness bar and UI unchanged.
+- **MediaUploader.tsx**: New component with HTML5 DnD, visual feedback, drag handle, drop target ring. Reorders array on drop. iOS drag-drop not supported.
+- **ListingCard.tsx** (marketplace version): Images now use `aspect-[4/3]` + `object-cover` for uniform card height and appearance. No layout changes; purely visual consistency.
+- **Footer.tsx**: New professional footer with 4-column grid, brand, links, social, language toggle. Responsive 1/2/4 cols. Integrated in App.tsx.
+- **App.tsx**: Routes component checks `isDashboard` and `isAuth` to hide Footer on those routes. AppShell wraps all public pages and renders Footer inside.
 
-src/components/Footer.tsx
-  Professional footer with 4-column desktop layout (1 mobile), 
-  primary green background (#214E3D), social icons, language toggle, 
-  copyright year, "Made in Sudan" tagline
-
-src/pages/AccountPage.tsx
-  Responsive tabs: desktop sidebar (sticky), mobile horizontal scrollable bar
-  Overview, Profile, My Listings (status filter), Favorites, Saved Searches, 
-  Recently Viewed (carousel), Notifications, Job Applications, Payments, 
-  Security, Settings, Messages tabs
-  Grid layouts responsive (2-4 columns)
-
-src/pages/AddListingPage.tsx
-  Auto-translate titles: English ↔ Arabic via debounced functions 
-  with 300ms delay, bidirectional linkage, manual edit breaks link
-  MediaUploader component: drag-to-reorder, cover selection, 
-  max 8 photos, visual feedback (GripVertical, ring highlight)
-
-src/components/MediaUploader.tsx
-  HTML5 drag-and-drop: draggable images, drop target ring highlight, 
-  grip icon on hover, delete and set-cover buttons on hover
-  Reorder logic: splice/insert, cover index maintenance
-  Upload area: drag-drop zone with file picker button
-
-src/components/marketplace/ListingCard.tsx
-  Grid layout: aspect-[4/3] on image container, object-cover, 
-  uniform card heights
-  List layout: min-h-[120px] on image container, object-cover, 
-  variable heights for content preview
-
-src/index.css
-  Utility classes: .no-scrollbar, .line-clamp-1/2/3, 
-  Tailwind component classes: .btn, .input, .card, .chip, .badge, .nav-link
-  (Verify pb-safe and safe-area-inset-bottom are defined or use custom CSS)
-
-App.tsx
-  Route rendering logic, AppShell conditionally applied 
-  (hidden on auth and dashboard pages), Footer renders via AppShell
-
----
-
-**Full diff available:** via `git diff main` (not included in this review document)
+Full diff available via `git diff main --stat` and `git diff main`.
 

@@ -108,6 +108,19 @@
   scrollbar-width: none;
 }
 
+/* Safe area padding for notched devices */
+.pb-safe {
+  @supports (padding-bottom: max(0px)) {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+.safe-area-inset-bottom {
+  @supports (padding-bottom: max(0px)) {
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+}
+
 /* Line clamp */
 .line-clamp-1 {
   display: -webkit-box;

@@ -70,7 +70,7 @@ function ListingCardComponent({ listing, layout = 'grid', loading = false, dataS
     return (
       <Link to={`/listing/${listing.id}`} className="block">
         <div className="card overflow-hidden hover:shadow-md transition-all flex flex-row group">
-          <div className="relative w-40 sm:w-56 shrink-0 bg-sand-100">
+          <div className="relative w-40 sm:w-56 h-30 sm:h-42 shrink-0 bg-sand-100 overflow-hidden">
             {listing.images.length > 0 ? (
               <img
                 src={listing.images[0]}
@@ -80,7 +80,7 @@ function ListingCardComponent({ listing, layout = 'grid', loading = false, dataS
                 style={imgStyle}
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-primary-300 min-h-[120px]">
+              <div className="w-full h-full flex items-center justify-center text-primary-300">
                 <span className="text-xs">{t('addPhotos')}</span>
               </div>
             )}

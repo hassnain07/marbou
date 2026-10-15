@@ -78,8 +78,8 @@ export function AccountPage() {
         </aside>
 
         {/* Mobile tab selector - horizontal scrollable on small screens */}
-        <div className="md:hidden mb-4">
-          <div className="flex gap-2 overflow-x-auto no-scrollbar px-0">
+        <div className="md:hidden mb-4 -mx-3 sm:-mx-4 px-3 sm:px-4">
+          <div className="flex gap-2 overflow-x-auto no-scrollbar scroll-smooth" style={{ scrollBehavior: 'smooth' }}>
             {TABS.map((tab) => (
               <button
                 key={tab.id}

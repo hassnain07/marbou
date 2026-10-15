@@ -103,6 +103,10 @@ export function AddListingPage() {
 
   // Handle title (English) auto-translate to Arabic
   const handleTitleChange = (value: string) => {
+    // If user edits an auto-translated field, break the auto-link
+    if (titleAutoTranslated && value !== title) {
+      setTitleAutoTranslated(false);
+    }
     setTitle(value);
     
     // Clear existing timeout
@@ -120,6 +124,10 @@ export function AddListingPage() {
 
   // Handle title (Arabic) auto-translate to English
   const handleTitleArChange = (value: string) => {
+    // If user edits an auto-translated field, break the auto-link
+    if (titleArAutoTranslated && value !== titleAr) {
+      setTitleArAutoTranslated(false);
+    }
     setTitleAr(value);
     
     // Clear existing timeout
@@ -133,15 +141,6 @@ export function AddListingPage() {
         setTitleAutoTranslated(true);
       }
     }, 300);
-  };
-
-  // Allow manual editing to break auto-translation
-  const handleTitleManualEdit = () => {
-    setTitleAutoTranslated(false);
-  };
-
-  const handleTitleArManualEdit = () => {
-    setTitleArAutoTranslated(false);
   };
 
   const activeCategory = categories.find((c) => c.id === category);
@@ -331,7 +330,7 @@ export function AddListingPage() {
               <label className="text-sm font-medium text-primary-600 mb-1.5 block">{t('title')} ({lang === 'ar' ? 'عربي' : 'English'})</label>
               <input 
                 value={title} 
-                onChange={(e) => { handleTitleChange(e.target.value); handleTitleManualEdit(); }}
+                onChange={(e) => handleTitleChange(e.target.value)}
                 className="input" 
                 placeholder={lang === 'ar' ? 'عنوان الإعلان' : 'Listing title'} 
               />
@@ -341,7 +340,7 @@ export function AddListingPage() {
               <label className="text-sm font-medium text-primary-600 mb-1.5 block">{t('title')} ({lang === 'ar' ? 'إنجليزي' : 'Arabic'})</label>
               <input 
                 value={titleAr} 
-                onChange={(e) => { handleTitleArChange(e.target.value); handleTitleArManualEdit(); }}
+                onChange={(e) => handleTitleArChange(e.target.value)}
                 className="input" 
                 placeholder={lang === 'ar' ? 'Listing title' : 'عنوان الإعلان'} 
                 dir={lang === 'ar' ? 'ltr' : 'rtl'} 

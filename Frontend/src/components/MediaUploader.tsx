@@ -156,7 +156,8 @@ export function MediaUploader({
                 onDragLeave={handleImageDragLeave}
                 onDrop={(e) => handleImageDrop(e, i)}
                 onDragEnd={handleImageDragEnd}
-                className={`relative aspect-square rounded-xl overflow-hidden border group cursor-grab active:cursor-grabbing transition-all ${
+                style={{ cursor: draggedIndex === i ? 'grabbing' : 'grab' }}
+                className={`relative aspect-square rounded-xl overflow-hidden border group transition-all ${
                   draggedIndex === i
                     ? 'opacity-50 border-sand-200'
                     : dropTarget === i

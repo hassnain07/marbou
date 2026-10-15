@@ -221,16 +221,16 @@ export function Header() {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <header className="sticky top-0 z-30 bg-white border-b border-sand-100 shadow-sm overflow-hidden">
+    <header className="sticky top-0 z-30 bg-white border-b border-sand-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
-        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 h-14 sm:h-16 overflow-x-hidden">
+        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 h-14 sm:h-16">
           {/* Logo - always visible */}
           <Logo />
           
           {/* Location selector - desktop only */}
           <div className="hidden md:block"><LocationSelector /></div>
           
-          {/* Category menu - hidden on lg */}
+          {/* Category menu - shown on sm-md, hidden below sm and on lg+ */}
           <div className="hidden sm:block lg:hidden"><CategoryMenu /></div>
           <div className="hidden lg:block"><CategoryMenu /></div>
           
@@ -262,8 +262,8 @@ export function Header() {
               <Search className="w-5 h-5" />
             </button>
             
-            {/* Notifications */}
-            <Link to="/account/notifications" className="relative p-2 rounded-lg text-primary-500 hover:bg-primary-50 transition-colors">
+            {/* Notifications - hidden on mobile, shown sm+ */}
+            <Link to="/account/notifications" className="hidden sm:flex relative p-2 rounded-lg text-primary-500 hover:bg-primary-50 transition-colors">
               <Bell className="w-5 h-5" />
               <span className="absolute top-1 end-1 w-2 h-2 bg-error-500 rounded-full" />
             </Link>
@@ -272,8 +272,10 @@ export function Header() {
             <div className="hidden sm:block"><LangSwitch /></div>
             
             {/* Network & demo role - desktop only */}
-            <NetworkStatusControl />
-            <DemoRoleSwitcher />
+            <div className="hidden lg:flex items-center gap-1 sm:gap-2">
+              <NetworkStatusControl />
+              <DemoRoleSwitcher />
+            </div>
             
             {/* Auth buttons - hidden on mobile */}
             <Link to="/login" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-primary-600 hover:bg-primary-50 transition-colors">

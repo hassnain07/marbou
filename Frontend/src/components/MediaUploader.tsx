@@ -156,19 +156,18 @@ export function MediaUploader({
                 onDragLeave={handleImageDragLeave}
                 onDrop={(e) => handleImageDrop(e, i)}
                 onDragEnd={handleImageDragEnd}
-                style={{ cursor: draggedIndex === i ? 'grabbing' : 'grab' }}
                 className={`relative aspect-square rounded-xl overflow-hidden border group transition-all ${
                   draggedIndex === i
-                    ? 'opacity-50 border-sand-200'
+                    ? 'opacity-50 border-sand-200 cursor-grabbing'
                     : dropTarget === i
-                    ? 'ring-2 ring-[#00B85A] border-sand-100'
-                    : 'border-sand-100 hover:border-primary-300'
+                    ? 'ring-2 ring-primary-500 border-sand-100 cursor-grab'
+                    : 'border-sand-100 hover:border-primary-300 cursor-grab'
                 }`}
               >
                 <img src={photo} alt="" className="w-full h-full object-cover" loading="lazy" />
                 
                 {i === coverIndex && (
-                  <div className="absolute top-1 start-1 badge bg-[#214E3D] text-white text-[10px]">
+                  <div className="absolute top-1 start-1 badge bg-primary-950 text-white text-[10px]">
                     {t('coverImage')}
                   </div>
                 )}
@@ -184,7 +183,7 @@ export function MediaUploader({
                     <button
                       onClick={() => onCoverChange(i)}
                       type="button"
-                      className="p-1.5 rounded-lg bg-white hover:bg-sand-100 text-[#214E3D] transition-colors"
+                      className="p-1.5 rounded-lg bg-white hover:bg-sand-100 text-primary-950 transition-colors"
                       title={t('setCoverPhoto')}
                     >
                       <Star className="w-4 h-4" />

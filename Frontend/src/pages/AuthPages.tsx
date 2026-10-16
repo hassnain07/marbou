@@ -129,7 +129,7 @@ export function RegisterPage() {
   const Arrow = lang === 'ar' ? ChevronLeft : ChevronRight;
   const ArrowBack = lang === 'ar' ? ChevronRight : ChevronLeft;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setError('');
     if (!accountType || !email || !password || !displayName) {
       setError(t('fillAllFields'));
@@ -140,24 +140,22 @@ export function RegisterPage() {
       return;
     }
     setLoading(true);
-    const result = register({
+    const result = await register({
       email,
+      password,
       accountType,
       displayName,
       phone,
       businessName: accountType === 'business' ? businessName : undefined,
       businessCategory: accountType === 'business' ? businessCategory : undefined,
-      ...(password ? {} : {}),
-    } as any);
+    });
 
-    setTimeout(() => {
-      setLoading(false);
-      if (result.success) {
-        navigate(accountType === 'business' ? '/business' : '/account');
-      } else {
-        setError(result.error === 'emailExists' ? t('emailExists') : t('errorState'));
-      }
-    }, 500);
+    setLoading(false);
+    if (result.success) {
+      navigate(accountType === 'business' ? '/business' : '/account');
+    } else {
+      setError(result.error === 'emailExists' ? t('emailExists') : t('errorState'));
+    }
   };
 
   return (
@@ -388,22 +386,20 @@ export function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setError('');
     if (!email || !password) {
       setError(t('fillAllFields'));
       return;
     }
     setLoading(true);
-    setTimeout(() => {
-      const result = login(email, password);
-      setLoading(false);
-      if (result.success) {
-        navigate('/account');
-      } else {
-        setError(result.error === 'invalidCredentials' ? t('invalidCredentials') : t('errorState'));
-      }
-    }, 400);
+    const result = await login(email, password);
+    setLoading(false);
+    if (result.success) {
+      navigate('/account');
+    } else {
+      setError(result.error === 'invalidCredentials' ? t('invalidCredentials') : t('errorState'));
+    }
   };
 
   return (

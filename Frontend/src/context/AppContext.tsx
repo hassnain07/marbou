@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { configService, FeatureFlags as ConfigFlags } from '../services/config';
 
 export type DemoRole = 'buyer' | 'business' | 'admin';
 export type NetworkState = 'connected' | 'slow' | 'offline';
@@ -67,7 +68,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [recentlyViewed, setRecentlyViewed] = usePersistentState<string[]>('marbou-recent', []);
   const [demoRole, setDemoRole] = usePersistentState<DemoRole>('marbou-role', 'buyer');
   const [dataSaver, setDataSaver] = usePersistentState<boolean>('marbou-datasaver', false);
-  const [networkState, setNetworkState] = usePersistentState<NetworkState>('marbou-network', 'connected');
+  const [networkState, setNetworkStateInternal] = usePersistentState<NetworkState>('marbou-network', 'connected');
   const [savedSearches, setSavedSearches] = usePersistentState<any[]>('marbou-searches', []);
   const [myListings, setMyListings] = usePersistentState<string[]>('marbou-mylistings', ['lst-030']);
   const [appliedJobs, setAppliedJobs] = usePersistentState<any[]>('marbou-appliedJobs', []);
@@ -81,6 +82,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
   });
   const [gatedAction, setGatedAction] = useState<GatedActionType>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+
+  // Detect real network state
+  useEffect(() => {
+    const handleOnline = () => setNetworkStateInternal('connected');
+    const handleOffline = () => setNetworkStateInternal('offline');
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    // Initialize from navigator.onLine
+    setNetworkStateInternal(navigator.onLine ? 'connected' : 'offline');
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  const setNetworkState = (state: NetworkState) => setNetworkStateInternal(state);
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
     setToast({ message, type });
@@ -169,3 +189,34 @@ export function useApp() {
   if (!ctx) throw new Error('useApp must be used within AppProvider');
   return ctx;
 }
+
+/**
+ * Hook to access feature flags (monetization, moderation, etc.)
+ * Automatically refreshes flags every 60 seconds
+ */
+export function useFlags() {
+  const [flags, setFlags] = useState<ConfigFlags | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadFlags = async () => {
+      try {
+        const f = await configService.getFlags();
+        setFlags(f);
+      } catch (error) {
+        console.error('Failed to load flags:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFlags();
+
+    // Refresh flags every 60 seconds
+    const interval = setInterval(loadFlags, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return { flags, loading };
+}
+

@@ -10,6 +10,12 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  server: {
+    historyApiFallback: true,
+  },
+  preview: {
+    historyApiFallback: true,
+  },
   build: {
     // Aggressive chunk splitting for scalability
     rollupOptions: {

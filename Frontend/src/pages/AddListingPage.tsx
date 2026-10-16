@@ -218,12 +218,37 @@ export function AddListingPage() {
     setPhotos([...photos, newPhoto]);
   };
 
-  const handleSubmit = () => {
-    const newId = `lst-${Date.now()}`;
-    addMyListing(newId);
-    localStorage.removeItem(DRAFT_KEY);
-    showToast(t('listingSubmitted'), 'success');
-    navigate('/account/my-listings');
+  const handleSubmit = async () => {
+    try {
+      const listing = await import('@/services/listings').then(m => m.createListing({
+        title,
+        description,
+        category,
+        price: parseInt(price) || 0,
+        currency: 'SDG',
+        condition: 'used',
+        images: photos,
+        coverImageIndex: coverIndex,
+        location: { city, area },
+        sellerId: 'guest',
+        sellerName: 'Anonymous',
+        status: 'active',
+        contactOptions: { call: true, whatsapp: true, chat: true },
+        negotiable,
+        specs,
+      }));
+
+      if (listing?.success && listing?.listing) {
+        localStorage.removeItem(DRAFT_KEY);
+        addMyListing(listing.listing.id);
+        showToast(t('listingSubmitted'), 'success');
+        setTimeout(() => navigate(`/listing/${listing.listing!.publicId}`), 1000);
+      } else {
+        showToast(listing?.error || 'Failed to create listing', 'error');
+      }
+    } catch (error) {
+      showToast('Error creating listing', 'error');
+    }
   };
 
   const handleSaveDraft = () => {
@@ -505,13 +530,13 @@ export function AddListingPage() {
             </div>
             <div className="flex items-center gap-2 p-3 bg-primary-50 rounded-xl text-sm text-primary-600">
               <Info className="w-4 h-4 shrink-0" />
-              {lang === 'ar' ? 'سيتم وضع إعلانك قيد المراجعة قبل النشر' : 'Your listing will be placed under review before publishing'}
+              {lang === 'ar' ? 'سيتم نشر إعلانك مباشرة' : 'Your listing will go live instantly'}
             </div>
             <div className="flex justify-between pt-4">
               <button onClick={() => setStep(5)} className="btn-secondary text-sm"><ArrowBack className="w-4 h-4" />{t('back')}</button>
               <div className="flex gap-2">
                 <button onClick={handleSaveDraft} className="btn-secondary text-sm"><Save className="w-4 h-4" />{t('saveDraft')}</button>
-                <button onClick={handleSubmit} className="btn-primary text-sm"><Send className="w-4 h-4" />{t('submitForReview')}</button>
+                <button onClick={handleSubmit} className="btn-primary text-sm"><Send className="w-4 h-4" />{t('publish')}</button>
               </div>
             </div>
           </div>

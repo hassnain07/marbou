@@ -3,8 +3,9 @@ import { I18nProvider } from '@/i18n/I18nContext';
 import { AppProvider } from '@/context/AppContext';
 import { AuthProvider } from '@/context/AuthContext';
 import { AppShell } from '@/components/AppShell';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Toast, Skeleton } from '@/components/ui';
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useEffect } from 'react';
 import { useI18n } from '@/i18n/I18nContext';
 
 const HomePage = lazy(() => import('@/pages/HomePage').then((m) => ({ default: m.HomePage })));
@@ -31,6 +32,7 @@ const ResetPasswordPage = lazy(() => import('@/pages/AuthPages').then((m) => ({ 
 const AddEmailPage = lazy(() => import('@/pages/AuthPages').then((m) => ({ default: m.AddEmailPage })));
 const HelpPage = lazy(() => import('@/pages/HelpPage').then((m) => ({ default: m.HelpPage })));
 const ComingSoonPage = lazy(() => import('@/pages/HelpPage').then((m) => ({ default: m.ComingSoonPage })));
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })));
 
 // Fallback skeleton for generic page loading
 function LoadingSkeleton() {
@@ -81,6 +83,35 @@ function Routes() {
   const { path } = useRouter();
   const { t } = useI18n();
 
+  // Update page title based on route
+  useEffect(() => {
+    const parts = path.split('?')[0].split('/').filter(Boolean);
+    const root = parts[0] || '';
+
+    const routeTitles: Record<string, string> = {
+      '': 'Marbou',
+      'home': 'Marbou',
+      'search': `${t('search')} | Marbou`,
+      'category': `${t('category')} | Marbou`,
+      'listing': `${t('listing')} | Marbou`,
+      'add-listing': `${t('addListing')} | Marbou`,
+      'favorites': `${t('favorites')} | Marbou`,
+      'compare': `${t('compare')} | Marbou`,
+      'messages': `${t('messages')} | Marbou`,
+      'account': `${t('account')} | Marbou`,
+      'jobs': `${t('jobs')} | Marbou`,
+      'business': `${t('business')} | Marbou`,
+      'admin': `${t('admin')} | Marbou`,
+      'signin': `${t('signIn')} | Marbou`,
+      'register': `${t('register')} | Marbou`,
+      'login': `${t('login')} | Marbou`,
+      'help': `${t('help')} | Marbou`,
+    };
+
+    const title = routeTitles[root] || 'Marbou';
+    document.title = title;
+  }, [path, t]);
+
   const parts = path.split('?')[0].split('/').filter(Boolean);
   const root = parts[0] || '';
   const isDashboard = root === 'business' || root === 'admin';
@@ -101,9 +132,9 @@ function Routes() {
       if (parts[1]) return <Suspense fallback={<LoadingSkeleton />}><JobDetailPage /></Suspense>;
       return <Suspense fallback={<LoadingSkeleton />}><JobsPage /></Suspense>;
     }
-    if (root === 'business' && parts[1] && parts[1].startsWith('biz-')) return <Suspense fallback={<LoadingSkeleton />}><BusinessProfilePage /></Suspense>;
-    if (root === 'business') return <Suspense fallback={<LoadingSkeleton />}><BusinessDashboard /></Suspense>;
-    if (root === 'admin') return <Suspense fallback={<LoadingSkeleton />}><AdminDashboard /></Suspense>;
+    if (root === 'business' && parts[1] && parts[1].startsWith('biz-')) return <Suspense fallback={<LoadingSkeleton />}><ProtectedRoute><BusinessProfilePage /></ProtectedRoute></Suspense>;
+    if (root === 'business') return <Suspense fallback={<LoadingSkeleton />}><ProtectedRoute><BusinessDashboard /></ProtectedRoute></Suspense>;
+    if (root === 'admin') return <Suspense fallback={<LoadingSkeleton />}><ProtectedRoute><AdminDashboard /></ProtectedRoute></Suspense>;
     
     // Auth routes - FEAT-001
     if (root === 'signin') return <Suspense fallback={<LoadingSkeleton />}><SignInHubPage /></Suspense>;
@@ -126,7 +157,8 @@ function Routes() {
     if (root === 'delivery') return <Suspense fallback={<LoadingSkeleton />}><ComingSoonPage title={t('deliveryComingSoon')} description={t('comingLaterDesc')} /></Suspense>;
     if (root === 'booking') return <Suspense fallback={<LoadingSkeleton />}><ComingSoonPage title={t('bookingComingSoon')} description={t('comingLaterDesc')} /></Suspense>;
 
-    return <Suspense fallback={<HomePageSkeleton />}><HomePage /></Suspense>;
+    // 404 - Not found
+    return <Suspense fallback={<LoadingSkeleton />}><NotFoundPage /></Suspense>;
   };
 
   if (isDashboard || isAuth) {

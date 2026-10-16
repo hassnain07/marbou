@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { useI18n } from '@/i18n/I18nContext';
 import { useApp } from '@/context/AppContext';
+import { useGate } from '@/hooks/useGate';
 import { Link } from '@/router/Router';
 import { Heart, MapPin, Eye, Video, Star, GitCompare } from 'lucide-react';
 import { TrustBadge, Skeleton } from '@/components/ui';
@@ -17,6 +18,7 @@ interface ListingCardProps {
 function ListingCardComponent({ listing, layout = 'grid', loading = false, dataSaver, blurDataURL }: ListingCardProps) {
   const { lang, t, formatPrice, formatDate, formatNumber } = useI18n();
   const { isFavorite, toggleFavorite, isComparing, toggleCompare, compareList, dataSaver: appDataSaver } = useApp();
+  const { requireAuth } = useGate();
 
   const shouldUseSaver = dataSaver ?? appDataSaver;
 
@@ -103,7 +105,7 @@ function ListingCardComponent({ listing, layout = 'grid', loading = false, dataS
               <button
                 onClick={(e) => {
                   e.preventDefault();
-                  toggleFavorite(listing.id);
+                  requireAuth('favorite', () => toggleFavorite(listing.id));
                 }}
                 className="shrink-0 p-1.5 rounded-lg hover:bg-sand-50 transition-colors"
                 aria-label={fav ? t('removeFavorite') : t('addFavorite')}
@@ -169,7 +171,7 @@ function ListingCardComponent({ listing, layout = 'grid', loading = false, dataS
           <button
             onClick={(e) => {
               e.preventDefault();
-              toggleFavorite(listing.id);
+              requireAuth('favorite', () => toggleFavorite(listing.id));
             }}
             className="absolute bottom-2 end-2 bg-white/90 rounded-full p-2 shadow-sm hover:bg-white transition-all"
             aria-label={fav ? t('removeFavorite') : t('addFavorite')}

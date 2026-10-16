@@ -1,6 +1,7 @@
 import { useState, memo } from 'react';
 import { useI18n } from '@/i18n/I18nContext';
 import { useApp } from '@/context/AppContext';
+import { useFlags } from '@/context/AppContext';
 import { Link, useRouter } from '@/router/Router';
 import { ListingCard } from '@/components/marketplace';
 import { CategoryTile, SearchBar } from '@/components/marketplace';
@@ -121,6 +122,7 @@ const JobCard = memo(function JobCardComponent({ job }: { job: typeof jobs[0] })
 export function HomePage() {
   const { t, lang } = useI18n();
   const { navigate } = useRouter();
+  const { flags } = useFlags();
 
   const featured = listings.filter((l) => l.promoted && l.status === 'published').slice(0, 10);
   const latest = listings.filter((l) => l.status === 'published').slice(0, 10);
@@ -184,10 +186,10 @@ export function HomePage() {
       </section>
 
       {/* Promo banner */}
-      <PromoBanner />
+      {flags?.monetizationEnabled && <PromoBanner />}
 
       {/* Featured listings */}
-      {featured.length > 0 && (
+      {flags?.monetizationEnabled && featured.length > 0 && (
         <section>
           <SectionHeader title={t('featuredListings')} viewAllTo="/search?sort=promoted" />
           <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">

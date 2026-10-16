@@ -1,6 +1,6 @@
 import { useState, ReactNode } from 'react';
 import { useI18n } from '@/i18n/I18nContext';
-import { useApp } from '@/context/AppContext';
+import { useApp, useFlags } from '@/context/AppContext';
 import { useRouter, Link } from '@/router/Router';
 import { EmptyState, StatusBadge, Modal, RatingStars, ComingSoon } from '@/components/ui';
 import { listings, businesses, sampleReviews } from '@/data/mockData';
@@ -59,6 +59,7 @@ export function BusinessDashboard() {
   const { t, lang, formatPrice, formatDate, formatNumber } = useI18n();
   const { path, navigate } = useRouter();
   const { showToast } = useApp();
+  const { flags } = useFlags();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showBankak, setShowBankak] = useState(false);
   const [bankakStep, setBankakStep] = useState(0);
@@ -68,6 +69,9 @@ export function BusinessDashboard() {
 
   const tabId = path.split('/')[2] || 'overview';
   const biz = businesses[0];
+
+  // Filter out plan tab if monetization is disabled
+  const visibleBizTabs = BIZ_TABS.filter((tab) => !(tab.id === 'plan' && !flags?.monetizationEnabled));
 
   const SidebarLink = ({ tab }: { tab: typeof BIZ_TABS[0] }) => {
     const Icon = tab.icon;
@@ -110,7 +114,7 @@ export function BusinessDashboard() {
             </div>
           </div>
           <div className="space-y-1">
-            {BIZ_TABS.map((tab) => <SidebarLink key={tab.id} tab={tab} />)}
+            {visibleBizTabs.map((tab) => <SidebarLink key={tab.id} tab={tab} />)}
           </div>
         </div>
       </aside>

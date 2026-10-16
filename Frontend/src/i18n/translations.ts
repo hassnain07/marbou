@@ -756,6 +756,16 @@ export const translations = {
     
     // AuthGateSheet keys (continued)
     secureTransaction: 'معلوماتك آمنة ومشفرة',
+
+    // New keys for blockers
+    listing: 'الإعلان',
+    signIn: 'تسجيل الدخول',
+    register: 'تسجيل',
+    help: 'مساعدة',
+    user: 'مستخدم',
+    pageNotFound: 'الصفحة غير موجودة',
+    pageNotFoundDesc: 'عذرا، الصفحة التي تبحث عنها غير موجودة',
+    backHome: 'العودة إلى الرئيسية',
   },
   en: {
     brandName: 'MARBOU',
@@ -1478,6 +1488,16 @@ export const translations = {
     
     // AuthGateSheet keys (continued)
     secureTransaction: 'Your information is secure and encrypted',
+
+    // New keys for blockers
+    listing: 'Listing',
+    signIn: 'Sign In',
+    register: 'Register',
+    help: 'Help',
+    user: 'User',
+    pageNotFound: 'Page Not Found',
+    pageNotFoundDesc: 'Sorry, the page you are looking for does not exist',
+    backHome: 'Back to Home',
   },
 } as const;
 

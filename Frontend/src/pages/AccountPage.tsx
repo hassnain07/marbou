@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useI18n } from '@/i18n/I18nContext';
 import type { TranslationKey } from '@/i18n/translations';
-import { useApp } from '@/context/AppContext';
+import { useApp, useFlags } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { useRouter, Link } from '@/router/Router';
 import { ListingCardGrid } from '@/components/ListingCard';
 import { EmptyState, StatusBadge, Modal, RatingStars } from '@/components/ui';
@@ -31,11 +32,16 @@ export function AccountPage() {
   const { t, lang, formatDate, formatPrice } = useI18n();
   const { path, navigate } = useRouter();
   const { favorites, myListings, recentlyViewed, savedSearches, removeSavedSearch, appliedJobs, savedJobs, toggleSavedJob, showToast, dataSaver, setDataSaver } = useApp();
+  const { flags } = useFlags();
+  const { user } = useAuth();
 
   const tabId = path.split('/')[2] || 'overview';
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [listingFilter, setListingFilter] = useState('all');
+
+  // Filter out payments tab if monetization is disabled
+  const visibleTabs = TABS.filter((tab) => !(tab.id === 'payments' && !flags?.monetizationEnabled));
 
   const myListingItems = listings.filter((l) => myListings.includes(l.id));
   const filteredMyListings = listingFilter === 'all' ? myListingItems : myListingItems.filter((l) => l.status === listingFilter);
@@ -67,20 +73,20 @@ export function AccountPage() {
                 <User className="w-5 h-5 text-primary-600" />
               </div>
               <div>
-                <p className="font-bold text-primary-700 text-sm">Demo User</p>
-                <p className="text-xs text-primary-400">{t('demoLabel')}</p>
+                <p className="font-bold text-primary-700 text-sm">{user?.displayName || 'User'}</p>
+                <p className="text-xs text-primary-400">{user?.email}</p>
               </div>
             </div>
             <div className="space-y-1">
-              {TABS.map((tab) => <SidebarLink key={tab.id} tab={tab} />)}
+              {visibleTabs.map((tab) => <SidebarLink key={tab.id} tab={tab} />)}
             </div>
           </div>
         </aside>
 
         {/* Mobile tab selector - horizontal scrollable on small screens */}
-        <div className="md:hidden mb-4 -mx-3 sm:-mx-4 px-3 sm:px-4">
-          <div className="flex gap-2 overflow-x-auto no-scrollbar scroll-smooth" style={{ scrollBehavior: 'smooth' }}>
-            {TABS.map((tab) => (
+        <div className="md:hidden mb-4 -mx-3 sm:-mx-4 px-3 sm:px-4 overflow-x-auto">
+          <div className="flex gap-2 no-scrollbar scroll-smooth w-max" style={{ scrollBehavior: 'smooth' }}>
+            {visibleTabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => navigate(`/account/${tab.id}`)}
@@ -156,18 +162,18 @@ export function AccountPage() {
                   <User className="w-10 h-10 text-primary-500" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-primary-700">Demo User</h2>
-                  <p className="text-sm text-primary-400">demo@marbou.sd</p>
+                  <h2 className="font-bold text-primary-700">{user?.displayName || t('user')}</h2>
+                  <p className="text-sm text-primary-400">{user?.email || ''}</p>
                 </div>
               </div>
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-medium text-primary-600 mb-1.5 block">{t('contactDetails')}</label>
-                  <input className="input w-full" defaultValue="Demo User" />
+                  <input className="input w-full" defaultValue={user?.displayName || ''} />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-primary-600 mb-1.5 block">Email</label>
-                  <input className="input w-full" defaultValue="demo@marbou.sd" />
+                  <input className="input w-full" defaultValue={user?.email || ''} />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-primary-600 mb-1.5 block">{t('call')}</label>

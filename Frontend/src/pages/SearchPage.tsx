@@ -24,6 +24,16 @@ export function SearchPage() {
   const initialSort = urlParams.get('sort') || 'relevance';
 
   const [query, setQuery] = useState(initialQuery);
+  
+  // Deserialize specs from URL
+  const initialSpecs: Record<string, string> = {};
+  urlParams.forEach((value, key) => {
+    if (key.startsWith('specs[') && key.endsWith(']')) {
+      const specKey = key.slice(6, -1); // Extract key from specs[key]
+      initialSpecs[specKey] = value;
+    }
+  });
+
   const [filters, setFilters] = useState<FilterState>({
     category: initialCategory || undefined,
     subcategory: urlParams.get('subcategory') || undefined,
@@ -31,6 +41,7 @@ export function SearchPage() {
     minPrice: urlParams.get('minPrice') ? parseInt(urlParams.get('minPrice')!) : undefined,
     maxPrice: urlParams.get('maxPrice') ? parseInt(urlParams.get('maxPrice')!) : undefined,
     condition: urlParams.get('condition') || undefined,
+    specs: Object.keys(initialSpecs).length > 0 ? initialSpecs : undefined,
   });
   const [sort, setSort] = useState(initialSort);
   const [layout, setLayout] = useState<'grid' | 'list'>('grid');
@@ -49,14 +60,21 @@ export function SearchPage() {
     if (filters.minPrice !== undefined) params.set('minPrice', String(filters.minPrice));
     if (filters.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));
     if (filters.condition) params.set('condition', filters.condition);
+    if (filters.specs) {
+      Object.entries(filters.specs).forEach(([k, v]) => {
+        params.set(`specs[${k}]`, v);
+      });
+    }
     if (sort !== 'relevance') params.set('sort', sort);
     if (currentPage > 1) params.set('page', String(currentPage));
 
     const newPath = `/search${params.toString() ? `?${params.toString()}` : ''}`;
     if (newPath !== path) {
-      navigate(newPath);
+      // Use replace for filter/sort changes, push for new queries
+      const isFilterChange = query === initialQuery;
+      navigate(newPath, { replace: isFilterChange });
     }
-  }, [query, filters, sort, currentPage, path, navigate]);
+  }, [query, filters, sort, currentPage, path, navigate, initialQuery]);
 
   useEffect(() => {
     setLoading(true);
@@ -98,6 +116,15 @@ export function SearchPage() {
     }
     if (filters.condition && filters.condition !== 'all') {
       filtered = filtered.filter((l) => l.condition === filters.condition);
+    }
+
+    // Filter by specs
+    if (filters.specs && Object.keys(filters.specs).length > 0) {
+      filtered = filtered.filter((listing) => {
+        return Object.entries(filters.specs!).every(([specKey, specValue]) => {
+          return listing.specs?.some((s) => s.key === specKey && String(s.value) === specValue);
+        });
+      });
     }
 
     switch (sort) {
@@ -211,7 +238,7 @@ export function SearchPage() {
 
       <div className="flex gap-6">
         {/* Desktop filters */}
-        <aside className="hidden lg:block w-64 shrink-0">
+        <aside className="hidden md:block w-64 shrink-0">
           <FilterPanel
             filters={filters}
             onChange={handleFilterChange}

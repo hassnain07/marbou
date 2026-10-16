@@ -1,5 +1,6 @@
-import { memo, useCallback, useRef, useEffect, useState } from 'react';
+import { memo, useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import { useI18n } from '@/i18n/I18nContext';
+import { getSpecOptionsForCategory } from '@/services/filters';
 import { ChevronDown, X } from 'lucide-react';
 
 export interface FilterState {
@@ -9,6 +10,7 @@ export interface FilterState {
   minPrice?: number;
   maxPrice?: number;
   condition?: string;
+  specs?: Record<string, string>;
 }
 
 interface FilterPanelProps {
@@ -43,7 +45,22 @@ function FilterPanelComponent({
   );
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const filterGroups: FilterGroup[] = [
+  // Get dynamic spec options for the selected category
+  const specOptions = useMemo(() => {
+    if (!filters.category) return {};
+    return getSpecOptionsForCategory(filters.category);
+  }, [filters.category]);
+
+  const dynamicSpecGroups: FilterGroup[] = useMemo(() => {
+    return Object.entries(specOptions).map(([specKey, values]) => ({
+      id: `spec-${specKey}`,
+      label: specKey.charAt(0).toUpperCase() + specKey.slice(1), // Capitalize key
+      type: 'select' as const,
+      options: values.map((v) => ({ value: v, label: v })),
+    }));
+  }, [specOptions]);
+
+  const staticFilterGroups: FilterGroup[] = [
     {
       id: 'category',
       label: t('category'),
@@ -74,6 +91,8 @@ function FilterPanelComponent({
     },
   ];
 
+  const filterGroups = [...staticFilterGroups, ...dynamicSpecGroups];
+
   const toggleGroup = useCallback((groupId: string) => {
     setExpandedGroups((prev) => {
       const next = new Set(prev);
@@ -87,8 +106,20 @@ function FilterPanelComponent({
   }, []);
 
   const handleChange = useCallback(
-    (key: keyof FilterState, value: any) => {
-      onChange({ ...filters, [key]: value });
+    (key: keyof FilterState | string, value: any) => {
+      // Handle spec filters
+      if (key.startsWith('spec-')) {
+        const specKey = key.replace('spec-', '');
+        const newSpecs = { ...filters.specs };
+        if (value) {
+          newSpecs[specKey] = value;
+        } else {
+          delete newSpecs[specKey];
+        }
+        onChange({ ...filters, specs: Object.keys(newSpecs).length > 0 ? newSpecs : undefined });
+      } else {
+        onChange({ ...filters, [key]: value });
+      }
     },
     [filters, onChange],
   );
@@ -124,10 +155,14 @@ function FilterPanelComponent({
             <div id={`filter-group-${group.id}`} className="space-y-2 ps-2">
               {group.type === 'select' && (
                 <select
-                  value={filters[group.id as keyof FilterState] || ''}
+                  value={
+                    group.id.startsWith('spec-')
+                      ? filters.specs?.[group.id.replace('spec-', '')] || ''
+                      : String(filters[group.id as keyof FilterState] || '')
+                  }
                   onChange={(e) =>
                     handleChange(
-                      group.id as keyof FilterState,
+                      group.id,
                       e.target.value || undefined,
                     )
                   }

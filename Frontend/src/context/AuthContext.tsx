@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import * as authService from '@/services/auth';
 
 export type AccountType = 'buyer_seller' | 'business';
 
@@ -7,37 +8,30 @@ export interface AuthUser {
   email: string;
   accountType: AccountType;
   displayName: string;
-  phone: string;
+  phone?: string;
   businessName?: string;
   businessCategory?: string;
+  createdAt: number;
+  lastLoginAt?: number;
 }
 
 interface AuthContextValue {
   user: AuthUser | null;
-  register: (data: Omit<AuthUser, 'id'>) => { success: boolean; error?: string };
-  login: (email: string, password: string) => { success: boolean; error?: string };
+  register: (data: {
+    email: string;
+    password: string;
+    displayName: string;
+    phone?: string;
+    accountType: AccountType;
+    businessName?: string;
+    businessCategory?: string;
+  }) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
-const USERS_KEY = 'marbou-users';
-const SESSION_KEY = 'marbou-session';
-
-interface StoredUser extends AuthUser {
-  password: string;
-}
-
-function getStoredUsers(): StoredUser[] {
-  try {
-    return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
-  } catch {
-    return [];
-  }
-}
-
-function saveStoredUsers(users: StoredUser[]) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-}
+const SESSION_KEY = 'marbou-session-v2';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(() => {
@@ -57,35 +51,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
-  const register: AuthContextValue['register'] = (data) => {
-    const users = getStoredUsers();
-    if (users.some((u) => u.email === data.email)) {
-      return { success: false, error: 'emailExists' };
-    }
-    const newUser: StoredUser = {
-      ...data,
-      id: `user-${Date.now()}`,
-      password: (data as any).password || '',
-    };
-    users.push(newUser);
-    saveStoredUsers(users);
-    const { password: _, ...userWithoutPassword } = newUser;
-    setUser(userWithoutPassword);
-    return { success: true };
+  const register = async (data: {
+    email: string;
+    password: string;
+    displayName: string;
+    phone?: string;
+    accountType: AccountType;
+    businessName?: string;
+    businessCategory?: string;
+  }) => {
+    const result = await authService.register(data);
+    // Note: Don't set user yet - OTP verification required first
+    return { success: result.success, error: result.error };
   };
 
-  const login: AuthContextValue['login'] = (email, password) => {
-    const users = getStoredUsers();
-    const found = users.find((u) => u.email === email && u.password === password);
-    if (!found) {
-      return { success: false, error: 'invalidCredentials' };
+  const login = async (email: string, password: string) => {
+    const result = await authService.login(email, password);
+    if (result.success && result.session) {
+      setUser(result.session.user);
     }
-    const { password: _, ...userWithoutPassword } = found;
-    setUser(userWithoutPassword);
-    return { success: true };
+    return { success: result.success, error: result.error };
   };
 
-  const logout = () => setUser(null);
+  const logout = () => {
+    setUser(null);
+    authService.logout();
+  };
 
   return (
     <AuthContext.Provider value={{ user, register, login, logout }}>
@@ -99,3 +90,5 @@ export function useAuth() {
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 }
+
+export { authService };

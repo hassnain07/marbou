@@ -1,12 +1,14 @@
 import { useState, ReactNode } from 'react';
 import { useI18n } from '@/i18n/I18nContext';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { Link, useRouter } from '@/router/Router';
 import { categories, sudanCities } from '@/data/mockData';
 import { Footer } from '@/components/Footer';
+import { AuthGateSheet } from '@/components/AuthGateSheet';
 import {
   Search, MapPin, Bell, MessageSquare, User, Plus, Home, Menu, X,
-  Globe, ChevronDown, Store, Shield, ShoppingBag, Settings, Wifi, WifiOff, Gauge,
+  Globe, ChevronDown, Store, Shield, ShoppingBag, Settings, Wifi, WifiOff, Gauge, LogOut,
 } from 'lucide-react';
 import type { TranslationKey } from '@/i18n/translations';
 
@@ -40,11 +42,11 @@ function LocationSelector({ compact = false }: { compact?: boolean }) {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-800 font-medium px-2 py-1 rounded-lg hover:bg-primary-50 transition-colors"
+        className="flex items-center gap-2 text-sm text-primary-600 hover:text-primary-800 font-medium px-3 py-2 rounded-lg hover:bg-primary-50 transition-colors whitespace-nowrap"
       >
-        <MapPin className="w-4 h-4 text-primary-400" />
-        <span className={compact ? 'max-w-[100px] truncate' : ''}>{label}</span>
-        <ChevronDown className="w-3.5 h-3.5 text-primary-300" />
+        <MapPin className="w-4 h-4 text-primary-400 shrink-0" />
+        <span className="hidden sm:inline max-w-[120px] truncate">{label}</span>
+        <ChevronDown className="w-4 h-4 text-primary-300 shrink-0" />
       </button>
       {open && (
         <>
@@ -81,6 +83,76 @@ function LangSwitch() {
       <Globe className="w-4 h-4" />
       {lang === 'ar' ? 'EN' : 'ع'}
     </button>
+  );
+}
+
+function UserMenu() {
+  const { t } = useI18n();
+  const { user, logout } = useAuth();
+  const { navigate } = useRouter();
+  const [open, setOpen] = useState(false);
+
+  if (!user) return null;
+
+  const handleLogout = () => {
+    logout();
+    setOpen(false);
+    navigate('/');
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-primary-600 hover:bg-primary-50 transition-colors"
+      >
+        <div className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center">
+          <User className="w-4 h-4 text-primary-600" />
+        </div>
+        <span className="hidden sm:inline max-w-[120px] truncate">{user.displayName}</span>
+        <ChevronDown className="w-4 h-4 text-primary-300 shrink-0" />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute top-full mt-1 end-0 bg-white rounded-xl shadow-xl border border-sand-100 z-50 p-2 min-w-[200px] animate-slide-down">
+            <div className="px-3 py-2 border-b border-sand-100 mb-2">
+              <p className="font-medium text-primary-700 text-sm">{user.displayName}</p>
+              <p className="text-xs text-primary-400">{user.email}</p>
+            </div>
+            <button
+              onClick={() => { navigate('/account'); setOpen(false); }}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-primary-600 hover:bg-primary-50 transition-colors"
+            >
+              <User className="w-4 h-4" />
+              {t('account')}
+            </button>
+            <button
+              onClick={() => { navigate('/messages'); setOpen(false); }}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-primary-600 hover:bg-primary-50 transition-colors"
+            >
+              <MessageSquare className="w-4 h-4" />
+              {t('messages')}
+            </button>
+            <button
+              onClick={() => { navigate('/account/settings'); setOpen(false); }}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-primary-600 hover:bg-primary-50 transition-colors"
+            >
+              <Settings className="w-4 h-4" />
+              {t('settings')}
+            </button>
+            <hr className="my-2 border-sand-100" />
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-error-600 hover:bg-error-50 transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </button>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -218,73 +290,92 @@ function CategoryMenu() {
 export function Header() {
   const { t } = useI18n();
   const { navigate } = useRouter();
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <header className="sticky top-0 z-30 bg-white border-b border-sand-100 shadow-sm">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
-        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 h-14 sm:h-16">
-          {/* Logo - always visible */}
-          <Logo />
+    <header className="sticky top-0 z-30 bg-white border-b border-sand-100 shadow-sm w-full">
+      <div className="w-full px-3 sm:px-4 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16 gap-4">
+          {/* Left: Logo */}
+          <div className="shrink-0">
+            <Logo />
+          </div>
           
-          {/* Location selector - desktop only */}
-          <div className="hidden md:block"><LocationSelector /></div>
-          
-          {/* Category menu - shown on sm-md, hidden below sm and on lg+ */}
-          <div className="hidden sm:block lg:hidden"><CategoryMenu /></div>
-          <div className="hidden lg:block"><CategoryMenu /></div>
-          
-          {/* Search - desktop, icon only on mobile */}
-          <div className="md:flex-1 md:max-w-xl hidden md:block">
+          {/* Center: Search bar - desktop only */}
+          <div className="hidden lg:flex flex-1 max-w-2xl mx-6">
             <form
               onSubmit={(e) => { e.preventDefault(); navigate(`/search?q=${encodeURIComponent(searchQuery)}`); }}
-              className="relative"
+              className="w-full"
             >
-              <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-300" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t('searchPlaceholder')}
-                className="input ps-10 pe-3 py-2 text-sm w-full"
-              />
+              <div className="relative">
+                <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-300" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={t('searchPlaceholder')}
+                  className="input ps-10 pe-4 py-2.5 text-sm w-full"
+                />
+              </div>
             </form>
           </div>
           
-          {/* Right side actions */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0 md:ml-auto">
-            {/* Search icon on mobile */}
+          {/* Right: Actions */}
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            {/* Search icon on mobile/tablet */}
             <button
               onClick={() => navigate('/search')}
-              className="md:hidden p-2 rounded-lg text-primary-500 hover:bg-primary-50 transition-colors"
+              className="lg:hidden p-2 rounded-lg text-primary-500 hover:bg-primary-50 transition-colors"
               aria-label={t('search')}
             >
               <Search className="w-5 h-5" />
             </button>
             
-            {/* Notifications - hidden on mobile, shown sm+ */}
-            <Link to="/account/notifications" className="hidden sm:flex relative p-2 rounded-lg text-primary-500 hover:bg-primary-50 transition-colors">
+            {/* Location - md and up */}
+            <div className="hidden md:block">
+              <LocationSelector compact />
+            </div>
+            
+            {/* Notifications - sm and up */}
+            <Link to="/account/notifications" className="hidden sm:flex p-2 rounded-lg text-primary-500 hover:bg-primary-50 transition-colors relative">
               <Bell className="w-5 h-5" />
               <span className="absolute top-1 end-1 w-2 h-2 bg-error-500 rounded-full" />
             </Link>
             
             {/* Language switch */}
-            <div className="hidden sm:block"><LangSwitch /></div>
-            
-            {/* Network & demo role - desktop only */}
-            <div className="hidden lg:flex items-center gap-1 sm:gap-2">
-              <NetworkStatusControl />
-              <DemoRoleSwitcher />
+            <div className="hidden md:block">
+              <LangSwitch />
             </div>
             
-            {/* Auth buttons - hidden on mobile */}
-            <Link to="/login" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-primary-600 hover:bg-primary-50 transition-colors">
-              {t('login')}
-            </Link>
-            <Link to="/register" className="btn-primary py-2 px-3 sm:px-4 text-sm shrink-0">
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">{t('createAccount')}</span>
-            </Link>
+            {/* User menu or Auth buttons */}
+            {user ? (
+              <div className="hidden sm:block">
+                <UserMenu />
+              </div>
+            ) : (
+              <div className="hidden sm:flex items-center gap-2">
+                <button
+                  onClick={() => navigate('/auth/login')}
+                  className="px-3 py-1.5 rounded-lg text-sm font-medium text-primary-600 hover:bg-primary-50 transition-colors"
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => navigate('/auth/register')}
+                  className="px-3 py-1.5 rounded-lg text-sm font-medium bg-primary-600 text-white hover:bg-primary-700 transition-colors"
+                >
+                  Sign Up
+                </button>
+              </div>
+            )}
+            
+            {/* Demo role - lg and up, dev only */}
+            {import.meta.env.DEV && (
+              <div className="hidden lg:block">
+                <DemoRoleSwitcher />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -342,16 +433,42 @@ export function BottomNav() {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { path } = useRouter();
+  const { networkState, dataSaver } = useApp();
+  const { t } = useI18n();
   const isDashboard = path.startsWith('/business') || path.startsWith('/admin');
 
   return (
-    <div className="min-h-screen bg-sand-50 flex flex-col">
+    <div className="min-h-screen bg-sand-50 flex flex-col w-full overflow-x-hidden">
       <Header />
-      <main className={`${isDashboard ? '' : 'max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4'} pb-20 md:pb-8 flex-1`}>
+      
+      {/* Network and Data Saver Banners */}
+      {networkState === 'offline' && (
+        <div className="bg-error-50 border-b border-error-200 px-4 py-2 text-sm text-error-700 flex items-center gap-2">
+          <WifiOff className="w-4 h-4 shrink-0" />
+          <span>{t('offline')}</span>
+        </div>
+      )}
+      
+      {networkState === 'slow' && (
+        <div className="bg-warning-50 border-b border-warning-200 px-4 py-2 text-sm text-warning-700 flex items-center gap-2">
+          <Gauge className="w-4 h-4 shrink-0" />
+          <span>{t('slowConnection')}</span>
+        </div>
+      )}
+      
+      {dataSaver && (
+        <div className="bg-accent-50 border-b border-accent-200 px-4 py-2 text-sm text-accent-700 flex items-center gap-2">
+          <Gauge className="w-4 h-4 shrink-0" />
+          <span>{t('dataSaverOn')}</span>
+        </div>
+      )}
+      
+      <main className={`${isDashboard ? 'w-full' : 'max-w-7xl mx-auto w-full px-3 sm:px-4 lg:px-6 py-4'} pb-20 md:pb-8 flex-1`}>
         {children}
       </main>
       {!isDashboard && <Footer />}
       <BottomNav />
+      <AuthGateSheet />
     </div>
   );
 }

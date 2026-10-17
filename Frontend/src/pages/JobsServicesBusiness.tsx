@@ -266,6 +266,7 @@ export function BusinessProfilePage() {
           </div>
           <div className="flex gap-2">
             <button onClick={() => setShowContact(true)} className="btn-primary text-sm"><Phone className="w-4 h-4" />{t('call')}</button>
+            <a href={`https://wa.me/${biz.whatsapp?.replace(/\s+/g, '').replace(/^\+/, '') || biz.phone.replace(/\s+/g, '').replace(/^\+/, '')}?text=${encodeURIComponent(`Hi, I'm interested in your services`)}`} target="_blank" rel="noopener noreferrer" className="btn-secondary text-sm"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z"/></svg>{t('whatsapp')}</a>
             <button onClick={() => showToast(t('share'), 'success')} className="btn-secondary text-sm"><Share2 className="w-4 h-4" /></button>
             <button onClick={() => showToast(t('reportSubmitted'), 'success')} className="btn-secondary text-sm"><Flag className="w-4 h-4" /></button>
           </div>
@@ -400,9 +401,12 @@ export function BusinessProfilePage() {
       <Modal open={showContact} onClose={() => setShowContact(false)} title={t('contactPreview')} size="sm">
         <div className="space-y-3">
           <div className="bg-sand-50 rounded-xl p-4 text-center">
-            <p className="text-xs text-primary-400 mb-1">{t('fictionalAccount')}</p>
+            <p className="text-xs text-primary-400 mb-1">{t('sellerInfo')}</p>
             <p className="text-lg font-bold text-primary-700">{biz.phone}</p>
           </div>
+          <a href={`tel:${biz.phone.replace(/\s+/g, '')}`} className="btn-primary w-full justify-center">
+            <Phone className="w-4 h-4" />{t('call')}
+          </a>
           <button onClick={() => { setShowContact(false); navigate('/messages'); }} className="btn-secondary w-full">
             <MessageSquare className="w-4 h-4" />{t('message')}
           </button>

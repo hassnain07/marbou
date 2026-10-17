@@ -78,6 +78,10 @@ export function SellerProfilePage() {
           <Link to="/messages" className="btn-secondary text-sm justify-center">
             <MessageSquare className="w-4 h-4" />{t('message')}
           </Link>
+          <a href={`https://wa.me/${sample.whatsapp.replace(/\s+/g, '').replace(/^\+/, '')}?text=${encodeURIComponent(`Hi, I'm interested in your products`)}`} target="_blank" rel="noopener noreferrer" className="btn-secondary text-sm justify-center bg-success-50 text-success-600 border border-success-200 hover:bg-success-100">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z"/></svg>
+            {t('whatsapp')}
+          </a>
           <button onClick={() => showToast(lang === 'ar' ? 'تم نسخ الرابط' : 'Link copied', 'success')} className="btn-secondary text-sm">
             <Share2 className="w-4 h-4" />{t('share')}
           </button>
@@ -140,11 +144,11 @@ export function SellerProfilePage() {
       <Modal open={showContact} onClose={() => setShowContact(false)} title={t('contactPreview')} size="sm">
         <div className="space-y-4">
           <div className="bg-sand-50 rounded-xl p-4 text-center">
-            <p className="text-xs text-primary-400 mb-1">{t('fictionalAccount')}</p>
-            <p className="text-lg font-bold text-primary-700">+249 91 234 5678</p>
+            <p className="text-xs text-primary-400 mb-1">{t('sellerInfo')}</p>
+            <p className="text-lg font-bold text-primary-700">{sample.phone}</p>
           </div>
           <div className="flex gap-2">
-            <a href="tel:+249912345678" className="btn-primary flex-1 justify-center text-sm">
+            <a href={`tel:${sample.phone.replace(/\s+/g, '')}`} className="btn-primary flex-1 justify-center text-sm">
               <Phone className="w-4 h-4" />{t('call')}
             </a>
             <button onClick={() => { setShowContact(false); navigate('/messages'); }} className="btn-secondary flex-1 justify-center text-sm">

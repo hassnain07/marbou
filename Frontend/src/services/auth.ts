@@ -4,6 +4,30 @@
 const MOCK_OTP_CODES: Map<string, { code: string; expiresAt: number; attempts: number }> = new Map();
 const USERS_KEY = 'marbou-users-v2'; // v2 to avoid old plaintext users
 
+// Pre-seeded demo users for testing different roles
+const DEMO_USERS = [
+  {
+    email: 'buyer@demo.com',
+    password: 'demo123',
+    displayName: 'Buyer Demo',
+    accountType: 'buyer_seller' as const,
+  },
+  {
+    email: 'seller@demo.com',
+    password: 'demo123',
+    displayName: 'Seller Demo',
+    accountType: 'buyer_seller' as const,
+  },
+  {
+    email: 'business@demo.com',
+    password: 'demo123',
+    displayName: 'Business Demo',
+    accountType: 'business' as const,
+    businessName: 'Demo Store',
+    businessCategory: 'retail',
+  },
+];
+
 export interface AuthUser {
   id: string;
   email: string;
@@ -46,6 +70,31 @@ function getStoredUsers(): StoredAuthUser[] {
     return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
   } catch {
     return [];
+  }
+}
+
+export async function initializeAuthSystem(): Promise<void> {
+  const users = getStoredUsers();
+  
+  // Seed demo users if storage is empty
+  if (users.length === 0) {
+    const seededUsers: StoredAuthUser[] = [];
+    
+    for (const demoUser of DEMO_USERS) {
+      const passwordHash = await hashPassword(demoUser.password);
+      seededUsers.push({
+        id: `user-${Date.now()}-${Math.random()}`,
+        email: demoUser.email,
+        displayName: demoUser.displayName,
+        accountType: demoUser.accountType,
+        businessName: demoUser.businessName,
+        businessCategory: demoUser.businessCategory,
+        passwordHash,
+        createdAt: Date.now(),
+      });
+    }
+    
+    saveStoredUsers(seededUsers);
   }
 }
 

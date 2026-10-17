@@ -756,6 +756,9 @@ export const translations = {
     
     // AuthGateSheet keys (continued)
     secureTransaction: 'معلوماتك آمنة ومشفرة',
+    signInRequired: 'تسجيل الدخول مطلوب',
+    signInToChat: 'يرجى تسجيل الدخول لبدء المحادثات',
+    signInToMessage: 'يرجى تسجيل الدخول لإرسال الرسائل',
 
     // New keys for blockers
     listing: 'الإعلان',
@@ -1488,6 +1491,9 @@ export const translations = {
     
     // AuthGateSheet keys (continued)
     secureTransaction: 'Your information is secure and encrypted',
+    signInRequired: 'Sign In Required',
+    signInToChat: 'Please sign in to start chatting',
+    signInToMessage: 'Please sign in to send messages',
 
     // New keys for blockers
     listing: 'Listing',

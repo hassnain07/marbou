@@ -376,7 +376,7 @@ export function RegisterPage() {
 
 export function LoginPage() {
   const { t, lang } = useI18n();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const { navigate } = useRouter();
 
   const [email, setEmail] = useState('');
@@ -385,6 +385,13 @@ export function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Redirect after successful login
+  useEffect(() => {
+    if (user) {
+      navigate(user.accountType === 'business' ? '/business' : '/account');
+    }
+  }, [user, navigate]);
 
   const handleLogin = async () => {
     setError('');
@@ -395,11 +402,10 @@ export function LoginPage() {
     setLoading(true);
     const result = await login(email, password);
     setLoading(false);
-    if (result.success) {
-      navigate('/account');
-    } else {
+    if (!result.success) {
       setError(result.error === 'invalidCredentials' ? t('invalidCredentials') : t('errorState'));
     }
+    // Navigation happens via useEffect when user is set
   };
 
   return (

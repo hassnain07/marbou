@@ -3,12 +3,12 @@ import { useI18n } from '@/i18n/I18nContext';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { Link, useRouter } from '@/router/Router';
-import { categories, sudanCities } from '@/data/mockData';
+import { categories } from '@/data/mockData';
 import { Footer } from '@/components/Footer';
 import { AuthGateSheet } from '@/components/AuthGateSheet';
 import {
-  Search, MapPin, Bell, MessageSquare, User, Plus, Home, Menu, X,
-  Globe, ChevronDown, Store, Shield, ShoppingBag, Settings, Wifi, WifiOff, Gauge, LogOut,
+  Search, Bell, MessageSquare, User, Plus, Home, Menu, X,
+  Globe, ChevronDown, ShoppingBag, Settings, Wifi, WifiOff, Gauge, LogOut,
 } from 'lucide-react';
 import type { TranslationKey } from '@/i18n/translations';
 
@@ -25,51 +25,6 @@ function Logo() {
       </div>
       <span className="text-xl font-extrabold text-primary-700 tracking-tight hidden sm:block">{t('brandName')}</span>
     </Link>
-  );
-}
-
-function LocationSelector({ compact = false }: { compact?: boolean }) {
-  const { lang, t } = useI18n();
-  const { location, setLocation } = useApp();
-  const [open, setOpen] = useState(false);
-  const city = sudanCities.find((c) => c.id === location.cityId);
-  const area = city?.areas.find((a) => a.id === location.areaId);
-  const label = lang === 'ar'
-    ? `${city?.nameAr || ''}${area ? ' - ' + area.nameAr : ''}`
-    : `${city?.name || ''}${area ? ' - ' + area.name : ''}`;
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-sm text-primary-600 hover:text-primary-800 font-medium px-3 py-2 rounded-lg hover:bg-primary-50 transition-colors whitespace-nowrap"
-      >
-        <MapPin className="w-4 h-4 text-primary-400 shrink-0" />
-        <span className="hidden sm:inline max-w-[120px] truncate">{label}</span>
-        <ChevronDown className="w-4 h-4 text-primary-300 shrink-0" />
-      </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute top-full mt-1 start-0 bg-white rounded-xl shadow-xl border border-sand-100 z-50 p-3 min-w-[240px] max-h-[320px] overflow-y-auto animate-slide-down">
-            {sudanCities.map((c) => (
-              <div key={c.id} className="mb-2">
-                <p className="text-xs font-bold text-primary-400 px-2 py-1">{lang === 'ar' ? c.nameAr : c.name}</p>
-                {c.areas.map((a) => (
-                  <button
-                    key={a.id}
-                    onClick={() => { setLocation({ cityId: c.id, areaId: a.id }); setOpen(false); }}
-                    className={`w-full text-start px-3 py-1.5 rounded-lg text-sm hover:bg-primary-50 transition-colors ${location.cityId === c.id && location.areaId === a.id ? 'bg-primary-50 text-primary-700 font-medium' : 'text-primary-600'}`}
-                  >
-                    {lang === 'ar' ? a.nameAr : a.name}
-                  </button>
-                ))}
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
   );
 }
 
@@ -149,54 +104,6 @@ function UserMenu() {
               <LogOut className="w-4 h-4" />
               Sign Out
             </button>
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-function DemoRoleSwitcher() {
-  const { t } = useI18n();
-  const { demoRole, setDemoRole } = useApp();
-  const [open, setOpen] = useState(false);
-  const { navigate } = useRouter();
-
-  const roles: { id: 'buyer' | 'business' | 'admin'; label: string; icon: ReactNode; path: string }[] = [
-    { id: 'buyer', label: t('buyerSeller'), icon: <User className="w-4 h-4" />, path: '/account' },
-    { id: 'business', label: t('business'), icon: <Store className="w-4 h-4" />, path: '/business' },
-    { id: 'admin', label: t('admin'), icon: <Shield className="w-4 h-4" />, path: '/admin' },
-  ];
-
-  const current = roles.find((r) => r.id === demoRole) || roles[0];
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-sand-100 text-primary-600 hover:bg-sand-200 transition-colors"
-      >
-        {current.icon}
-        <span className="hidden sm:inline">{current.label}</span>
-        <span className="badge bg-accent-100 text-accent-700 text-[10px]">{t('demoLabel')}</span>
-        <ChevronDown className="w-3 h-3" />
-      </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute top-full mt-1 end-0 bg-white rounded-xl shadow-xl border border-sand-100 z-50 p-2 min-w-[200px] animate-slide-down">
-            <p className="text-xs text-primary-400 px-3 py-1 font-medium">{t('switchDemoView')}</p>
-            {roles.map((r) => (
-              <button
-                key={r.id}
-                onClick={() => { setDemoRole(r.id); navigate(r.path); setOpen(false); }}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-primary-50 transition-colors ${demoRole === r.id ? 'bg-primary-50 text-primary-700 font-medium' : 'text-primary-600'}`}
-              >
-                {r.icon}
-                {r.label}
-                {demoRole === r.id && <span className="badge bg-primary-100 text-primary-700 ms-auto text-[10px]">{t('activeRole')}</span>}
-              </button>
-            ))}
           </div>
         </>
       )}
@@ -322,7 +229,7 @@ export function Header() {
           </div>
           
           {/* Right: Actions */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0 ml-auto">
             {/* Search icon on mobile/tablet */}
             <button
               onClick={() => navigate('/search')}
@@ -332,48 +239,26 @@ export function Header() {
               <Search className="w-5 h-5" />
             </button>
             
-            {/* Location - md and up */}
-            <div className="hidden md:block">
-              <LocationSelector compact />
-            </div>
-            
-            {/* Notifications - sm and up */}
-            <Link to="/account/notifications" className="hidden sm:flex p-2 rounded-lg text-primary-500 hover:bg-primary-50 transition-colors relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1 end-1 w-2 h-2 bg-error-500 rounded-full" />
-            </Link>
-            
-            {/* Language switch */}
-            <div className="hidden md:block">
-              <LangSwitch />
-            </div>
+            {/* Language switch - always visible */}
+            <LangSwitch />
             
             {/* User menu or Auth buttons */}
             {user ? (
-              <div className="hidden sm:block">
-                <UserMenu />
-              </div>
+              <UserMenu />
             ) : (
-              <div className="hidden sm:flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <button
-                  onClick={() => navigate('/auth/login')}
-                  className="px-3 py-1.5 rounded-lg text-sm font-medium text-primary-600 hover:bg-primary-50 transition-colors"
+                  onClick={() => navigate('/login')}
+                  className="px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-primary-600 hover:bg-primary-50 transition-colors whitespace-nowrap"
                 >
                   Sign In
                 </button>
                 <button
-                  onClick={() => navigate('/auth/register')}
-                  className="px-3 py-1.5 rounded-lg text-sm font-medium bg-primary-600 text-white hover:bg-primary-700 transition-colors"
+                  onClick={() => navigate('/register')}
+                  className="px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-primary-600 text-white hover:bg-primary-700 transition-colors whitespace-nowrap"
                 >
                   Sign Up
                 </button>
-              </div>
-            )}
-            
-            {/* Demo role - lg and up, dev only */}
-            {import.meta.env.DEV && (
-              <div className="hidden lg:block">
-                <DemoRoleSwitcher />
               </div>
             )}
           </div>

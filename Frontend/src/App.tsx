@@ -7,6 +7,7 @@ import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Toast, Skeleton } from '@/components/ui';
 import { Suspense, lazy, useEffect } from 'react';
 import { useI18n } from '@/i18n/I18nContext';
+import { initializeAuthSystem } from '@/services/auth';
 
 const HomePage = lazy(() => import('@/pages/HomePage').then((m) => ({ default: m.HomePage })));
 const SearchPage = lazy(() => import('@/pages/SearchPage').then((m) => ({ default: m.SearchPage })));
@@ -179,6 +180,10 @@ function Routes() {
 }
 
 function App() {
+  useEffect(() => {
+    initializeAuthSystem();
+  }, []);
+
   return (
     <I18nProvider>
       <AppProvider>

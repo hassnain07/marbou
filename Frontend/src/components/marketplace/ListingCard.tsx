@@ -186,7 +186,7 @@ function ListingCardComponent({ listing, layout = 'grid', loading = false, dataS
             <button
               onClick={(e) => {
                 e.preventDefault();
-                if (compareList.length < 3 || comparing) toggleCompare(listing.id);
+                if (compareList.length < 4 || comparing) toggleCompare(listing.id);
               }}
               className={`absolute bottom-2 start-2 bg-white/90 rounded-full p-2 shadow-sm hover:bg-white transition-all ${comparing ? 'ring-2 ring-primary-500' : ''}`}
               aria-label={comparing ? t('removeCompare') : t('addCompare')}

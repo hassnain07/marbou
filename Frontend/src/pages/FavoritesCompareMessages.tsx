@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useI18n } from '@/i18n/I18nContext';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { useRouter, Link } from '@/router/Router';
 import { ListingCardGrid } from '@/components/ListingCard';
 import { EmptyState, Modal, StatusBadge } from '@/components/ui';
@@ -141,13 +142,29 @@ export function ComparePage() {
 export function MessagesPage() {
   const { t, lang, formatDate, formatPrice } = useI18n();
   const { navigate } = useRouter();
-  const { showToast } = useApp();
+  const { user } = useAuth();
+  const { showToast, showAuthGate } = useApp();
   const [activeConv, setActiveConv] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [showOffer, setShowOffer] = useState(false);
   const [offerAmount, setOfferAmount] = useState('');
   const [convs, setConvs] = useState(conversations);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Gate: require authentication
+  if (!user) {
+    return (
+      <div className="py-4 max-w-3xl mx-auto">
+        <h1 className="text-xl font-bold text-primary-800 mb-4">{t('messages')}</h1>
+        <EmptyState
+          icon={<MessageSquare className="w-10 h-10" />}
+          title={t('signInRequired')}
+          description={t('signInToChat')}
+          action={<button onClick={() => navigate('/auth/login')} className="btn-primary text-sm">{t('signIn')}</button>}
+        />
+      </div>
+    );
+  }
 
   const filteredConvs = convs.filter((c) => {
     const name = lang === 'ar' ? c.participantNameAr : c.participantName;

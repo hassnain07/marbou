@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useI18n } from '@/i18n/I18nContext';
 import type { TranslationKey } from '@/i18n/translations';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { useRouter, Link } from '@/router/Router';
 import { ListingCard } from '@/components/ListingCard';
 import { Modal, RatingStars, TrustBadge, StatusBadge, EmptyState } from '@/components/ui';
@@ -9,13 +10,14 @@ import { listings, businesses, sampleReviews } from '@/data/mockData';
 import {
   Heart, Share2, GitCompare, Phone, MessageSquare, MapPin, Eye, Clock,
   ChevronLeft, ChevronRight, X, Shield, Flag, Ban, CheckCircle, ChevronDown,
-  Star, Send, Video,
+  Star, Send, Video, Lock,
 } from 'lucide-react';
 
 export function ListingDetailPage() {
   const { t, lang, formatPrice, formatDate, formatNumber } = useI18n();
   const { path, navigate } = useRouter();
-  const { isFavorite, toggleFavorite, isComparing, toggleCompare, compareList, addRecentlyViewed, showToast, dataSaver } = useApp();
+  const { user } = useAuth();
+  const { isFavorite, toggleFavorite, isComparing, toggleCompare, compareList, addRecentlyViewed, showToast, showAuthGate, dataSaver } = useApp();
 
   const id = path.split('/')[2];
   const listing = listings.find((l) => l.id === id);
@@ -157,7 +159,13 @@ export function ListingDetailPage() {
             {/* Action buttons */}
             <div className="flex flex-wrap gap-2">
               <button
-                onClick={() => toggleFavorite(listing.id)}
+                onClick={() => {
+                  if (!user) {
+                    showAuthGate('favorite');
+                  } else {
+                    toggleFavorite(listing.id);
+                  }
+                }}
                 className={`btn px-4 py-2 text-sm border ${fav ? 'bg-error-50 border-error-200 text-error-600' : 'border-sand-200 text-primary-600 hover:bg-sand-50'}`}
               >
                 <Heart className={`w-4 h-4 ${fav ? 'fill-error-500' : ''}`} />{t('favorite')}
@@ -167,7 +175,7 @@ export function ListingDetailPage() {
               </button>
               {canCompare && (
                 <button
-                  onClick={() => { if (compareList.length < 3 || comparing) toggleCompare(listing.id); else showToast(t('maxCompareReached'), 'error'); }}
+                  onClick={() => { if (compareList.length < 4 || comparing) toggleCompare(listing.id); else showToast(t('maxCompareReached'), 'error'); }}
                   className={`btn px-4 py-2 text-sm border ${comparing ? 'bg-primary-50 border-primary-300 text-primary-700' : 'border-sand-200 text-primary-600 hover:bg-sand-50'}`}
                 >
                   <GitCompare className="w-4 h-4" />{t('compare')}
@@ -341,19 +349,26 @@ export function ListingDetailPage() {
               </Link>
             )}
             <div className="space-y-2">
-              <button onClick={() => setShowContact(true)} className="btn-primary w-full text-sm">
+              <a href={`tel:${listing.phone.replace(/\s+/g, '')}`} className="btn-primary w-full text-sm justify-center">
                 <Phone className="w-4 h-4" />{t('call')}
-              </button>
+              </a>
               <Link to="/messages" className="btn-secondary w-full text-sm justify-center">
                 <MessageSquare className="w-4 h-4" />{t('message')}
               </Link>
-              <button onClick={() => showToast(lang === 'ar' ? 'تم فتح واتساب' : 'Opening WhatsApp', 'info')} className="btn w-full text-sm bg-success-50 text-success-600 border border-success-200 hover:bg-success-100">
+              <a href={`https://wa.me/${listing.whatsapp.replace(/\s+/g, '').replace(/^\+/, '')}?text=${encodeURIComponent(`Hi, I'm interested in: ${title}\nListing ID: ${listing.ref}\nPrice: ${formatPrice(listing.price)}`)}`} target="_blank" rel="noopener noreferrer" className="btn w-full text-sm bg-success-50 text-success-600 border border-success-200 hover:bg-success-100 justify-center">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z"/></svg>
                 {t('whatsapp')}
-              </button>
+              </a>
             </div>
-            <button onClick={() => showToast(lang === 'ar' ? 'تم حظر المستخدم' : 'User blocked', 'info')} className="w-full mt-2 text-xs text-primary-400 hover:text-error-500 flex items-center justify-center gap-1">
-              <Ban className="w-3 h-3" />{t('block')}
+            <button onClick={() => {
+              if (!user) {
+                showAuthGate('message');
+              } else {
+                navigate('/messages');
+              }
+            }} className="w-full mt-2 text-xs text-primary-400 hover:text-primary-600 flex items-center justify-center gap-1 py-2">
+              {user ? <MessageSquare className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
+              {user ? t('message') : t('signInToMessage')}
             </button>
           </div>
         </div>
@@ -393,10 +408,14 @@ export function ListingDetailPage() {
 
       {/* Sticky mobile contact bar */}
       <div className="md:hidden fixed bottom-16 inset-x-0 z-20 bg-white border-t border-sand-100 p-3 flex gap-2 shadow-[0_-2px_8px_rgba(0,0,0,0.06)]">
-        <button onClick={() => setShowContact(true)} className="btn-primary flex-1 text-sm">
+        <a href={`tel:${listing.phone.replace(/\s+/g, '')}`} className="btn-primary flex-1 text-sm justify-center">
           <Phone className="w-4 h-4" />{t('call')}
-        </button>
-        <Link to="/messages" className="btn-secondary flex-1 text-sm justify-center">
+        </a>
+        <a href={`https://wa.me/${listing.whatsapp.replace(/\s+/g, '').replace(/^\+/, '')}?text=${encodeURIComponent(`Hi, I'm interested in: ${title}\nListing ID: ${listing.ref}\nPrice: ${formatPrice(listing.price)}`)}`} target="_blank" rel="noopener noreferrer" className="btn-secondary flex-1 text-sm justify-center">
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z"/></svg>
+          {t('whatsapp')}
+        </a>
+        <Link to="/messages" className="btn w-full text-sm justify-center bg-primary-50 text-primary-600 border border-primary-100 hover:bg-primary-100">
           <MessageSquare className="w-4 h-4" />{t('message')}
         </Link>
       </div>
@@ -415,11 +434,11 @@ export function ListingDetailPage() {
       <Modal open={showContact} onClose={() => setShowContact(false)} title={t('contactPreview')}>
         <div className="space-y-4">
           <div className="bg-sand-50 rounded-xl p-4 text-center">
-            <p className="text-xs text-primary-400 mb-1">{t('fictionalAccount')}</p>
-            <p className="text-lg font-bold text-primary-700">+249 91 234 5678</p>
+            <p className="text-xs text-primary-400 mb-1">{t('sellerInfo')}</p>
+            <p className="text-lg font-bold text-primary-700">{listing.phone}</p>
           </div>
           <div className="flex gap-2">
-            <a href="tel:+249912345678" className="btn-primary flex-1 justify-center text-sm">
+            <a href={`tel:${listing.phone.replace(/\s+/g, '')}`} className="btn-primary flex-1 justify-center text-sm">
               <Phone className="w-4 h-4" />{t('call')}
             </a>
             <button onClick={() => { setShowContact(false); navigate('/messages'); }} className="btn-secondary flex-1 justify-center text-sm">

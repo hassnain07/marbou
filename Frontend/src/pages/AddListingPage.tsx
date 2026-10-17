@@ -1,13 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { useI18n } from '@/i18n/I18nContext';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { useRouter } from '@/router/Router';
+import { useGate } from '@/hooks/useGate';
 import { categories, sudanCities, listings } from '@/data/mockData';
-import { Modal, ComingSoon } from '@/components/ui';
+import { Modal, ComingSoon, EmptyState } from '@/components/ui';
 import {
   Check, ChevronLeft, ChevronRight, Upload, X, Image as ImageIcon,
   Video, Star, Save, Send, Cloud, CloudOff, RefreshCw, GripVertical,
-  Tag, DollarSign, MapPin, FileText, AlertCircle, Info,
+  Tag, DollarSign, MapPin, FileText, AlertCircle, Info, Lock,
 } from 'lucide-react';
 import type { TranslationKey } from '@/i18n/translations';
 
@@ -50,7 +52,23 @@ const getSimpleTranslation = (text: string, toArabic: boolean): string => {
 export function AddListingPage() {
   const { t, lang, formatPrice } = useI18n();
   const { navigate } = useRouter();
+  const { user } = useAuth();
+  const { showAuthGate } = useApp();
   const { addMyListing, showToast, networkState } = useApp();
+
+  // Gate: require authentication to post listings
+  if (!user) {
+    return (
+      <div className="py-4 max-w-2xl mx-auto">
+        <EmptyState
+          icon={<Lock className="w-10 h-10" />}
+          title={t('signInRequired')}
+          description={lang === 'ar' ? 'يجب تسجيل الدخول لنشر إعلان' : 'You must be signed in to post a listing'}
+          action={<button onClick={() => navigate('/auth/login')} className="btn-primary text-sm">{t('signIn')}</button>}
+        />
+      </div>
+    );
+  }
 
   const [step, setStep] = useState(0);
   const [intent, setIntent] = useState('');

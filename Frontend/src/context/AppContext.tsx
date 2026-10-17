@@ -3,7 +3,7 @@ import { configService, FeatureFlags as ConfigFlags } from '../services/config';
 
 export type DemoRole = 'buyer' | 'business' | 'admin';
 export type NetworkState = 'connected' | 'slow' | 'offline';
-export type GatedActionType = 'message' | 'offer' | 'chat' | 'favorite' | null;
+export type GatedActionType = 'message' | 'offer' | 'chat' | 'favorite' | 'apply' | 'saveSearch' | 'postWanted' | 'review' | 'report' | 'contact' | null;
 
 export interface FeatureFlags {
   ENABLE_MONETIZATION: boolean;
@@ -115,7 +115,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const toggleCompare = (id: string) => {
     setCompareList((prev) => {
       if (prev.includes(id)) return prev.filter((c) => c !== id);
-      if (prev.length >= 3) return prev;
+      if (prev.length >= 4) return prev;
       return [...prev, id];
     });
   };

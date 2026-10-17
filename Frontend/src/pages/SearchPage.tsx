@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect, memo } from 'react';
 import { useI18n } from '@/i18n/I18nContext';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { useRouter } from '@/router/Router';
+import { useGate } from '@/hooks/useGate';
 import { ListingCard, ListingCardGrid, FilterPanel, type FilterState, SearchBar } from '@/components/marketplace';
 import { EmptyState, Skeleton } from '@/components/ui';
 import { listings, categories, sudanCities } from '@/data/mockData';
@@ -15,7 +17,9 @@ const ITEMS_PER_PAGE = 20;
 export function SearchPage() {
   const { t, lang, formatPrice } = useI18n();
   const { path, navigate } = useRouter();
-  const { addSavedSearch, showToast, dataSaver } = useApp();
+  const { user } = useAuth();
+  const { requireAuth } = useGate();
+  const { addSavedSearch, showToast, showAuthGate, dataSaver } = useApp();
 
   const urlParams = new URLSearchParams(path.split('?')[1] || '');
   const initialQuery = urlParams.get('q') || '';
@@ -167,6 +171,7 @@ export function SearchPage() {
   };
 
   const handleSaveSearch = () => {
+    if (!requireAuth('saveSearch')) return;
     addSavedSearch(query, query);
     showToast(t('saveSearch'), 'success');
   };

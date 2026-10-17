@@ -4,6 +4,7 @@ import type { TranslationKey } from '@/i18n/translations';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, Link } from '@/router/Router';
+import { useGate } from '@/hooks/useGate';
 import { ListingCard } from '@/components/ListingCard';
 import { Modal, RatingStars, TrustBadge, StatusBadge, EmptyState } from '@/components/ui';
 import { listings, businesses, sampleReviews } from '@/data/mockData';
@@ -17,6 +18,7 @@ export function ListingDetailPage() {
   const { t, lang, formatPrice, formatDate, formatNumber } = useI18n();
   const { path, navigate } = useRouter();
   const { user } = useAuth();
+  const { requireAuth } = useGate();
   const { isFavorite, toggleFavorite, isComparing, toggleCompare, compareList, addRecentlyViewed, showToast, showAuthGate, dataSaver } = useApp();
 
   const id = path.split('/')[2];
@@ -25,6 +27,7 @@ export function ListingDetailPage() {
   const [activeImage, setActiveImage] = useState(0);
   const [lightbox, setLightbox] = useState(false);
   const [showContact, setShowContact] = useState(false);
+  const [showCallContact, setShowCallContact] = useState(false);
   const [showReport, setShowReport] = useState(false);
   const [showReview, setShowReview] = useState(false);
   const [reviewRating, setReviewRating] = useState(5);
@@ -58,16 +61,26 @@ export function ListingDetailPage() {
   };
 
   const handleReport = () => {
+    if (!requireAuth('report')) return;
     setShowReport(false);
     showToast(t('reportSubmitted'), 'success');
   };
 
   const handleReview = () => {
+    if (!requireAuth('review')) return;
     setReviews([{ id: Date.now().toString(), author: 'Demo User', authorAr: 'مستخدم تجريبي', avatar: '', rating: reviewRating, text: reviewText, textAr: reviewText, date: new Date().toISOString().slice(0, 10) }, ...reviews]);
     setReviewText('');
     setReviewRating(5);
     setShowReview(false);
     showToast(lang === 'ar' ? 'تم نشر التقييم' : 'Review posted', 'success');
+  };
+
+  const handleCallClick = () => {
+    if (!user) {
+      showAuthGate('contact');
+      return;
+    }
+    setShowCallContact(true);
   };
 
   return (
@@ -181,7 +194,7 @@ export function ListingDetailPage() {
                   <GitCompare className="w-4 h-4" />{t('compare')}
                 </button>
               )}
-              <button onClick={() => setShowReport(true)} className="btn px-4 py-2 text-sm border border-sand-200 text-primary-600 hover:bg-sand-50">
+              <button onClick={() => { if (requireAuth('report')) setShowReport(true); }} className="btn px-4 py-2 text-sm border border-sand-200 text-primary-600 hover:bg-sand-50">
                 <Flag className="w-4 h-4" />{t('report')}
               </button>
             </div>
@@ -207,7 +220,7 @@ export function ListingDetailPage() {
             <h2 className="text-lg font-bold text-primary-800 mb-3 flex items-center gap-2">
               <span className="w-1 h-5 bg-primary-600 rounded-full" />{t('marketPriceInsights')}
             </h2>
-            <p className="text-xs text-primary-400 mb-4">{t('marketPriceDisclaimer')}</p>
+            <p className="text-xs text-primary-400 mb-4">{t('marketPriceDisclaimer')} ({lang === 'ar' ? 'تقدير فقط - mock data' : 'estimated - mock data'})</p>
             <div className="grid grid-cols-3 gap-3">
               <div className="text-center p-3 bg-sand-50 rounded-xl">
                 <p className="text-xs text-primary-400 mb-1">{t('lowestPrice')}</p>
@@ -280,7 +293,7 @@ export function ListingDetailPage() {
                 <h2 className="text-lg font-bold text-primary-800 flex items-center gap-2">
                   <span className="w-1 h-5 bg-primary-600 rounded-full" />{t('reviews')}
                 </h2>
-                <button onClick={() => setShowReview(true)} className="btn-primary text-sm py-2 px-4">
+                <button onClick={() => { if (requireAuth('review')) setShowReview(true); }} className="btn-primary text-sm py-2 px-4">
                   {t('writeReview')}
                 </button>
               </div>
@@ -337,7 +350,7 @@ export function ListingDetailPage() {
                   <RatingStars rating={listing.sellerRating} />
                   <span>{listing.sellerRating}</span>
                 </div>
-                <p className="text-xs text-primary-300 mt-0.5">{t('memberSince')} 2021</p>
+                <p className="text-xs text-primary-300 mt-0.5">{t('usuallyReplies')} {lang === 'ar' ? 'في غضون ساعتين' : 'within 2 hours'}</p>
               </div>
             </div>
             <button onClick={() => navigate(`/seller/${encodeURIComponent(sellerName)}`)} className="btn-secondary w-full text-sm mb-3">
@@ -349,23 +362,27 @@ export function ListingDetailPage() {
               </Link>
             )}
             <div className="space-y-2">
-              <a href={`tel:${listing.phone.replace(/\s+/g, '')}`} className="btn-primary w-full text-sm justify-center">
+              <button onClick={handleCallClick} className="btn-primary w-full text-sm justify-center">
                 <Phone className="w-4 h-4" />{t('call')}
-              </a>
-              <Link to="/messages" className="btn-secondary w-full text-sm justify-center">
+              </button>
+              <button onClick={() => {
+                if (!requireAuth('chat')) {
+                  return;
+                }
+                navigate('/messages');
+              }} className="btn-secondary w-full text-sm justify-center">
                 <MessageSquare className="w-4 h-4" />{t('message')}
-              </Link>
+              </button>
               <a href={`https://wa.me/${listing.whatsapp.replace(/\s+/g, '').replace(/^\+/, '')}?text=${encodeURIComponent(`Hi, I'm interested in: ${title}\nListing ID: ${listing.ref}\nPrice: ${formatPrice(listing.price)}`)}`} target="_blank" rel="noopener noreferrer" className="btn w-full text-sm bg-success-50 text-success-600 border border-success-200 hover:bg-success-100 justify-center">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z"/></svg>
                 {t('whatsapp')}
               </a>
             </div>
             <button onClick={() => {
-              if (!user) {
-                showAuthGate('message');
-              } else {
-                navigate('/messages');
+              if (!requireAuth('message')) {
+                return;
               }
+              navigate('/messages');
             }} className="w-full mt-2 text-xs text-primary-400 hover:text-primary-600 flex items-center justify-center gap-1 py-2">
               {user ? <MessageSquare className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
               {user ? t('message') : t('signInToMessage')}
@@ -408,16 +425,21 @@ export function ListingDetailPage() {
 
       {/* Sticky mobile contact bar */}
       <div className="md:hidden fixed bottom-16 inset-x-0 z-20 bg-white border-t border-sand-100 p-3 flex gap-2 shadow-[0_-2px_8px_rgba(0,0,0,0.06)]">
-        <a href={`tel:${listing.phone.replace(/\s+/g, '')}`} className="btn-primary flex-1 text-sm justify-center">
+        <button onClick={handleCallClick} className="btn-primary flex-1 text-sm justify-center">
           <Phone className="w-4 h-4" />{t('call')}
-        </a>
+        </button>
         <a href={`https://wa.me/${listing.whatsapp.replace(/\s+/g, '').replace(/^\+/, '')}?text=${encodeURIComponent(`Hi, I'm interested in: ${title}\nListing ID: ${listing.ref}\nPrice: ${formatPrice(listing.price)}`)}`} target="_blank" rel="noopener noreferrer" className="btn-secondary flex-1 text-sm justify-center">
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z"/></svg>
           {t('whatsapp')}
         </a>
-        <Link to="/messages" className="btn w-full text-sm justify-center bg-primary-50 text-primary-600 border border-primary-100 hover:bg-primary-100">
+        <button onClick={() => {
+          if (!requireAuth('chat')) {
+            return;
+          }
+          navigate('/messages');
+        }} className="btn w-full text-sm justify-center bg-primary-50 text-primary-600 border border-primary-100 hover:bg-primary-100">
           <MessageSquare className="w-4 h-4" />{t('message')}
-        </Link>
+        </button>
       </div>
 
       {/* Lightbox */}
@@ -445,6 +467,30 @@ export function ListingDetailPage() {
               <MessageSquare className="w-4 h-4" />{t('message')}
             </button>
           </div>
+        </div>
+      </Modal>
+
+      {/* Call privacy modal (intermediary contact gateway) */}
+      <Modal open={showCallContact} onClose={() => setShowCallContact(false)} title={t('contactSeller')} size="sm">
+        <div className="space-y-4">
+          <div className="bg-primary-50 rounded-xl p-4">
+            <p className="text-xs text-primary-500 font-medium mb-2">{lang === 'ar' ? 'معلومات المتصل' : 'Caller Information'}</p>
+            <p className="text-sm text-primary-700 font-bold mb-3">{listing.phone}</p>
+            <div className="flex items-center gap-2 p-2.5 bg-white rounded-lg border border-sand-100 text-xs text-primary-400">
+              <Clock className="w-4 h-4" />
+              {lang === 'ar' ? 'عادة يرد البائع خلال ساعتين' : 'Seller usually replies within 2 hours'}
+            </div>
+          </div>
+          <div className="bg-warning-50/50 border border-warning-100 rounded-xl p-3 flex gap-2 text-xs text-warning-700">
+            <Shield className="w-4 h-4 shrink-0 mt-0.5" />
+            <span>{lang === 'ar' ? 'تأكد من الالتقاء في مكان عام آمن' : 'Always meet in a public place and verify the item'}</span>
+          </div>
+          <a href={`tel:${listing.phone.replace(/\s+/g, '')}`} className="btn-primary w-full justify-center">
+            <Phone className="w-4 h-4" />{lang === 'ar' ? 'اتصل الآن' : 'Call Now'}
+          </a>
+          <button onClick={() => setShowCallContact(false)} className="btn-secondary w-full">
+            {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+          </button>
         </div>
       </Modal>
 

@@ -13,6 +13,7 @@ export interface AuthUser {
   businessCategory?: string;
   createdAt: number;
   lastLoginAt?: number;
+  emailVerified: boolean;
 }
 
 interface AuthContextValue {
@@ -45,7 +46,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (user) {
-      localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+      // Ensure emailVerified defaults to true if not set (for backward compat and demo users)
+      const userWithVerification: AuthUser = {
+        ...user,
+        emailVerified: user.emailVerified ?? true,
+      };
+      localStorage.setItem(SESSION_KEY, JSON.stringify(userWithVerification));
     } else {
       localStorage.removeItem(SESSION_KEY);
     }
@@ -61,14 +67,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     businessCategory?: string;
   }) => {
     const result = await authService.register(data);
-    // Note: Don't set user yet - OTP verification required first
+    // Note: Don't set user yet - OTP verification required first, so emailVerified = false
     return { success: result.success, error: result.error };
   };
 
   const login = async (email: string, password: string) => {
     const result = await authService.login(email, password);
     if (result.success && result.session) {
-      setUser(result.session.user);
+      // Set emailVerified to true for login (user already verified to log in)
+      const userWithVerification: AuthUser = {
+        ...result.session.user,
+        emailVerified: true,
+      };
+      setUser(userWithVerification);
     }
     return { success: result.success, error: result.error };
   };

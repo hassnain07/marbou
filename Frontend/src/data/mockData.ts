@@ -229,18 +229,6 @@ export const categories: CategoryDef[] = [
       { id: 'other-services', key: 'other', icon: 'MoreHorizontal' },
     ],
   },
-  {
-    id: 'jobs',
-    key: 'jobs',
-    icon: 'Briefcase',
-    subcategories: [
-      { id: 'government-jobs', key: 'government', icon: 'Landmark' },
-      { id: 'private-jobs', key: 'private', icon: 'Building' },
-      { id: 'freelance-jobs', key: 'freelance', icon: 'User' },
-      { id: 'remote-jobs', key: 'remote', icon: 'Laptop' },
-      { id: 'other-jobs', key: 'other', icon: 'MoreHorizontal' },
-    ],
-  },
 ];
 
 export interface SudanLocation {
@@ -310,6 +298,7 @@ export interface Business {
   hours: { day: string; dayAr: string; open: string; close: string; closed?: boolean }[];
   staff?: { name: string; nameAr: string; role: string; roleAr: string; avatar: string }[];
   services?: string[];
+  jobs?: { titleAr: string; title: string; applicants: number }[];
 }
 
 export const businesses: Business[] = [
@@ -344,6 +333,11 @@ export const businesses: Business[] = [
       { name: 'Ahmed Ali', nameAr: 'أحمد علي', role: 'Sales Rep', roleAr: 'مندوب مبيعات', avatar: 'https://images.pexels.com/photos/28181741/pexels-photo-28181741.jpeg?auto=compress&cs=tinysrgb&h=200&w=200' },
     ],
     services: ['Vehicle Sales', 'Financing', 'Trade-in', 'Insurance'],
+    jobs: [
+      { title: 'Sales Manager', titleAr: 'مدير المبيعات', applicants: 12 },
+      { title: 'Mechanic', titleAr: 'ميكانيكي', applicants: 8 },
+      { title: 'Sales Representative', titleAr: 'مندوب مبيعات', applicants: 15 },
+    ],
   },
   {
     id: 'biz-2',

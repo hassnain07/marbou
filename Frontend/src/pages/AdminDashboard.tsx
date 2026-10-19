@@ -2,32 +2,15 @@ import { useState, ReactNode } from 'react';
 import { useI18n } from '@/i18n/I18nContext';
 import { useApp } from '@/context/AppContext';
 import { useRouter, Link } from '@/router/Router';
+import { AdminSidebar } from '@/components/AdminSidebar';
 import { EmptyState, StatusBadge, Modal, ComingSoon } from '@/components/ui';
 import {
-  LayoutDashboard, FileText, FolderTree, Users, Flag, Briefcase,
-  CreditCard, Megaphone, Bell, FileEdit, BarChart3, Lock, ToggleLeft,
-  Globe, Check, X, Clock, Upload, FileCheck, AlertCircle, ChevronDown,
+  Clock, Upload, FileCheck, AlertCircle, ChevronDown,
   Plus, Edit, Eye, Shield, Settings, Server, History, Smartphone,
-  Store, MessageSquare, Wrench, Save,
+  Store, MessageSquare, Wrench, Save, Check, X, Users, FileText, Flag, Briefcase,
+  CreditCard, Megaphone, Bell, FileEdit, BarChart3, Lock, ToggleLeft, Globe,
 } from 'lucide-react';
 import type { TranslationKey } from '@/i18n/translations';
-
-const ADMIN_TABS = [
-  { id: 'overview', icon: LayoutDashboard, key: 'adminOverview' as TranslationKey },
-  { id: 'listings', icon: FileText, key: 'listingsModeration' as TranslationKey },
-  { id: 'categories', icon: FolderTree, key: 'categoryBuilder' as TranslationKey },
-  { id: 'users', icon: Users, key: 'usersBusinesses' as TranslationKey },
-  { id: 'reports', icon: Flag, key: 'reportsAppeals' as TranslationKey },
-  { id: 'jobs-services', icon: Briefcase, key: 'jobsServices' as TranslationKey },
-  { id: 'payments', icon: CreditCard, key: 'paymentsBankak' as TranslationKey },
-  { id: 'subscriptions', icon: Megaphone, key: 'subsPromotions' as TranslationKey },
-  { id: 'notifications', icon: Bell, key: 'notificationsAdmin' as TranslationKey },
-  { id: 'cms', icon: FileEdit, key: 'cmsLegal' as TranslationKey },
-  { id: 'analytics', icon: BarChart3, key: 'analyticsSystem' as TranslationKey },
-  { id: 'roles', icon: Lock, key: 'rolesPermissions' as TranslationKey },
-  { id: 'feature-flags', icon: ToggleLeft, key: 'featureFlags' as TranslationKey },
-  { id: 'country', icon: Globe, key: 'countrySettings' as TranslationKey },
-];
 
 function KpiCard({ icon, label, value, color }: { icon: ReactNode; label: string; value: string; color: string }) {
   return (
@@ -59,7 +42,6 @@ export function AdminDashboard() {
   const { t, lang, formatNumber, formatDate } = useI18n();
   const { path, navigate } = useRouter();
   const { showToast } = useApp();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [adminRole, setAdminRole] = useState('superAdmin');
   const [showApprove, setShowApprove] = useState<string | null>(null);
   const [showPayment, setShowPayment] = useState<string | null>(null);
@@ -72,18 +54,6 @@ export function AdminDashboard() {
   });
 
   const tabId = path.split('/')[2] || 'overview';
-
-  const SidebarLink = ({ tab }: { tab: typeof ADMIN_TABS[0] }) => {
-    const Icon = tab.icon;
-    return (
-      <button
-        onClick={() => { navigate(`/admin/${tab.id}`); setSidebarOpen(false); }}
-        className={`nav-link w-full ${tabId === tab.id ? 'nav-link-active' : ''}`}
-      >
-        <Icon className="w-4 h-4" />{t(tab.key)}
-      </button>
-    );
-  };
 
   // Sample data for moderation queue
   const moderationQueue = [
@@ -108,47 +78,8 @@ export function AdminDashboard() {
   const flagList = ['otp', 'bankak', 'admob', 'subscriptions', 'promotions', 'auctions', 'barter', 'rental', 'wholesale', 'bookings', 'delivery', 'video', 'jobs', 'services', 'businessVerification', 'messaging', 'push', 'sms'];
 
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className={`fixed md:sticky top-0 inset-y-0 start-0 z-40 w-60 bg-primary-900 text-white transition-transform md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full rtl:translate-x-full'}`} style={{ height: '100vh' }}>
-        <div className="p-4 border-b border-primary-800">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center">
-              <svg viewBox="0 0 100 100" className="w-5 h-5">
-                <path d="M28 70 L28 30 L50 30 L50 70" stroke="#fdfbf7" strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                <circle cx="72" cy="50" r="14" stroke="#f97e16" strokeWidth="6" fill="none" />
-                <circle cx="72" cy="50" r="4" fill="#fdfbf7" />
-              </svg>
-            </div>
-            <div>
-              <span className="font-bold text-white">{t('brandName')}</span>
-              <p className="text-[10px] text-primary-300">{t('admin')} · {t('demoLabel')}</p>
-            </div>
-          </Link>
-        </div>
-        <div className="p-3 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 80px)' }}>
-          {/* Role switcher */}
-          <select value={adminRole} onChange={(e) => setAdminRole(e.target.value)} className="w-full bg-primary-800 text-white text-xs rounded-lg px-3 py-2 mb-3 border border-primary-700">
-            {roles.map((r) => <option key={r} value={r}>{t(r as TranslationKey)}</option>)}
-          </select>
-          <div className="space-y-1">
-            {ADMIN_TABS.map((tab) => <SidebarLink key={tab.id} tab={tab} />)}
-          </div>
-        </div>
-      </aside>
-
-      {sidebarOpen && <div className="fixed inset-0 z-30 bg-primary-950/40 md:hidden" onClick={() => setSidebarOpen(false)} />}
-
-      {/* Main */}
-      <div className="flex-1 min-w-0">
-        <div className="md:hidden flex items-center justify-between p-4 bg-white border-b border-sand-100 sticky top-0 z-20">
-          <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-lg hover:bg-sand-50">
-            <LayoutDashboard className="w-5 h-5 text-primary-600" />
-          </button>
-          <span className="font-bold text-primary-700">{t(tabId as TranslationKey) || t('adminOverview')}</span>
-        </div>
-
-        <div className="p-4 sm:p-6">
+    <AdminSidebar activeTab={tabId} adminRole={adminRole} onRoleChange={setAdminRole} showRoleSelector={true}>
+      <div className="p-4 sm:p-6">
           {tabId === 'overview' && (
             <div className="space-y-6">
               <div>
@@ -562,8 +493,7 @@ export function AdminDashboard() {
               </div>
             </div>
           )}
-        </div>
       </div>
-    </div>
+    </AdminSidebar>
   );
 }

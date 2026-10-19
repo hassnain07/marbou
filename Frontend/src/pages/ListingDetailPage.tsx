@@ -356,11 +356,6 @@ export function ListingDetailPage() {
             <button onClick={() => navigate(`/seller/${encodeURIComponent(sellerName)}`)} className="btn-secondary w-full text-sm mb-3">
               {t('viewDetails')}
             </button>
-            {business && (
-              <Link to={`/business/${business.id}`} className="btn w-full text-sm bg-primary-50 text-primary-600 border border-primary-100 hover:bg-primary-100 px-4 py-2 mb-3 justify-center">
-                {t('viewBusiness')}
-              </Link>
-            )}
             <div className="space-y-2">
               <button onClick={handleCallClick} className="btn-primary w-full text-sm justify-center">
                 <Phone className="w-4 h-4" />{t('call')}
@@ -369,20 +364,22 @@ export function ListingDetailPage() {
                 if (!requireAuth('chat')) {
                   return;
                 }
-                navigate('/messages');
+                navigate('/account/messages');
               }} className="btn-secondary w-full text-sm justify-center">
                 <MessageSquare className="w-4 h-4" />{t('message')}
               </button>
-              <a href={`https://wa.me/${listing.whatsapp.replace(/\s+/g, '').replace(/^\+/, '')}?text=${encodeURIComponent(`Hi, I'm interested in: ${title}\nListing ID: ${listing.ref}\nPrice: ${formatPrice(listing.price)}`)}`} target="_blank" rel="noopener noreferrer" className="btn w-full text-sm bg-success-50 text-success-600 border border-success-200 hover:bg-success-100 justify-center">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z"/></svg>
-                {t('whatsapp')}
-              </a>
+              {listing.whatsapp && (
+                <a href={`https://wa.me/${listing.whatsapp.replace(/\s+/g, '').replace(/^\+/, '')}?text=${encodeURIComponent(`Hi, I'm interested in: ${title}\nListing ID: ${listing.ref}\nPrice: ${formatPrice(listing.price)}`)}`} target="_blank" rel="noopener noreferrer" className="btn w-full text-sm bg-success-50 text-success-600 border border-success-200 hover:bg-success-100 justify-center">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z"/></svg>
+                  {t('whatsapp')}
+                </a>
+              )}
             </div>
             <button onClick={() => {
               if (!requireAuth('message')) {
                 return;
               }
-              navigate('/messages');
+              navigate('/account/messages');
             }} className="w-full mt-2 text-xs text-primary-400 hover:text-primary-600 flex items-center justify-center gap-1 py-2">
               {user ? <MessageSquare className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
               {user ? t('message') : t('signInToMessage')}
@@ -397,11 +394,9 @@ export function ListingDetailPage() {
           <h2 className="text-lg font-bold text-primary-800 mb-3 flex items-center gap-2">
             <span className="w-1 h-5 bg-primary-600 rounded-full" />{t('similarListings')}
           </h2>
-          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
             {similar.map((l) => (
-              <div key={l.id} className="min-w-[180px] sm:min-w-[220px]">
-                <ListingCard listing={l} />
-              </div>
+              <ListingCard key={l.id} listing={l} />
             ))}
           </div>
         </div>
@@ -413,11 +408,9 @@ export function ListingDetailPage() {
           <h2 className="text-lg font-bold text-primary-800 mb-3 flex items-center gap-2">
             <span className="w-1 h-5 bg-primary-600 rounded-full" />{t('recentlyViewed')}
           </h2>
-          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
             {recent.map((l) => (
-              <div key={l.id} className="min-w-[180px] sm:min-w-[220px]">
-                <ListingCard listing={l} />
-              </div>
+              <ListingCard key={l.id} listing={l} />
             ))}
           </div>
         </div>
@@ -428,15 +421,17 @@ export function ListingDetailPage() {
         <button onClick={handleCallClick} className="btn-primary flex-1 text-sm justify-center">
           <Phone className="w-4 h-4" />{t('call')}
         </button>
-        <a href={`https://wa.me/${listing.whatsapp.replace(/\s+/g, '').replace(/^\+/, '')}?text=${encodeURIComponent(`Hi, I'm interested in: ${title}\nListing ID: ${listing.ref}\nPrice: ${formatPrice(listing.price)}`)}`} target="_blank" rel="noopener noreferrer" className="btn-secondary flex-1 text-sm justify-center">
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z"/></svg>
-          {t('whatsapp')}
-        </a>
+        {listing.whatsapp && (
+          <a href={`https://wa.me/${listing.whatsapp.replace(/\s+/g, '').replace(/^\+/, '')}?text=${encodeURIComponent(`Hi, I'm interested in: ${title}\nListing ID: ${listing.ref}\nPrice: ${formatPrice(listing.price)}`)}`} target="_blank" rel="noopener noreferrer" className="btn-secondary flex-1 text-sm justify-center">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z"/></svg>
+            {t('whatsapp')}
+          </a>
+        )}
         <button onClick={() => {
           if (!requireAuth('chat')) {
             return;
           }
-          navigate('/messages');
+          navigate('/account/messages');
         }} className="btn w-full text-sm justify-center bg-primary-50 text-primary-600 border border-primary-100 hover:bg-primary-100">
           <MessageSquare className="w-4 h-4" />{t('message')}
         </button>
@@ -457,13 +452,15 @@ export function ListingDetailPage() {
         <div className="space-y-4">
           <div className="bg-sand-50 rounded-xl p-4 text-center">
             <p className="text-xs text-primary-400 mb-1">{t('sellerInfo')}</p>
-            <p className="text-lg font-bold text-primary-700">{listing.phone}</p>
+            <p className="text-lg font-bold text-primary-700">{listing?.phone || t('notAvailable')}</p>
           </div>
           <div className="flex gap-2">
-            <a href={`tel:${listing.phone.replace(/\s+/g, '')}`} className="btn-primary flex-1 justify-center text-sm">
-              <Phone className="w-4 h-4" />{t('call')}
-            </a>
-            <button onClick={() => { setShowContact(false); navigate('/messages'); }} className="btn-secondary flex-1 justify-center text-sm">
+            {listing?.phone && (
+              <a href={`tel:${listing.phone.replace(/\s+/g, '')}`} className="btn-primary flex-1 justify-center text-sm">
+                <Phone className="w-4 h-4" />{t('call')}
+              </a>
+            )}
+            <button onClick={() => { setShowContact(false); navigate('/account/messages'); }} className="btn-secondary flex-1 justify-center text-sm">
               <MessageSquare className="w-4 h-4" />{t('message')}
             </button>
           </div>
@@ -485,9 +482,11 @@ export function ListingDetailPage() {
             <Shield className="w-4 h-4 shrink-0 mt-0.5" />
             <span>{lang === 'ar' ? 'تأكد من الالتقاء في مكان عام آمن' : 'Always meet in a public place and verify the item'}</span>
           </div>
-          <a href={`tel:${listing.phone.replace(/\s+/g, '')}`} className="btn-primary w-full justify-center">
-            <Phone className="w-4 h-4" />{lang === 'ar' ? 'اتصل الآن' : 'Call Now'}
-          </a>
+          {listing?.phone && (
+            <a href={`tel:${listing.phone.replace(/\s+/g, '')}`} className="btn-primary w-full justify-center">
+              <Phone className="w-4 h-4" />{lang === 'ar' ? 'اتصل الآن' : 'Call Now'}
+            </a>
+          )}
           <button onClick={() => setShowCallContact(false)} className="btn-secondary w-full">
             {lang === 'ar' ? 'إلغاء' : 'Cancel'}
           </button>

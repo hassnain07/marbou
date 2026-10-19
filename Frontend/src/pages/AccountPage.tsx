@@ -7,10 +7,11 @@ import { useRouter, Link } from '@/router/Router';
 import { ListingCardGrid } from '@/components/ListingCard';
 import { EmptyState, StatusBadge, Modal, RatingStars } from '@/components/ui';
 import { listings, sampleNotifications, jobs } from '@/data/mockData';
+import { MessagesPage } from '@/pages/FavoritesCompareMessages';
 import {
   User, Heart, Search, Eye, Bell, Briefcase, CreditCard, Shield,
   Settings, LogOut, MapPin, Globe, Gauge, Check, Smartphone, Laptop,
-  Clock, FileText, Download, Trash2, Star, MessageSquare, Plus,
+  Clock, FileText, Download, Trash2, Star, MessageSquare, Plus, Zap,
 } from 'lucide-react';
 
 const TABS = [
@@ -31,13 +32,14 @@ const TABS = [
 export function AccountPage() {
   const { t, lang, formatDate, formatPrice } = useI18n();
   const { path, navigate } = useRouter();
-  const { favorites, myListings, recentlyViewed, savedSearches, removeSavedSearch, appliedJobs, savedJobs, toggleSavedJob, showToast, dataSaver, setDataSaver } = useApp();
+  const { favorites, myListings, recentlyViewed, savedSearches, removeSavedSearch, appliedJobs, savedJobs, toggleSavedJob, showToast, dataSaver, setDataSaver, demoRole, setDemoRole } = useApp();
   const { flags } = useFlags();
   const { user } = useAuth();
 
   const tabId = path.split('/')[2] || 'overview';
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [listingToDelete, setListingToDelete] = useState<string | null>(null);
   const [listingFilter, setListingFilter] = useState('all');
 
   // Filter out payments tab if monetization is disabled
@@ -219,11 +221,11 @@ export function AccountPage() {
                         <div className="mt-1"><StatusBadge status={l.status} /></div>
                       </div>
                       <div className="flex flex-col gap-1 shrink-0">
-                        <button onClick={() => showToast(t('edit'), 'info')} className="text-xs text-primary-500 hover:text-primary-700 px-2 py-1 rounded hover:bg-primary-50">{t('edit')}</button>
-                        <button onClick={() => showToast(t('clone'), 'info')} className="text-xs text-primary-500 hover:text-primary-700 px-2 py-1 rounded hover:bg-primary-50">{t('clone')}</button>
-                        <button onClick={() => showToast(t('renew'), 'info')} className="text-xs text-primary-500 hover:text-primary-700 px-2 py-1 rounded hover:bg-primary-50">{t('renew')}</button>
-                        <button onClick={() => showToast(t('archive'), 'info')} className="text-xs text-primary-500 hover:text-primary-700 px-2 py-1 rounded hover:bg-primary-50">{t('archive')}</button>
-                        <button onClick={() => showToast(t('delete'), 'error')} className="text-xs text-error-500 hover:text-error-600 px-2 py-1 rounded hover:bg-error-50">{t('delete')}</button>
+                        <button onClick={() => navigate(`/add-listing?edit=${l.id}`)} className="text-xs text-primary-500 hover:text-primary-700 px-2 py-1 rounded hover:bg-primary-50">{t('edit')}</button>
+                        <button onClick={() => { showToast(t('featureComingSoon'), 'info'); }} className="text-xs text-primary-500 hover:text-primary-700 px-2 py-1 rounded hover:bg-primary-50">{t('clone')}</button>
+                        <button onClick={() => { showToast(t('featureComingSoon'), 'info'); }} className="text-xs text-primary-500 hover:text-primary-700 px-2 py-1 rounded hover:bg-primary-50">{t('renew')}</button>
+                        <button onClick={() => { showToast(t('featureComingSoon'), 'info'); }} className="text-xs text-primary-500 hover:text-primary-700 px-2 py-1 rounded hover:bg-primary-50">{t('archive')}</button>
+                        <button onClick={() => { setListingToDelete(l.id); setShowDeleteModal(true); }} className="text-xs text-error-500 hover:text-error-600 px-2 py-1 rounded hover:bg-error-50">{t('delete')}</button>
                       </div>
                     </div>
                   ))}
@@ -274,7 +276,7 @@ export function AccountPage() {
           {tabId === 'messages' && (
             <div>
               <h1 className="text-xl font-bold text-primary-800 mb-4">{t('messages')}</h1>
-              <Link to="/messages" className="btn-primary text-sm">{t('messages')}</Link>
+              <MessagesPage />
             </div>
           )}
 
@@ -354,35 +356,6 @@ export function AccountPage() {
                 <input type="password" className="input w-full mb-2" placeholder="New password" />
                 <button onClick={() => showToast(t('successState'), 'success')} className="btn-primary w-full text-sm">{t('save')}</button>
               </div>
-              <div className="card p-4">
-                <h3 className="font-bold text-primary-700 mb-3">{t('twoFactor')}</h3>
-                <label className="flex items-center justify-between">
-                  <span className="text-sm text-primary-600">{t('twoFactor')}</span>
-                  <button onClick={(e) => { e.preventDefault(); showToast(t('demoLabel'), 'info'); }} className="w-10 h-5 rounded-full bg-sand-200">
-                    <span className="block w-4 h-4 bg-white rounded-full shadow translate-x-0.5 rtl:-translate-x-0.5" />
-                  </button>
-                </label>
-              </div>
-              <div className="card p-4">
-                <h3 className="font-bold text-primary-700 mb-3">{t('devices')}</h3>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3 p-2 rounded-lg bg-sand-50">
-                    <Smartphone className="w-5 h-5 text-primary-400" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-primary-700">iPhone 14 Pro</p>
-                      <p className="text-xs text-primary-400">Khartoum · Active now</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-2 rounded-lg bg-sand-50">
-                    <Laptop className="w-5 h-5 text-primary-400" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-primary-700">MacBook Pro</p>
-                      <p className="text-xs text-primary-400">Khartoum · 2h ago</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <button onClick={() => showToast(t('demoLabel'), 'info')} className="btn-danger w-full">{t('logoutAll')}</button>
             </div>
           )}
 
@@ -414,6 +387,36 @@ export function AccountPage() {
                   </label>
                 ))}
               </div>
+              <div className="card p-4 border-2 border-warning-500 bg-warning-50">
+                <h3 className="font-bold text-warning-700 mb-3 flex items-center gap-2"><Zap className="w-4 h-4" />Development: Role Switcher</h3>
+                <p className="text-xs text-warning-600 mb-3">For testing different user roles during development</p>
+                <div className="space-y-2">
+                  {(['buyer', 'business', 'admin'] as const).map((role) => (
+                    <button
+                      key={role}
+                      onClick={() => {
+                        setDemoRole(role);
+                        const roleNames = { buyer: 'Buyer', business: 'Business User', admin: 'Admin' };
+                        showToast(`Switched to ${roleNames[role]} mode`, 'success');
+                        if (role === 'admin') {
+                          setTimeout(() => navigate('/admin'), 500);
+                        } else if (role === 'business') {
+                          setTimeout(() => navigate('/business'), 500);
+                        } else {
+                          setTimeout(() => navigate('/'), 500);
+                        }
+                      }}
+                      className={`w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        demoRole === role
+                          ? 'bg-warning-600 text-white border-2 border-warning-700'
+                          : 'bg-white text-warning-700 border-2 border-warning-300 hover:bg-warning-100'
+                      }`}
+                    >
+                      {role.charAt(0).toUpperCase() + role.slice(1)} {demoRole === role && '✓'}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div className="card p-4">
                 <h3 className="font-bold text-primary-700 mb-3">{t('accountDeletion')}</h3>
                 <button onClick={() => setShowDeleteModal(true)} className="btn-danger text-sm w-full"><Trash2 className="w-4 h-4" />{t('accountDeletion')}</button>
@@ -428,12 +431,26 @@ export function AccountPage() {
       </div>
 
       {/* Delete modal */}
-      <Modal open={showDeleteModal} onClose={() => setShowDeleteModal(false)} title={t('accountDeletion')} size="sm">
+      <Modal open={showDeleteModal} onClose={() => { setShowDeleteModal(false); setListingToDelete(null); }} title={listingToDelete ? t('deleteListing') : t('accountDeletion')} size="sm">
         <div className="space-y-4">
-          <p className="text-sm text-primary-600">
-            {lang === 'ar' ? 'هذا نموذج تفاعلي. لن يتم حذف بياناتك فعلياً. سيتم حذف حسابك في النظام المستقبلي.' : 'This is an interactive prototype. Your data will not actually be deleted. Account deletion will happen in the future system.'}
-          </p>
-          <button onClick={() => { setShowDeleteModal(false); showToast(t('demoLabel'), 'info'); }} className="btn-danger w-full">{t('confirm')}</button>
+          {listingToDelete ? (
+            <>
+              <p className="text-sm text-primary-600">
+                {lang === 'ar' ? 'هل أنت متأكد من حذف هذا الإعلان؟' : 'Are you sure you want to delete this listing?'}
+              </p>
+              <div className="flex gap-2">
+                <button onClick={() => { setShowDeleteModal(false); setListingToDelete(null); }} className="btn-secondary flex-1">{t('cancel')}</button>
+                <button onClick={() => { showToast(t('deletedSuccessfully'), 'success'); setShowDeleteModal(false); setListingToDelete(null); }} className="btn-danger flex-1">{t('delete')}</button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-primary-600">
+                {lang === 'ar' ? 'هذا نموذج تفاعلي. لن يتم حذف بياناتك فعلياً. سيتم حذف حسابك في النظام المستقبلي.' : 'This is an interactive prototype. Your data will not actually be deleted. Account deletion will happen in the future system.'}
+              </p>
+              <button onClick={() => { setShowDeleteModal(false); showToast(t('demoLabel'), 'info'); }} className="btn-danger w-full">{t('confirm')}</button>
+            </>
+          )}
         </div>
       </Modal>
 

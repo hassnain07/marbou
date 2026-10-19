@@ -242,6 +242,30 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* Jobs portal entry card */}
+      <section>
+        <button 
+          onClick={() => navigate('/jobs')}
+          className="w-full relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary-700 via-primary-600 to-primary-500 p-8 sm:p-12 text-white hover:shadow-lg transition-all group"
+        >
+          <div className="absolute top-0 end-0 w-48 h-48 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/4" aria-hidden="true" />
+          <div className="absolute bottom-0 start-0 w-32 h-32 bg-white/5 rounded-full translate-y-1/2" aria-hidden="true" />
+          <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            <div className="text-start flex-1">
+              <h2 className="text-2xl sm:text-3xl font-extrabold mb-2">{t('browseJobs')}</h2>
+              <p className="text-sm sm:text-base text-primary-100 mb-4 max-w-md">
+                {lang === 'ar' ? 'اكتشف الفرص الوظيفية المثيرة في السودان' : 'Discover exciting job opportunities in Sudan'}
+              </p>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors">
+                <span className="font-semibold text-sm">{t('browseAll')}</span>
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              </div>
+            </div>
+            <div className="hidden sm:block text-6xl opacity-20">💼</div>
+          </div>
+        </button>
+      </section>
+
       {/* Jobs highlights */}
       <section>
         <SectionHeader title={t('jobsHighlights')} viewAllTo="/jobs" />

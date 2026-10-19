@@ -10,17 +10,18 @@ import {
   Check, ChevronLeft, ChevronRight, Upload, X, Image as ImageIcon,
   Video, Star, Save, Send, Cloud, CloudOff, RefreshCw, GripVertical,
   Tag, DollarSign, MapPin, FileText, AlertCircle, Info, Lock,
+  ShoppingCart, Key, Wrench, Briefcase, Search, Activity, AlertTriangle,
 } from 'lucide-react';
 import type { TranslationKey } from '@/i18n/translations';
 
 const STEPS = ['selectIntent', 'selectCategory', 'enterDetails', 'addPhotosVideo', 'enterPriceLocation', 'enterDescription', 'reviewListing'];
 
 const INTENTS = [
-  { id: 'sell', key: 'sell', icon: '🏷️' },
-  { id: 'rent', key: 'rent', icon: '🔑' },
-  { id: 'offerService', key: 'offerService', icon: '🛠️' },
-  { id: 'postJob', key: 'postJob', icon: '💼' },
-  { id: 'wantedListing', key: 'wantedListing', icon: '🔍' },
+  { id: 'sell', key: 'sell', icon: ShoppingCart },
+  { id: 'rent', key: 'rent', icon: Key },
+  { id: 'offerService', key: 'offerService', icon: Wrench },
+  { id: 'postJob', key: 'postJob', icon: Briefcase },
+  { id: 'wantedListing', key: 'wantedListing', icon: Search },
 ];
 
 const DRAFT_KEY = 'marbou-addlisting-draft';
@@ -77,6 +78,8 @@ export function AddListingPage() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [coverIndex, setCoverIndex] = useState(0);
   const [hasVideo, setHasVideo] = useState(false);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoDuration, setVideoDuration] = useState(0);
   const [price, setPrice] = useState('');
   const [negotiable, setNegotiable] = useState(false);
   const [city, setCity] = useState('khartoum');
@@ -236,6 +239,19 @@ export function AddListingPage() {
     setPhotos([...photos, newPhoto]);
   };
 
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 15 * 1024 * 1024) {
+        showToast(lang === 'ar' ? 'حجم الفيديو يتجاوز 15 ميجابايت' : 'Video size exceeds 15 MB limit', 'error');
+        return;
+      }
+      setVideoFile(file);
+      setHasVideo(true);
+      showToast(lang === 'ar' ? 'تم تحميل الفيديو' : 'Video uploaded successfully', 'success');
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       const listing = await import('@/services/listings').then(m => m.createListing({
@@ -291,15 +307,63 @@ export function AddListingPage() {
   };
 
   const StepIndicator = () => (
-    <div className="flex items-center justify-between mb-6 overflow-x-auto no-scrollbar">
-      {STEPS.map((s, i) => (
-        <div key={i} className="flex items-center shrink-0">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${i < step ? 'bg-primary-600 text-white' : i === step ? 'bg-primary-100 text-primary-700 ring-2 ring-primary-300' : 'bg-sand-100 text-primary-300'}`}>
-            {i < step ? <Check className="w-4 h-4" /> : i + 1}
-          </div>
-          {i < STEPS.length - 1 && <div className={`w-8 sm:w-12 h-0.5 mx-0.5 ${i < step ? 'bg-primary-600' : 'bg-sand-200'}`} />}
+    <div className="mb-6 overflow-visible">
+      {/* Step progress header */}
+      <div className="flex items-center justify-between mb-3 px-2">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-6 bg-primary-600 rounded-full" />
+          <span className="text-xs font-bold text-primary-600 tracking-wide uppercase">{t('step')} {step + 1} {lang === 'ar' ? 'من' : 'of'} {STEPS.length}</span>
         </div>
-      ))}
+        <span className="text-xs font-medium text-primary-400">{Math.round(((step + 1) / STEPS.length) * 100)}%</span>
+      </div>
+
+      {/* Progress bar */}
+      <div className="w-full h-1.5 bg-sand-100 rounded-full overflow-hidden mb-4">
+        <div 
+          className="h-full bg-gradient-to-r from-primary-500 to-primary-600 rounded-full transition-all duration-500 ease-out shadow-sm"
+          style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
+        />
+      </div>
+
+      {/* Step indicators - with padding to prevent clipping */}
+      <div className="flex items-start justify-between gap-1.5 overflow-x-auto no-scrollbar py-2 px-2">
+        {STEPS.map((s, i) => {
+          const isCompleted = i < step;
+          const isCurrent = i === step;
+          const isUpcoming = i > step;
+          
+          return (
+            <div key={i} className="flex flex-col items-center shrink-0">
+              <div className={`
+                relative w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold
+                transition-all duration-300 transform
+                ${isCompleted 
+                  ? 'bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-md' 
+                  : isCurrent 
+                  ? 'bg-white text-primary-600 ring-2 ring-primary-400 shadow-lg scale-110' 
+                  : 'bg-sand-100 text-primary-300'
+                }
+              `}>
+                {isCompleted ? (
+                  <Check className="w-4 h-4" strokeWidth={3} />
+                ) : (
+                  <span>{i + 1}</span>
+                )}
+                {isCurrent && (
+                  <div className="absolute inset-0 rounded-full animate-pulse bg-primary-400 opacity-20" />
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Step label */}
+      <div className="mt-3 text-center">
+        <p className="text-sm font-medium text-primary-700">
+          {t(STEPS[step] as TranslationKey)}
+        </p>
+      </div>
     </div>
   );
 
@@ -319,7 +383,7 @@ export function AddListingPage() {
       <div className="card p-3 mb-4">
         <div className="flex items-center justify-between mb-1.5">
           <span className="text-xs font-medium text-primary-500">{t('completenessScore')}</span>
-          <span className="text-xs font-bold text-primary-700">{completeness}%</span>
+          <span className="text-xs font-bold text-primary-700">{Math.round(completeness)}%</span>
         </div>
         <div className="h-2 bg-sand-100 rounded-full overflow-hidden">
           <div className="h-full bg-gradient-to-r from-primary-400 to-primary-600 rounded-full transition-all duration-300" style={{ width: `${completeness}%` }} />
@@ -333,9 +397,14 @@ export function AddListingPage() {
             {fields.filter(f => f.required).some(f => !specs[f.key]) && <p className="text-[11px] text-primary-400 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{lang === 'ar' ? 'أكمل المواصفات المطلوبة' : 'Complete required specs'}</p>}
           </div>
         )}
+        {completeness === 100 && (
+          <div className="mt-2 flex items-center gap-1 text-[11px] text-success-600">
+            <Check className="w-3 h-3" />{lang === 'ar' ? 'إعلانك كامل وجاهز للنشر' : 'Your listing is complete and ready to publish'}
+          </div>
+        )}
       </div>
 
-      <div className="card p-5 sm:p-6">
+      <div className="card p-5 sm:p-6 overflow-visible">
         {/* Step 0: Intent */}
         {step === 0 && (
           <div className="space-y-3">
@@ -347,7 +416,9 @@ export function AddListingPage() {
                   onClick={() => { setIntent(intent_opt.id); setStep(1); }}
                   className={`p-4 rounded-xl border-2 text-center transition-all ${intent === intent_opt.id ? 'border-primary-500 bg-primary-50' : 'border-sand-100 hover:border-primary-200'}`}
                 >
-                  <div className="text-3xl mb-2">{intent_opt.icon}</div>
+                  <div className="flex justify-center mb-2">
+                    {intent_opt.icon && <intent_opt.icon className="w-8 h-8 text-primary-600" />}
+                  </div>
                   <span className="text-sm font-medium text-primary-700">{t(intent_opt.key as TranslationKey)}</span>
                 </button>
               ))}
@@ -440,7 +511,12 @@ export function AddListingPage() {
         {/* Step 3: Photos */}
         {step === 3 && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-primary-800">{t('addPhotosVideo')}</h2>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-bold text-primary-800">{t('addPhotosVideo')}</h2>
+                <p className="text-xs text-primary-400 mt-1">{photos.length}/8 {lang === 'ar' ? 'صور' : 'photos'}{hasVideo && videoFile && ` + 1 ${lang === 'ar' ? 'فيديو' : 'video'}`}</p>
+              </div>
+            </div>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
               {photos.map((photo, i) => (
                 <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-sand-100 group">
@@ -471,13 +547,35 @@ export function AddListingPage() {
               )}
             </div>
             <div className="flex items-center gap-3 p-3 bg-sand-50 rounded-xl">
-              <button onClick={() => setHasVideo(!hasVideo)} className={`p-2 rounded-lg ${hasVideo ? 'bg-primary-100 text-primary-600' : 'bg-white text-primary-400'}`}>
-                <Video className="w-5 h-5" />
-              </button>
-              <div>
-                <p className="text-xs font-medium text-primary-600">{t('addVideo')}</p>
-                <p className="text-xs text-primary-300">{t('videoLimitInfo')}</p>
-              </div>
+              <label className="flex items-center gap-3 cursor-pointer flex-1">
+                <input
+                  type="checkbox"
+                  checked={hasVideo}
+                  onChange={(e) => {
+                    if (!e.target.checked) {
+                      setVideoFile(null);
+                    }
+                    setHasVideo(e.target.checked);
+                  }}
+                  className="accent-primary-600 w-4 h-4"
+                />
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-primary-600">{t('addVideo')}</p>
+                  <p className="text-xs text-primary-300">{t('videoLimitInfo')}</p>
+                </div>
+              </label>
+              {hasVideo && (
+                <input
+                  type="file"
+                  accept="video/*"
+                  onChange={handleVideoUpload}
+                  className="hidden"
+                  id="video-upload"
+                />
+              )}
+              {hasVideo && <label htmlFor="video-upload" className="p-2 rounded-lg bg-primary-100 text-primary-600 hover:bg-primary-200 cursor-pointer transition-colors">
+                <Upload className="w-4 h-4" />
+              </label>}
             </div>
             {networkState === 'offline' && (
               <div className="flex items-center gap-2 p-3 bg-warning-50 rounded-xl text-warning-600 text-sm">
@@ -541,10 +639,20 @@ export function AddListingPage() {
             <h2 className="text-lg font-bold text-primary-800">{t('reviewListing')}</h2>
             <div className="card p-4 bg-sand-50/50">
               {photos[0] && <img src={photos[coverIndex] || photos[0]} alt="" className="w-full h-40 object-cover rounded-xl mb-3" />}
+              {hasVideo && videoFile && (
+                <div className="w-full h-20 bg-primary-100 rounded-xl mb-3 flex items-center justify-center">
+                  <Video className="w-6 h-6 text-primary-600" />
+                  <span className="text-sm text-primary-600 ml-2">{lang === 'ar' ? 'فيديو' : 'Video'}: {videoFile.name}</span>
+                </div>
+              )}
               <h3 className="font-bold text-primary-800">{title || titleAr || 'Untitled'}</h3>
               <p className="text-lg font-bold text-primary-700">{price ? formatPrice(parseInt(price)) : '--'}</p>
               <p className="text-sm text-primary-400">{lang === 'ar' ? sudanCities.find(c => c.id === city)?.nameAr : sudanCities.find(c => c.id === city)?.name}</p>
               {description && <p className="text-sm text-primary-500 mt-2 line-clamp-3">{description}</p>}
+              <div className="mt-3 flex items-center gap-2 text-xs text-primary-500">
+                <Activity className="w-3 h-3" />
+                {photos.length} {lang === 'ar' ? 'صور' : 'photos'} {hasVideo && videoFile && `+ 1 ${lang === 'ar' ? 'فيديو' : 'video'}`}
+              </div>
             </div>
             <div className="flex items-center gap-2 p-3 bg-primary-50 rounded-xl text-sm text-primary-600">
               <Info className="w-4 h-4 shrink-0" />

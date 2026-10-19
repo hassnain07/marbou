@@ -1,7 +1,8 @@
 import { useState, ReactNode } from 'react';
 import { useI18n } from '@/i18n/I18nContext';
 import { useApp, useFlags } from '@/context/AppContext';
-import { useRouter, Link } from '@/router/Router';
+import { useRouter } from '@/router/Router';
+import { BusinessSidebar } from '@/components/BusinessSidebar';
 import { EmptyState, StatusBadge, Modal, RatingStars, ComingSoon } from '@/components/ui';
 import { listings, businesses, sampleReviews } from '@/data/mockData';
 import {
@@ -11,20 +12,6 @@ import {
   Phone, MapPin, Save, FileCheck, AlertCircle,
 } from 'lucide-react';
 import type { TranslationKey } from '@/i18n/translations';
-
-const BIZ_TABS = [
-  { id: 'overview', icon: LayoutDashboard, key: 'businessOverview' as TranslationKey },
-  { id: 'listings', icon: FileText, key: 'listingsManagement' as TranslationKey },
-  { id: 'services', icon: Wrench, key: 'servicesManagement' as TranslationKey },
-  { id: 'jobs', icon: Briefcase, key: 'jobPosts' as TranslationKey },
-  { id: 'messages', icon: MessageSquare, key: 'messagesLeads' as TranslationKey },
-  { id: 'profile', icon: Store, key: 'storeProfile' as TranslationKey },
-  { id: 'staff', icon: Users, key: 'staffDirectory' as TranslationKey },
-  { id: 'verification', icon: Shield, key: 'verification' as TranslationKey },
-  { id: 'reviews', icon: Star, key: 'reviewsReplies' as TranslationKey },
-  { id: 'plan', icon: CreditCard, key: 'planSubs' as TranslationKey },
-  { id: 'analytics', icon: BarChart3, key: 'analytics' as TranslationKey },
-];
 
 function MetricCard({ icon, label, value, trend }: { icon: ReactNode; label: string; value: string; trend?: string }) {
   return (
@@ -42,15 +29,22 @@ function MetricCard({ icon, label, value, trend }: { icon: ReactNode; label: str
 function SimpleBarChart({ data, labels }: { data: number[]; labels: string[] }) {
   const max = Math.max(...data);
   return (
-    <div className="flex items-end justify-between gap-2 h-32">
-      {data.map((v, i) => (
-        <div key={i} className="flex-1 flex flex-col items-center gap-1">
-          <div className="w-full bg-primary-100 rounded-t-lg flex items-end" style={{ height: `${(v / max) * 100}%` }}>
-            <div className="w-full bg-primary-500 rounded-t-lg transition-all" style={{ height: '100%' }} />
+    <div className="w-full space-y-4">
+      <div className="flex items-end justify-between gap-2 h-48">
+        {data.map((v, i) => (
+          <div key={i} className="flex-1 flex flex-col items-center gap-2">
+            {/* Bar container - full height, bars grow from bottom */}
+            <div className="w-full h-full flex items-end justify-center rounded-t-lg overflow-hidden bg-primary-50">
+              <div 
+                className="w-3/4 bg-gradient-to-t from-primary-600 to-primary-500 rounded-t-lg transition-all hover:from-primary-700 hover:to-primary-600 shadow-md"
+                style={{ height: `${(v / max) * 100}%`, minHeight: '8px' }}
+              />
+            </div>
+            {/* Label */}
+            <span className="text-xs font-medium text-primary-600 text-center">{labels[i]}</span>
           </div>
-          <span className="text-[10px] text-primary-300">{labels[i]}</span>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
@@ -70,54 +64,17 @@ export function BusinessDashboard() {
   const tabId = path.split('/')[2] || 'overview';
   const biz = businesses[0];
 
-  // Filter out plan tab if monetization is disabled
-  const visibleBizTabs = BIZ_TABS.filter((tab) => !(tab.id === 'plan' && !flags?.monetizationEnabled));
-
-  const SidebarLink = ({ tab }: { tab: typeof BIZ_TABS[0] }) => {
-    const Icon = tab.icon;
-    return (
-      <button
-        onClick={() => { navigate(`/business/${tab.id}`); setSidebarOpen(false); }}
-        className={`nav-link w-full ${tabId === tab.id ? 'nav-link-active' : ''}`}
-      >
-        <Icon className="w-4 h-4" />{t(tab.key)}
-      </button>
-    );
-  };
-
   const bizListings = listings.filter((l) => l.businessId === biz.id);
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className={`fixed md:sticky top-0 inset-y-0 start-0 z-40 w-60 bg-white border-e border-sand-100 transition-transform md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full rtl:translate-x-full'}`} style={{ height: '100vh' }}>
-        <div className="p-4 border-b border-sand-100">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center">
-              <svg viewBox="0 0 100 100" className="w-5 h-5">
-                <path d="M28 70 L28 30 L50 30 L50 70" stroke="#fdfbf7" strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                <circle cx="72" cy="50" r="14" stroke="#f97e16" strokeWidth="6" fill="none" />
-                <circle cx="72" cy="50" r="4" fill="#fdfbf7" />
-              </svg>
-            </div>
-            <span className="font-bold text-primary-700">{t('brandName')}</span>
-          </Link>
-        </div>
-        <div className="p-3 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 80px)' }}>
-          <div className="flex items-center gap-2 p-2 mb-2 bg-sand-50 rounded-xl">
-            <div className="w-8 h-8 rounded-lg bg-sand-100 overflow-hidden">
-              <img src={biz.logo} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-primary-700 truncate">{lang === 'ar' ? biz.nameAr : biz.name}</p>
-              <p className="text-[10px] text-primary-400">{t('demoLabel')}</p>
-            </div>
-          </div>
-          <div className="space-y-1">
-            {visibleBizTabs.map((tab) => <SidebarLink key={tab.id} tab={tab} />)}
-          </div>
-        </div>
-      </aside>
+      {/* Shared Sidebar */}
+      <BusinessSidebar 
+        activeTab={tabId} 
+        business={biz}
+        sidebarOpen={sidebarOpen}
+        onCloseSidebar={() => setSidebarOpen(false)}
+      />
 
       {sidebarOpen && <div className="fixed inset-0 z-30 bg-primary-950/30 md:hidden" onClick={() => setSidebarOpen(false)} />}
 
@@ -134,91 +91,204 @@ export function BusinessDashboard() {
         <div className="p-4 sm:p-6">
           {tabId === 'overview' && (
             <div className="space-y-6">
-              <div>
-                <h1 className="text-xl font-bold text-primary-800">{t('businessOverview')}</h1>
-                <p className="text-sm text-primary-400">{t('demoLabel')}</p>
+              {/* Header */}
+              <div className="flex items-start justify-between">
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-primary-800">{t('businessOverview')}</h1>
+                  <p className="text-sm text-primary-400 mt-1">{lang === 'ar' ? 'مرحبا بك في لوحة التحكم الخاصة بك' : 'Welcome back to your dashboard'}</p>
+                </div>
+                <button onClick={() => showToast(t('refreshed'), 'success')} className="btn-secondary text-sm hidden sm:flex"><TrendingUp className="w-4 h-4" />{t('refresh')}</button>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+
+              {/* KPI Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <MetricCard icon={<Eye className="w-5 h-5" />} label={t('views2')} value={formatNumber(12450)} trend="+12%" />
                 <MetricCard icon={<MessageSquare className="w-5 h-5" />} label={t('leads')} value={formatNumber(89)} trend="+5%" />
                 <MetricCard icon={<Star className="w-5 h-5" />} label={t('favorites')} value={formatNumber(234)} trend="+8%" />
                 <MetricCard icon={<FileText className="w-5 h-5" />} label={t('listingsCount')} value={formatNumber(bizListings.length)} />
               </div>
-              <div className="card p-4">
-                <h3 className="font-bold text-primary-700 mb-4">{t('analytics')}</h3>
-                <SimpleBarChart data={[30, 45, 28, 52, 38, 60, 48]} labels={['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']} />
+
+              {/* Main Charts */}
+              <div className="grid lg:grid-cols-3 gap-4">
+                {/* Views Chart */}
+                <div className="lg:col-span-2 card p-5 sm:p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h2 className="font-bold text-primary-800 text-lg">{t('views2')} {lang === 'ar' ? 'هذا الأسبوع' : 'This Week'}</h2>
+                      <p className="text-sm text-primary-400 mt-1">{lang === 'ar' ? 'إجمالي المشاهدات: 12,450' : 'Total views: 12,450'}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-primary-700">+12%</p>
+                      <p className="text-xs text-success-600">{lang === 'ar' ? 'عن الأسبوع الماضي' : 'vs last week'}</p>
+                    </div>
+                  </div>
+                  <SimpleBarChart data={[30, 45, 28, 52, 38, 60, 48]} labels={['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']} />
+                </div>
+
+                {/* Quick Stats */}
+                <div className="space-y-3">
+                  <div className="card p-4 bg-gradient-to-br from-success-50 to-success-50/30 border-success-100">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 rounded-lg bg-success-100 flex items-center justify-center">
+                        <Check className="w-5 h-5 text-success-600" />
+                      </div>
+                      <span className="text-sm font-medium text-primary-600">{t('approved')}</span>
+                    </div>
+                    <p className="text-2xl font-bold text-primary-800">24</p>
+                    <p className="text-xs text-primary-400 mt-1">{lang === 'ar' ? 'إعلانات مفعلة' : 'Active listings'}</p>
+                  </div>
+                  <div className="card p-4 bg-gradient-to-br from-warning-50 to-warning-50/30 border-warning-100">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 rounded-lg bg-warning-100 flex items-center justify-center">
+                        <Clock className="w-5 h-5 text-warning-600" />
+                      </div>
+                      <span className="text-sm font-medium text-primary-600">{t('pending')}</span>
+                    </div>
+                    <p className="text-2xl font-bold text-primary-800">3</p>
+                    <p className="text-xs text-primary-400 mt-1">{lang === 'ar' ? 'تحت المراجعة' : 'Under review'}</p>
+                  </div>
+                  <div className="card p-4 bg-gradient-to-br from-accent-50 to-accent-50/30 border-accent-100">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 rounded-lg bg-accent-100 flex items-center justify-center">
+                        <TrendingUp className="w-5 h-5 text-accent-600" />
+                      </div>
+                      <span className="text-sm font-medium text-primary-600">{t('conversion')}</span>
+                    </div>
+                    <p className="text-2xl font-bold text-primary-800">3.2%</p>
+                    <p className="text-xs text-primary-400 mt-1">{lang === 'ar' ? 'معدل التحويل' : 'Conversion rate'}</p>
+                  </div>
+                </div>
               </div>
-              <div className="card p-4">
-                <h3 className="font-bold text-primary-700 mb-3">{t('activityTimeline')}</h3>
+
+              {/* Secondary Charts */}
+              <div className="grid md:grid-cols-2 gap-4">
+                {/* Leads Chart */}
+                <div className="card p-5 sm:p-6">
+                  <div className="mb-6">
+                    <h2 className="font-bold text-primary-800 text-lg">{t('leads')} ({t('messaging')})</h2>
+                    <p className="text-sm text-primary-400 mt-1">{lang === 'ar' ? 'عدد الرسائل المستلمة' : 'Messages received'}</p>
+                  </div>
+                  <SimpleBarChart data={[12, 19, 15, 22, 18, 25, 20]} labels={['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']} />
+                </div>
+
+                {/* Favorites Trend */}
+                <div className="card p-5 sm:p-6">
+                  <div className="mb-6">
+                    <h2 className="font-bold text-primary-800 text-lg">{t('favorites')} {lang === 'ar' ? 'والتقييمات' : '& Ratings'}</h2>
+                    <p className="text-sm text-primary-400 mt-1">{lang === 'ar' ? 'عدد الإعجابات والتقييمات' : 'Likes and ratings'}</p>
+                  </div>
+                  <SimpleBarChart data={[25, 30, 28, 35, 32, 38, 34]} labels={['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']} />
+                </div>
+              </div>
+
+              {/* Activity Timeline */}
+              <div className="card p-5 sm:p-6">
+                <h2 className="font-bold text-primary-800 text-lg mb-4">{t('activityTimeline')}</h2>
                 <div className="space-y-3">
                   {[
-                    { icon: <Eye className="w-4 h-4" />, text: lang === 'ar' ? 'شخص شاهد إعلانك' : 'Someone viewed your listing', time: '2h ago' },
-                    { icon: <MessageSquare className="w-4 h-4" />, text: lang === 'ar' ? 'رسالة جديدة من عميل' : 'New message from a customer', time: '5h ago' },
-                    { icon: <Star className="w-4 h-4" />, text: lang === 'ar' ? 'تقييم جديد 5 نجوم' : 'New 5-star review', time: '1d ago' },
+                    { icon: <Eye className="w-4 h-4" />, text: lang === 'ar' ? 'شخص جديد شاهد إعلاناتك' : 'New person viewed your listing', time: '2h ago', color: 'primary' },
+                    { icon: <MessageSquare className="w-4 h-4" />, text: lang === 'ar' ? 'رسالة جديدة من عميل' : 'New message from customer', time: '5h ago', color: 'primary' },
+                    { icon: <Star className="w-4 h-4" />, text: lang === 'ar' ? 'تقييم جديد 5 نجوم من محمد علي' : 'New 5-star review from Mohammed Ali', time: '1d ago', color: 'success' },
+                    { icon: <Check className="w-4 h-4" />, text: lang === 'ar' ? 'تم نشر إعلانك بنجاح' : 'Your listing was published', time: '2d ago', color: 'success' },
                   ].map((a, i) => (
-                    <div key={i} className="flex items-center gap-3 text-sm">
-                      <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center text-primary-500">{a.icon}</div>
-                      <span className="text-primary-600 flex-1">{a.text}</span>
-                      <span className="text-xs text-primary-300">{a.time}</span>
+                    <div key={i} className={`flex items-center gap-3 p-3 rounded-lg bg-${a.color}-50 border border-${a.color}-100`}>
+                      <div className={`w-8 h-8 rounded-full bg-${a.color}-100 flex items-center justify-center text-${a.color}-600`}>{a.icon}</div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-primary-700">{a.text}</p>
+                      </div>
+                      <span className="text-xs text-primary-400 whitespace-nowrap">{a.time}</span>
                     </div>
                   ))}
                 </div>
               </div>
-            </div>
-          )}
 
-          {tabId === 'listings' && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h1 className="text-xl font-bold text-primary-800">{t('listingsManagement')}</h1>
-                <Link to="/add-listing" className="btn-primary text-sm"><Plus className="w-4 h-4" />{t('addListing')}</Link>
-              </div>
-              <div className="space-y-2">
-                {bizListings.map((l) => (
-                  <div key={l.id} className="card p-3 flex items-center gap-3">
-                    <Link to={`/listing/${l.id}`} className="w-16 h-16 rounded-xl overflow-hidden bg-sand-100 shrink-0">
-                      {l.images[0] && <img src={l.images[0]} alt="" className="w-full h-full object-cover" />}
-                    </Link>
-                    <div className="flex-1 min-w-0">
-                      <Link to={`/listing/${l.id}`} className="font-bold text-primary-700 text-sm hover:text-primary-500 line-clamp-1">{lang === 'ar' ? l.titleAr : l.title}</Link>
-                      <p className="text-sm font-bold text-primary-600">{formatPrice(l.price, l.perMonth)}</p>
-                      <StatusBadge status={l.status} />
-                    </div>
-                    <div className="flex gap-1 shrink-0">
-                      <button onClick={() => showToast(t('promote'), 'info')} className="p-2 rounded-lg hover:bg-sand-50 text-accent-500" title={t('promote')}><TrendingUp className="w-4 h-4" /></button>
-                      <button onClick={() => showToast(t('edit'), 'info')} className="p-2 rounded-lg hover:bg-sand-50 text-primary-500" title={t('edit')}><FileText className="w-4 h-4" /></button>
-                    </div>
+              {/* Footer Stats */}
+              <div className="grid sm:grid-cols-3 gap-4">
+                <div className="card p-4 text-center">
+                  <p className="text-xs text-primary-400 mb-1">{t('accountHealth')}</p>
+                  <p className="text-2xl font-bold text-primary-700">92%</p>
+                  <div className="w-full bg-sand-100 rounded-full h-1.5 mt-3">
+                    <div className="bg-success-500 h-full rounded-full" style={{ width: '92%' }} />
                   </div>
-                ))}
+                </div>
+                <div className="card p-4 text-center">
+                  <p className="text-xs text-primary-400 mb-1">{t('responseRate')}</p>
+                  <p className="text-2xl font-bold text-primary-700">98%</p>
+                  <p className="text-xs text-success-600 mt-2">{lang === 'ar' ? 'ممتاز' : 'Excellent'}</p>
+                </div>
+                <div className="card p-4 text-center">
+                  <p className="text-xs text-primary-400 mb-1">{t('avgRating')}</p>
+                  <p className="text-2xl font-bold text-primary-700">4.7⭐</p>
+                  <p className="text-xs text-primary-400 mt-2">234 {t('ratingCount')}</p>
+                </div>
               </div>
             </div>
           )}
 
           {tabId === 'services' && (
             <div className="space-y-4">
-              <h1 className="text-xl font-bold text-primary-800">{t('servicesManagement')}</h1>
-              <div className="flex flex-wrap gap-2">
-                {biz.services?.map((s, i) => (
-                  <div key={i} className="card p-3 flex items-center gap-2">
-                    <Wrench className="w-4 h-4 text-primary-400" />
-                    <span className="text-sm text-primary-700">{s}</span>
-                  </div>
-                ))}
+              <div className="flex items-center justify-between">
+                <h1 className="text-xl font-bold text-primary-800">{t('servicesManagement')}</h1>
+                <button onClick={() => navigate(`/business/${biz.id}/add-service`)} className="btn-primary text-sm"><Plus className="w-4 h-4" />{t('addService')}</button>
               </div>
+              {biz.services && biz.services.length > 0 ? (
+                <div>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {biz.services.map((s, i) => (
+                      <div key={i} className="card p-3 flex items-center gap-2 group hover:border-primary-300 transition-all">
+                        <Wrench className="w-4 h-4 text-primary-400" />
+                        <span className="text-sm text-primary-700">{s}</span>
+                        <button onClick={() => showToast(t('deleted'), 'success')} className="ml-auto p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                          <X className="w-3 h-3 text-error-500 hover:text-error-600" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <button onClick={() => navigate(`/business/${biz.id}/services`)} className="btn-primary text-sm">
+                    {t('manageServices')} →
+                  </button>
+                </div>
+              ) : (
+                <EmptyState icon={<Wrench className="w-10 h-10" />} title={t('noServices')} action={<button onClick={() => navigate(`/business/${biz.id}/services`)} className="btn-primary text-sm">{t('addService')}</button>} />
+              )}
             </div>
           )}
 
           {tabId === 'jobs' && (
             <div className="space-y-4">
-              <h1 className="text-xl font-bold text-primary-800">{t('jobPosts')}</h1>
-              <EmptyState icon={<Briefcase className="w-10 h-10" />} title={t('noJobs')} action={<button onClick={() => showToast(t('demoLabel'), 'info')} className="btn-primary text-sm">{t('postJob')}</button>} />
+              <div className="flex items-center justify-between">
+                <h1 className="text-xl font-bold text-primary-800">{t('jobPosts')}</h1>
+                <button onClick={() => navigate(`/business/${biz.id}/post-job`)} className="btn-primary text-sm"><Plus className="w-4 h-4" />{t('postJob')}</button>
+              </div>
+              <button onClick={() => navigate(`/business/${biz.id}/jobs`)} className="btn-secondary text-sm">
+                {t('manageJobs')} →
+              </button>
             </div>
           )}
 
           {tabId === 'messages' && (
             <div className="space-y-4">
               <h1 className="text-xl font-bold text-primary-800">{t('messagesLeads')}</h1>
-              <Link to="/messages" className="btn-primary text-sm">{t('messages')}</Link>
+              <div className="space-y-2">
+                {[
+                  { name: lang === 'ar' ? 'أحمد محمد' : 'Ahmed Mohammed', message: lang === 'ar' ? 'هل لديك هذا المنتج بالمخزون؟' : 'Do you have this product in stock?', time: '5m ago', unread: true },
+                  { name: lang === 'ar' ? 'فاطمة علي' : 'Fatima Ali', message: lang === 'ar' ? 'أريد طلب تخصيص للمنتج' : 'I want to customize the product', time: '1h ago', unread: false },
+                  { name: lang === 'ar' ? 'محمود حسن' : 'Mahmoud Hassan', message: lang === 'ar' ? 'شكراً على الخدمة الممتازة' : 'Thanks for the excellent service', time: '2h ago', unread: false },
+                ].map((msg, i) => (
+                  <button key={i} onClick={() => navigate('/account/messages')} className={`card p-3 text-start hover:border-primary-300 transition-all w-full ${msg.unread ? 'border-primary-200 bg-primary-50/30' : ''}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm ${msg.unread ? 'font-bold' : 'font-medium'} text-primary-700`}>{msg.name}</p>
+                        <p className="text-sm text-primary-600 line-clamp-1">{msg.message}</p>
+                      </div>
+                      <div className="flex flex-col items-end gap-1">
+                        <span className="text-xs text-primary-400">{msg.time}</span>
+                        {msg.unread && <div className="w-2 h-2 rounded-full bg-accent-500" />}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
@@ -257,10 +327,13 @@ export function BusinessDashboard() {
 
           {tabId === 'staff' && (
             <div className="space-y-4">
-              <h1 className="text-xl font-bold text-primary-800">{t('staffDirectory')}</h1>
+              <div className="flex items-center justify-between">
+                <h1 className="text-xl font-bold text-primary-800">{t('staffDirectory')}</h1>
+                <button onClick={() => showToast(t('featureComingSoon'), 'info')} className="btn-primary text-sm"><Plus className="w-4 h-4" />{t('addStaff')}</button>
+              </div>
               <div className="grid sm:grid-cols-2 gap-3">
                 {biz.staff?.map((s, i) => (
-                  <div key={i} className="card p-4 flex items-center gap-3">
+                  <div key={i} className="card p-4 flex items-center gap-3 group">
                     <div className="w-12 h-12 rounded-full bg-sand-100 overflow-hidden">
                       <img src={s.avatar} alt="" className="w-full h-full object-cover" />
                     </div>
@@ -268,7 +341,10 @@ export function BusinessDashboard() {
                       <p className="font-bold text-primary-700 text-sm">{lang === 'ar' ? s.nameAr : s.name}</p>
                       <p className="text-xs text-primary-400">{lang === 'ar' ? s.roleAr : s.role}</p>
                     </div>
-                    <span className="badge bg-primary-50 text-primary-600">{t('permissions')}</span>
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={() => showToast(t('edit'), 'info')} className="p-2 rounded hover:bg-sand-50"><FileText className="w-4 h-4 text-primary-500" /></button>
+                      <button onClick={() => showToast(t('delete'), 'error')} className="p-2 rounded hover:bg-error-50"><X className="w-4 h-4 text-error-500" /></button>
+                    </div>
                   </div>
                 ))}
               </div>

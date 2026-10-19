@@ -407,7 +407,7 @@ export function BusinessProfilePage() {
           <a href={`tel:${biz.phone.replace(/\s+/g, '')}`} className="btn-primary w-full justify-center">
             <Phone className="w-4 h-4" />{t('call')}
           </a>
-          <button onClick={() => { setShowContact(false); navigate('/messages'); }} className="btn-secondary w-full">
+          <button onClick={() => { setShowContact(false); navigate('/account/messages'); }} className="btn-secondary w-full">
             <MessageSquare className="w-4 h-4" />{t('message')}
           </button>
         </div>

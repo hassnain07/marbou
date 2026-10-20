@@ -138,19 +138,20 @@ function ListingCardComponent({ listing, layout = 'grid', loading = false, dataS
   }
 
   return (
-    <Link to={`/listing/${listing.id}`} className="block">
-      <div className="card overflow-hidden hover:shadow-lg transition-all duration-200 group h-full flex flex-col">
-        <div className="relative aspect-[4/3] bg-sand-100 overflow-hidden">
+    <Link to={`/listing/${listing.id}`} className="block h-full">
+      <div className="card overflow-hidden hover:shadow-lg transition-all duration-200 group flex flex-col h-full">
+        {/* Image — aspect-ratio based so it scales with card width, always consistent */}
+        <div className="relative aspect-[4/3] w-full shrink-0 bg-sand-100 overflow-hidden">
           {listing.images.length > 0 ? (
             <img
               src={listing.images[0]}
               alt={title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               loading="lazy"
               style={imgStyle}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-primary-300">
+            <div className="absolute inset-0 flex items-center justify-center text-primary-300">
               <span className="text-xs">{t('addPhotos')}</span>
             </div>
           )}
@@ -199,28 +200,32 @@ function ListingCardComponent({ listing, layout = 'grid', loading = false, dataS
             </button>
           )}
         </div>
+        {/* Fixed-height content — always same structure */}
         <div className="p-3 flex flex-col flex-1">
-          <h3 className="font-bold text-primary-800 text-sm line-clamp-2 group-hover:text-primary-600 transition-colors min-h-[2.5rem]">
+          {/* Title — always 2 lines reserved */}
+          <h3 className="font-bold text-primary-800 text-sm line-clamp-2 group-hover:text-primary-600 transition-colors" style={{ minHeight: '2.5rem' }}>
             {title}
           </h3>
-          <p className="text-lg font-bold text-primary-700 mt-1">{formatPrice(listing.price, listing.perMonth)}</p>
-          {listing.negotiable && <span className="text-xs text-primary-400">{t('negotiable')}</span>}
-          <p className="text-xs text-primary-400 mt-1 flex items-center gap-1">
+          {/* Price */}
+          <p className="text-base font-bold text-primary-700 mt-1.5">{formatPrice(listing.price, listing.perMonth)}</p>
+          {/* Location — always 1 line */}
+          <p className="text-xs text-primary-400 mt-1 flex items-center gap-1 truncate">
             <MapPin className="w-3 h-3 shrink-0" aria-hidden="true" />
-            {city} - {area}
+            <span className="truncate">{city} - {area}</span>
           </p>
-          {specsPreview && <p className="text-xs text-primary-500 mt-1.5 line-clamp-1">{specsPreview}</p>}
+          {/* Specs — always 1 line reserved */}
+          <p className="text-xs text-primary-500 mt-1 line-clamp-1 min-h-[1rem]">
+            {specsPreview || '\u00A0'}
+          </p>
+          {/* Footer */}
           <div className="flex items-center justify-between mt-auto pt-2 border-t border-sand-50">
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 min-w-0">
               {listing.sellerVerified && (
-                <div className="flex items-center gap-0.5">
-                  <Star className="w-3 h-3 fill-primary-500 text-primary-500" aria-hidden="true" />
-                  <span className="text-xs text-primary-500 font-medium">{listing.sellerRating}</span>
-                </div>
+                <Star className="w-3 h-3 fill-primary-500 text-primary-500 shrink-0" aria-hidden="true" />
               )}
               <span className="text-xs text-primary-300 truncate max-w-[80px]">{sellerName}</span>
             </div>
-            <span className="text-xs text-primary-400 flex items-center gap-0.5">
+            <span className="text-xs text-primary-400 flex items-center gap-0.5 shrink-0">
               <Eye className="w-3 h-3" aria-hidden="true" />
               {formatNumber(listing.views)}
             </span>
@@ -250,7 +255,7 @@ function ListingCardGridComponent({ listings, layout = 'grid', loading = false }
     );
   }
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 items-stretch">
       {listings.map((l) => (
         <ListingCard key={l.id} listing={l} loading={loading} />
       ))}

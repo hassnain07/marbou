@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Bell, CheckCheck, Heart, LogOut, Menu, MessageSquare, User, X } from 'lucide-react';
+import { Bell, CheckCheck, Heart, LogOut, Menu, MessageSquare, Settings, User, X } from 'lucide-react';
 import { useI18n } from '@/i18n/I18nContext';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
@@ -95,6 +95,10 @@ function UserMenu() {
             <button type="button" onClick={() => go('/account/messages')} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-primary-800 hover:bg-primary-50">
               <MessageSquare className="h-4 w-4" aria-hidden="true" />
               {t('messages')}
+            </button>
+            <button type="button" onClick={() => go('/account?tab=settings')} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-primary-800 hover:bg-primary-50">
+              <Settings className="h-4 w-4" aria-hidden="true" />
+              {t('settings')}
             </button>
             <hr className="my-2 border-sand-100" />
             <button
